@@ -1,0 +1,144 @@
+/*
+{
+    "id":1,
+    "uuid":"d2372d31-be16-48dd-b1f3-6168f243b87f",
+    "description":"cp_Desc",
+    "version":1,
+    "fhirTherapist":"1849f626b17-778060b6-d1da-4d37-b80c-0138ea88d167",
+    "fhirPatient":"1849f601431-9cad4548-2ea7-443a-80c6-623703f4ef96",
+    "startDate":"2022-01-01",
+    "stopDate":"2030-11-23",
+    "state":"ACTIVE",
+    "units":[
+        {
+            "id":1,
+            "schedules":[],
+            "procedures":[
+                {
+                    "id":1,
+                    "startMoment":"2022-11-23T11:33:29",
+                    "stopMoment":"2022-11-23T12:33:44",
+                    "fhirProcedure":"1849f601431-9cad4548-2ea7-443a-80c6-623703f4ef96",
+                    "state":"RUNNING",
+                    "units":[
+                        {
+                            "id":1,
+                            "activityUnit":{
+                                "id":1,
+                                "contentPackage":{
+                                    "id":2,
+                                    "available":true,
+                                    "name":"web_questionnaire",
+                                    "version":"0.0.1",
+                                    "author":"cp_Author",
+                                    "therapistInvolved":false,
+                                    "synchronousFinish":false,
+                                    "timeout":0,
+                                    "type":"WEBSITE",
+                                    "translations":[],
+                                    "resultTemplates":[
+                                        {
+                                            "fieldName":"result_2",
+                                            "mandatory":true,
+                                            "type":"STRING"
+                                        },
+                                        {
+                                            "fieldName":"result_3",
+                                            "mandatory":true,
+                                            "type":"STRING"
+                                        },
+                                        {
+                                            "fieldName":"result_4",
+                                            "mandatory":true,
+                                            "type":"NUMBER"
+                                        },
+                                        {
+                                            "fieldName":"result_5",
+                                            "mandatory":true,
+                                            "type":"STRING"
+                                        },
+                                        {
+                                            "fieldName":"result_6",
+                                            "mandatory":true,
+                                            "type":"STRING"
+                                        }
+                                    ],
+                                    "parameters":[],
+                                    "resources":[
+                                        {
+                                            "name":"default",
+                                            "resourceId":"1849f601431-9cad4548-2ea7-443a-80c6-623703f4ef96",
+                                            "translations":[],
+                                            "parameters":[]
+                                        }
+                                    ]
+                                },
+                                "order":1,
+                                "mandatory":true,
+                                "parameters":[]
+                            },
+                            "contentPackageResource":{
+                                "name":"default",
+                                "resourceId":"1849f601431-9cad4548-2ea7-443a-80c6-623703f4ef96",
+                                "translations":[],
+                                "parameters":[]
+                            },
+                            "state":"RUNNING",
+                            "startMoment":"2022-11-23T11:33:29",
+                            "stopMoment":"2022-11-23T12:33:44",
+                            "results":[
+                                {
+                                    "value":"pur_Value",
+                                    "id":1,
+                                    "resultTemplate":{
+                                        "fieldName":"result_1",
+                                        "mandatory":true,
+                                        "type":"STRING"
+                                    },
+                                    "fhirPatient":"1849f601431-9cad4548-2ea7-443a-80c6-623703f4ef96",
+                                    "fhirTherapist":"1849f626b17-778060b6-d1da-4d37-b80c-0138ea88d167"
+                                }
+                            ],
+                            "packageParameters":[
+                                {
+                                    "id":1,
+                                    "value":"pupp_Value"
+                                }
+                            ],
+                            "resourceParameters":[
+                                {
+                                    "id":1,
+                                    "key":{},
+                                    "value":"purp_Value"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id":2,
+            "schedules":[],
+            "procedures":[]
+        }
+    ]
+}
+*/
+
+import { Model, List } from "@/types/base";
+export class CareplanRecord extends Model {
+    get defaults() {
+        return { };
+    }
+    set defaults(id/*, title, message*/) {
+        this.id = id;
+        //this.title = title;
+        //this.message = message;
+    }
+}
+export class CareplanRecords extends List {
+    get model() {
+        return CareplanRecord;
+    }
+}

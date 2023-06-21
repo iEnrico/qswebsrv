@@ -1,0 +1,13 @@
+version: "1.0"
+
+services:
+  webproject:
+    build:
+      context: '.'
+      target: 'development'
+    container_name: 'webproject'
+    restart: 'always'
+    volumes:
+      - '/usr/src/app/node_modules'
+    ports:
+      - '8080:8080'

@@ -1,0 +1,14 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\assets",
+    "\\components",
+    "\\scripts",
+    "\\scripts\\api",
+    "\\scripts\\auth",
+    "\\scripts\\common",
+    "\\views"
+  ],
+  "SelectedNode": "\\scripts\\auth",
+  "PreviewInSolutionExplorer": false
+}
