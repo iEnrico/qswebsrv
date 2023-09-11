@@ -50,27 +50,6 @@
       </v-col>
     </v-row>
   </v-card>
-  <!--
-    <v-col :cols="4" style="height: 14%">
-      <v-row no-gutters align="start" justify="start">
-        <v-list-item-title
-          class="ml-2 mr-auto"
-          style="justify-self: start"
-          v-text="item.text"
-        ></v-list-item-title>
-      </v-row>
-      <v-row no-gutters align="start" justify="start">
-        <v-list-item-subtitle
-          class="ml-2 mr-auto"
-          style="justify-self: start"
-          v-text="parseDate(item.date)"
-        ></v-list-item-subtitle>
-      </v-row>
-    </v-col>
-    <v-col :cols="8" style="height: 14%">
-      <v-btn> i </v-btn>
-    </v-col>
-    -->
 </template>
 
 <script>
@@ -88,6 +67,7 @@ file-document-edit  = in edit mode
 checkbox-multiple-marked-circle   = done, complete
 
 */
+//import { parseDate } from "@/scripts/media/utils";
 
 export default {
   name: "listItemPatient",

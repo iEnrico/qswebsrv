@@ -17,6 +17,7 @@
 </template>
 
 <script>
+//import { parseDate } from "@/scripts/media/utils";
 export default {
   name: "listItemCourseQuestion",
   data: () => ({}),
@@ -47,8 +48,6 @@ export default {
         minute: "2-digit",
         //second: "2-digit",
       });
-
-      //.toLocaleString();
     },
   },
 };

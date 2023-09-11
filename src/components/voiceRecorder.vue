@@ -1,6 +1,46 @@
 <template>
-  <v-card max-width="350" color="#FFFFFF" class="rounded-lg" outlined tile>
-    <v-row no-gutters align="center" justify="center">
+  <div class="text-center">
+    <!-- dialog if record gets clicked without permission -->
+    <v-dialog
+      v-model="dialog"
+      width="40em"
+    >
+      <v-card class="pa-4 ma-4">
+        <v-card-title class="ml-0 pl-2">
+          Fehlende Mikrofonberechtigung!
+        </v-card-title>
+        <v-card-text class="ml-0 pl-2 mb-4">
+          Sie müssen für diese Funktion den Zugriff auf ihr Mikrofon freigeben. 
+        </v-card-text>
+        <v-card-actions>
+          <v-btn variant="elevated" style="background-color: #E5E5E7;" @click="dialog = false"><span class="text-black">Zurück zur Session</span></v-btn>
+          <v-spacer></v-spacer>
+          <v-btn variant="elevated" style="background-color: #28B9AF;" @click="this.$router.push('/Dashboard1')"><span class="text-white">Jetzt Abbrechen</span></v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </div>
+  <!-- recording controls -->
+  <v-card max-width="320" color="#FFFFFF" class="rounded-lg" flat tile>
+
+    <v-row justify="center" align="center" no-gutters>
+      <!--
+      <v-card-subtitle v-if="this.state == 0 || this.state == 1" class="ph-0 ma-1">
+        Zum Start der Aufnahme klicken
+      </v-card-subtitle>
+      -->
+      <v-card-subtitle v-if="this.state == 2" class="ph-0 ma-1">
+        {{ formatTimeMMSS(getProgress()) }} {{ " / 01:00" }}
+      </v-card-subtitle>
+      <!--
+      <div class="container" v-if="this.state == 2">
+        <div class="recording-circle"></div>
+        <div class="recording-text">Recording</div>
+      </div>
+      -->
+    </v-row>
+
+    <v-row v-if="!(this.state == 1 && audiofiles[index])" no-gutters align="center" justify="center">
       <v-progress-linear
         :model-value="getProgress()"
         :max="60"
@@ -16,27 +56,39 @@
 
       <v-btn
         variant="text"
+        class="pa-2 mt-2 mb-2"
+        style="border: 5px solid #ddd; border-radius: 100%; background-color: #F47F76"
         :height="this.state == 1 && audiofiles[index] ? 32 : 64"
+        :width="this.state == 1 && audiofiles[index] ? 32 : 64"
         @click="toggleRec()"
       >
-        <v-icon size="48pt" v-if="this.state == 0">mdi-microphone-off</v-icon>
-        <v-icon size="24pt" color="#28B9AF" v-if="this.state == 1 && audiofiles[index]"
-          >mdi-refresh</v-icon
-        >
-        <v-icon size="48pt" v-if="this.state == 1 && !audiofiles[index]"
-          >mdi-microphone</v-icon
-        >
-        <v-icon size="48pt" v-if="this.state == 2">mdi-stop</v-icon>
+      <!--
+        border: 1px solid currentColor;
+        border-radius:50%;
+        -->        
+        <v-icon size="32pt" color="#FFF" v-if="this.state == 0">mdi-microphone-off</v-icon>
+        <v-icon size="32pt" color="#FFF" v-if="this.state == 1 && audiofiles[index]">mdi-refresh</v-icon>
+        <v-icon size="32pt" color="#FFF" v-if="this.state == 1 && !audiofiles[index]">mdi-microphone</v-icon>
+        <v-icon size="32pt" color="#FFF" v-if="this.state == 2">mdi-stop</v-icon>
       </v-btn>
     </v-row>
 
-    <v-row no-gutters>
+    <v-row justify="center" align="center" no-gutters>
+      <v-card-subtitle v-if="this.state == 0 || (this.state == 1 && !audiofiles[index])" class="ph-0 ma-1">
+        Zum Start der Aufnahme klicken
+      </v-card-subtitle>
+      <v-card-subtitle v-if="this.state == 2" class="ph-0 ma-1">
+        Aufnahme läuft...
+      </v-card-subtitle>
+      <!--
       <div class="container" v-if="this.state == 2">
         <div class="recording-circle"></div>
         <div class="recording-text">Recording</div>
       </div>
+      -->
     </v-row>
 
+    <!-- if audio recording exists 
     <v-container class="pa-0 ma-0" fluid v-if="audiofiles[index]">
       <v-row no-gutters align="center" justify="center">
         <v-col :cols="12">
@@ -69,14 +121,82 @@
         </v-col>
       </v-row>
     </v-container>
+-->
+
+  </v-card>
+  <v-card max-width="350" color="#fff" class="rounded-lg" flat tile>
+    <v-row v-if="this.audiofiles[this.index]" no-gutters align="center" justify="center">
+      <!--  
+      {{this.audiofiles[this.index].src}}
+      -->
+
+      <!--   -->
+      <ListItemPlayer :elevated="true" :item="this.audiofiles[this.index].src" :index="this.index" :action="toggleRec" />
+   
+      <!-- 
+      
+      <v-card
+          v-if="this.audiofiles[this.index]"
+          variant="plain"
+          class="pa-0 ma-0"
+          style="height: 100px; display: flex; flex-direction: column"
+        >
+          <v-row align="center" justify="center" class="pb-2">
+            <div class="parent mr-4">
+              <svg class="progress-ring" width="40" height="40">
+                <circle
+                  class="progress-ring__circle"
+                  stroke="#28B9AF"
+                  stroke-width="4"
+                  fill="transparent"
+                  r="17"
+                  cx="20"
+                  cy="20"
+                />
+              </svg>
+
+              <div class="child child-1">
+                <div :id="'icon' + index" class="icon-container"></div>
+              </div>
+            </div>
+
+            <audio
+              :id="'audio' + index"
+              :src="getAudio(this.audiofiles[this.index])"
+              controls
+              hidden="true"
+            ></audio>
+            <div :id="'vis' + index" class="visualizer-container"></div>
+          </v-row>
+        </v-card> -->
+
+    </v-row> 
+
+
+<!--
+pause-circle-outline
+      test
+
+    <v-row no-gutters align="center" justify="center">
+      <v-icon size="32pt" color="#FFF" v-if="this.state == 1">mdi-play-circle-outline</v-icon>
+      <v-spacer></v-spacer>
+      <div :id="'vis' + index" class="visualizer-container"></div>
+      <v-spacer></v-spacer>
+      <v-icon size="20pt" color="#000" v-if="this.state == 1">mdi-reload</v-icon>
+    </v-row>
+-->
+
   </v-card>
 </template>
 
 <script>
 import Encoder from "../scripts/media/encoder";
+import ListItemPlayer from "@/components/listItemPlayer.vue";
+
 export default {
   name: "VoiceRecorder",
   data: () => ({
+    dialog: false,
     analyser: null,
     vis_data_arr: null,
     volume: 0,
@@ -114,12 +234,17 @@ export default {
     },
     //audiofiles: function () {},
   },
-  components: {},
+  components: { ListItemPlayer },
   mounted: function () {
     // Emits on mount
     //this.emitInterface();
 
     this.initMediaRec();
+
+    /*
+    this.initPlayerVisual();
+    this.initPlayerAnalyser();
+    */
   },
   methods: {
     /**
@@ -140,6 +265,18 @@ export default {
       alert("klicked!");
     },
     */
+    getAudio(item) {
+      console.log(item)
+      //var note = new Note(item);
+      //var entries = new NoteEntry(note.entries[this.index]);
+      //var myModule = item.audioPath;
+      console.log(item.src.search("blob:"));
+      if (item.src.search("blob:") == 0) {
+        return item;
+      } else {
+        return require("@/assets/" + item);
+      }
+    },
     getProgress() {
       return 60.0 - this.countDown;
     },
@@ -214,6 +351,12 @@ export default {
       }
     },
     toggleRec() {
+
+      if (this.recorder == null) {
+        this.dialog = true;
+        return
+      }
+
       if (this.state == 1) {
         this.startTime = Date.now();
         this.countDown = 60.0;
@@ -489,6 +632,41 @@ export default {
 </script>
 
 <style>
+
+.visualizer-container {
+  height: 100px;
+  margin-top: 24px;
+  display: contents;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+}
+
+.visualizer-container__bar {
+  vertical-align: bottom;
+  display: inline-flex;
+  background: black;
+  margin: 0 1pt;
+  width: 1pt;
+}
+
+.child {
+  position: absolute;
+  top: 0;
+}
+
+.child-1 {
+  left: 0;
+}
+
+.parent {
+  position: relative;
+}
+
+
+
+
 .container {
   display: flex;
   flex-direction: row;

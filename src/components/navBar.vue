@@ -15,24 +15,34 @@
         </v-tooltip>-->
       </template>
       <v-card min-width="300" class="rounded-lg">
+        
+        <!--
+
         <v-list>
           <v-list-item
             :prepend-avatar="require('@/assets/avatar.png')"
-            :title="`${this.user.fullName}`"
-            :subtitle="`${this.user.email}`"
           >
           </v-list-item>
         </v-list>
 
-        <v-divider></v-divider>
+        <v-divider :thickness="1" class="mt-2 border-opacity-100" color="#f22"></v-divider>
+
+        -->
 
         <v-list>
           <v-list-item>
+            <v-btn variant="flat" @click="redirectProfile()"> Kontoverwaltung </v-btn>
+          </v-list-item>
+          <v-list-item>
             <v-btn variant="flat" @click="logout()"> logout </v-btn>
           </v-list-item>
+          
+          <!--
           <v-list-item>
             <v-btn variant="flat" @click="refreshToken()"> refresh token </v-btn>
           </v-list-item>
+          -->
+
           <v-list-item>
             <v-combobox
               label="Sprache"
@@ -79,6 +89,13 @@ export default {
     },
     refreshToken: function () {
       auth.refreshToken();
+    },
+    redirectProfile: function () {
+      window.location.href = "https://keycloak.relivr-integration.nuromedia.com/realms/relivr/account/#/personal-info"
+      //https://keycloak.relivr-integration.nuromedia.com/realms/relivr/account
+      
+      //<a href="https://www.google.com" target="_blank">
+      //auth.refreshToken();
     },
     /*
     help: function () {

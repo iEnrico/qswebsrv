@@ -1,20 +1,20 @@
 <template>
-  <v-card
-    outlined
-    tile
-    class="ma-2 pa-2 rounded-lg"
-    max-width="24em"
-    @click="routeDetails()"
-  >
+  <v-card flat tile class="ma-2 pa-2 rounded-lg" max-width="100%" @click="routeDetails()">
     <v-row no-gutters align="center" justify="start">
-      <v-icon size="24" :icon="item.icon" color="black"></v-icon>
       <v-list-item-title
+        max-width="40px"
         class="ml-4 mr-auto"
         style="justify-self: start"
         v-text="item.text"
       ></v-list-item-title>
       <v-list-item-subtitle
-        style="justify-self: end"
+        class="ml-4 mr-auto"
+        style="justify-self: start"
+        v-text="parseDate(item.date)"
+      ></v-list-item-subtitle>
+      <v-list-item-subtitle
+        class="ml-4 mr-auto"
+        style="justify-self: start"
         v-text="parseDate(item.date)"
       ></v-list-item-subtitle>
     </v-row>
@@ -22,6 +22,8 @@
 </template>
 
 <script>
+//import { parseDate } from "@/scripts/media/utils";
+
 export default {
   name: "NotesHistory",
   data: () => ({}),
@@ -45,8 +47,6 @@ export default {
         minute: "2-digit",
         //second: "2-digit",
       });
-
-      //.toLocaleString();
     },
   },
 };

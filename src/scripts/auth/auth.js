@@ -1,6 +1,7 @@
 import decode from 'jwt-decode';
 import {request} from '@/scripts/api/api.js'
-import {appRouter} from "@/router/router.js";
+//import {appRouter} from "@/router/router.js";
+//import api from "@/scripts/api/api.js";
 
 const BASE_URL = "https://keycloak.relivr-integration.nuromedia.com/realms/relivr/protocol/openid-connect";
 const AUD_URL = "https://fhir.relivr-integration.nuromedia.com/fhir-server/api/v4";
@@ -17,11 +18,11 @@ var auth = {
 
     generateToken: async function () {
         if (window.location.search) {
-            
+
             var args = new URLSearchParams(window.location.search);
             var code = args.get("code");
             console.log("returned keycloak code: " + code)
-                
+
             if (code) {
                 try {
 
@@ -46,8 +47,10 @@ var auth = {
                         // stay on login and show token
                         //location.href = location.href.replace(location.search, '');
 
+                        window.location.reload(true);
+
                         // goto dashboard if success
-                        await appRouter.push({ path: '/dashboard1'});
+                        //await appRouter.push({ path: '/dashboard1'});
 
                     } else {
                         console.error(response);
@@ -74,7 +77,7 @@ var auth = {
             });
 
             if (response.status == 200) {
-                console.log(response);
+                console.log("Refresh token saved response:",response);
                 saveData(response);
 
                 // stay on login and show token
@@ -117,13 +120,13 @@ var auth = {
                 }));
             });
     },
-    logout: function (token) {
+    logout: function (/*token*/) {
         Promise.resolve()
             .then(function () {
                 redirectKeycloak(logoutEndpoint, new URLSearchParams({
                     client_id: clientId,
-                    id_token_hint: token,
-                    post_logout_redirect_uri: window.location.href.split('?')[0],
+                    //id_token_hint: token,
+                    post_logout_redirect_uri: "http://localhost:8080"//window.location.href.split('?')[0],
                 }));
                 clearData();
             });
@@ -199,22 +202,26 @@ export function isValidToken () {
         return false;
     }
 }
-    
+
+
 export function remainingSessionTime () {
     const token = getLocalToken();
+    console.log('token:',token);
     if (token) {
         try {
             const decodedToken = decode(token);
-            const date = new Date().getTime() / 1000;
+            console.log('decodedToken:',decodedToken);
+            const date = Math.round(new Date().getTime() / 1000);
+            console.log('date:',date);
             const remainingSessionMinutes = Number(((decodedToken.exp - date) / 60).toFixed(0));
             console.log('remaining session minutes: ', remainingSessionMinutes);
             return remainingSessionMinutes > 0;
         } catch (error) {
             console.log('Remaining session time -> invalid token format', error);
         }
-    }   
+    }
 }
-    
+
 export function getLocalToken () {
     return sessionStorage.getItem("access_token");
 }

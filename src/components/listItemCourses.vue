@@ -62,24 +62,6 @@
       </v-col>
     </v-row>
   </v-card>
-  <!--
-  <v-card outlined tile class="my-2 mx-1 pa-2" max-width="auto" @click="routeDetails()">
-    <v-row no-gutters align="start" justify="start">
-      <v-list-item-title
-        class="ml-2 mr-auto"
-        style="justify-self: start"
-        v-text="item.title"
-      ></v-list-item-title>
-    </v-row>
-    <v-row no-gutters align="start" justify="start">
-      <v-list-item-subtitle
-        class="ml-2 mr-auto"
-        style="justify-self: start"
-        v-text="parseDate(item.date)"
-      ></v-list-item-subtitle>
-    </v-row>
-  </v-card>
-  -->
 </template>
 
 <script>
@@ -89,6 +71,8 @@ CURSE STATE:
 ------------
 
 */
+
+//import { parseDate } from "@/scripts/media/utils";
 
 export default {
   name: "listItemCourses",

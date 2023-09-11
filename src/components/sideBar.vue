@@ -23,10 +23,11 @@
           width="120"
           alt="no logo :("
           class="mx-2"
-          v-on:click="route('/')"
       /></v-list-item>
 
       <!--
+v-on:click="route('/')"
+
       <v-list-item
         v-if="isOpen"
         :prepend-avatar="require('@/assets/avatar.png')"
@@ -153,10 +154,10 @@ export default {
     },
     getDestination(id) {
       return id == 0
-        ? window.sessionStorage.getItem("navdrawer_last_index")
+        ? window.sessionStorage.getItem("notes_history_seen")
           ? "/Dashboard3"
           : "/Dashboard3Pre"
-        : window.sessionStorage.getItem("navdrawer_last_index")
+        : window.sessionStorage.getItem("notes_history_seen")
         ? "/DashboardTherapist3"
         : "/DashboardTherapist3Pre";
     },

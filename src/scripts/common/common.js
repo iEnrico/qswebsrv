@@ -4,7 +4,11 @@ export default {
     course_type_init: 0,
     course_type_web: 1,
     course_type_vr: 2,
-    course_type_question: 3,
+    course_type_diary: 3,
+    course_type_question: 4,
+    course_type_video: 5,
+    course_type_demographic: 6,
+    course_type_ffaf: 7,
     // session type
     session_type_meditation: 0,
     session_type_unknown1: 1,
@@ -29,4 +33,12 @@ export default {
     // calendar entry states
     calendar_item_state_open: 0,
     calendar_item_state_done: 1,
+    // session states
+    session_state_notstarted: 0,
+    session_state_running: 1,
+    session_state_overdue: 2,
+    session_state_done: 3,
+    // notification types (item overdue, general information ...)
+    notification_type_1: 2,
+    notification_type_2: 1,
 }

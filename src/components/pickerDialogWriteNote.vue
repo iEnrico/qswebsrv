@@ -1,20 +1,17 @@
 <template>
-  <v-row>
     <v-dialog v-model="dialog" max-width="40%">
       <template v-slot:activator="{ props }">
-        <v-btn
-          style="height: 24px"
-          v-bind="props"
-          variant="text"
-          size="medium"
-          icon="mdi-plus-box-outline"
-          :color="0 == 1 ? '#28B9AF' : 'gray'"
-          @click="this.data.edit = !this.data.edit"
-        ></v-btn>
+        <v-btn v-bind="props" variant="flat" prepend-icon="mdi-plus" >
+          <span style="color: #28B9AF">hinzufügen</span>
+        </v-btn>
       </template>
       <v-card justify="center" class="rounded-lg">
         <v-container fluid>
+          <v-card-title class="pa-0 mt-0 mb-0 ml-2 mr-0" center>
+            <span style="color: #000">{{ "Notiz erstellen" }}</span>
+          </v-card-title>
           <v-text-field
+            class="mt-4"
             model-value="Sample Note"
             clearable
             hide-details="auto"
@@ -30,18 +27,15 @@
             model-value="The Woodman set to work at once, and so sharp was his axe that the tree was soon chopped nearly through."
           ></v-textarea>
         </v-container>
-        <v-card-actions>
+        <v-card-actions class="pa-4">
           <v-spacer></v-spacer>
-          <v-btn color="green-darken-1" variant="text" @click="dialog = false">
-            Abbrechen
-          </v-btn>
-          <v-btn color="green-darken-1" variant="text" @click="dialog = false">
-            Übernehmen
-          </v-btn>
+          <v-btn variant="elevated" @click="dialog = false"><span color="#000">Abbrechen</span></v-btn>
+          <v-spacer></v-spacer>
+          <v-btn variant="elevated" style="background-color: #28B9AF;" @click="dialog = false"><span class="text-white">Übernehmen</span></v-btn>
+          <v-spacer></v-spacer>
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </v-row>
 </template>
 <script>
 export default {

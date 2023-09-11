@@ -7,6 +7,7 @@ import router from "@/router/router.js";
 
 // css, icon font
 import '@/css/app.css';
+import '@/css/calendar.css';
 import '@/css/tailwind.min.css';
 import '@mdi/font/css/materialdesignicons.css';
 

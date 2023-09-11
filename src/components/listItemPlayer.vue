@@ -3,17 +3,18 @@
     <v-row class="pa-0 ma-0 fill-height">
       <v-col :cols="12">
         <v-card
-          variant="plain"
-          class="pa-0 ma-0"
-          style="height: 100px; display: flex; flex-direction: column"
+          id="playercard"
+          :variant="elevated ? 'elevated' : 'flat'"
+          class="pa-0 ma-0 rounded-pill"
+          style="height: 80px; display: flex; flex-direction: column"
         >
-          <v-row align="center" justify="center" class="pb-2">
+          <v-row align="center" justify="center" class="pb-0">
             <div class="parent mr-4">
               <svg class="progress-ring" width="40" height="40">
                 <circle
                   class="progress-ring__circle"
-                  stroke="#28B9AF"
-                  stroke-width="4"
+                  stroke="#63CCC1"
+                  stroke-width="5"
                   fill="transparent"
                   r="17"
                   cx="20"
@@ -33,6 +34,12 @@
               hidden="true"
             ></audio>
             <div :id="'vis' + index" class="visualizer-container"></div>
+
+            <v-icon v-if="action" class="ml-4" size="20pt" color="#666" @click="toggleRec">mdi-refresh</v-icon>
+            <!-- 
+              v-if="this.state == 1 && audiofiles[index]" 
+              parent
+              -->
           </v-row>
         </v-card>
       </v-col>
@@ -44,23 +51,35 @@
 //import { Note } from "@/types/note";
 //import { NoteEntry } from "@/types/noteentry";
 export default {
-  name: "NotesHistory",
+  name: "ListItemPlayer",
   data: () => ({
     NBR_OF_BARS: 50,
     audio: null,
     analayzer: null,
   }),
-  props: ["item", "index"],
+  props: ["item", "index", "elevated", "action"],
   components: {},
   mounted: function () {
     this.initPlayerVisual();
     this.initPlayerAnalyser();
   },
   methods: {
+    toggleRec() {
+      //alert("do again!" + this.action)
+      this.action();
+    },
     getAudio(item) {
+      console.log("getAudio -> " + item)
       //var note = new Note(item);
       //var entries = new NoteEntry(note.entries[this.index]);
-      var myModule = item.audioPath;
+      var myModule = "";
+      if (item.audioPath) {
+        myModule = item.audioPath;
+      }
+      else {
+        myModule = item;
+      }
+
       console.log(myModule.search("blob:"));
       if (myModule.search("blob:") == 0) {
         return myModule;
@@ -118,14 +137,14 @@ export default {
       if (this.audio) {
         if (this.audio.paused) {
           iconcontainer.innerHTML = //"";
-            '<i class="mdi-play-circle-outline mdi v-icon notranslate v-theme--light text-black v-icon--clickable mr-2" style="font-size: 40px; height: 40px; width: 40px;" role="button" aria-hidden="false"></i>';
+            '<i class="mdi-play-circle-outline mdi v-icon notranslate v-theme--light v-icon--clickable mr-2" style="color:#28B9AF!important; font-size: 40px; height: 40px; width: 40px;" role="button" aria-hidden="false"></i>';
         } else {
           iconcontainer.innerHTML =
-            '<i class="mdi-pause-circle-outline mdi v-icon notranslate v-theme--light text-black v-icon--clickable mr-2" style="font-size: 40px; height: 40px; width: 40px;" role="button" aria-hidden="false"></i>';
+            '<i class="mdi-pause-circle-outline mdi v-icon notranslate v-theme--light v-icon--clickable mr-2" style="color:#28B9AF!important; font-size: 40px; height: 40px; width: 40px;" role="button" aria-hidden="false"></i>';
         }
       } else {
         iconcontainer.innerHTML = //"";
-          '<i class="mdi-play-circle-outline mdi v-icon notranslate v-theme--light text-black v-icon--clickable mr-2" style="font-size: 40px; height: 40px; width: 40px;" role="button" aria-hidden="false"></i>';
+          '<i class="mdi-play-circle-outline mdi v-icon notranslate v-theme--light v-icon--clickable mr-2" style="color:#28B9AF!important; font-size: 40px; height: 40px; width: 40px;" role="button" aria-hidden="false"></i>';
       }
       iconcontainer.addEventListener("click", this.toggleAudio);
     },
@@ -164,8 +183,13 @@ export default {
 
           // If fd is undefined, default to 0, then make sure fd is at least 4
           // This will make make a quiet frequency at least 4px high for visual effects
-          const barHeight = Math.max(4, fd || 0);
-          bar.style.height = barHeight / 1.5 + "px";
+          // additionally we normalize the barheight to maximum of player height
+          const barHeight = Math.max(4, ((document.getElementById("playercard").offsetHeight/255) * fd) || 0);
+          bar.style.height = barHeight + "px"; // / 1.5
+
+          //console.log("player height: " + barHeight + " / " + document.getElementById("playercard").offsetHeight);
+          //if (barHeight)
+          //console.log((80/255) * fd);
         }
         vm.drawProgress(vm.audio.currentTime / (vm.audio.duration / 100));
         // At the next animation frame, call ourselves

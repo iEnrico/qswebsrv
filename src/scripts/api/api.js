@@ -1,7 +1,8 @@
 import axios from 'axios';
-import { isValidToken, getLocalToken, clearData } from '@/scripts/auth/auth.js';
+import { isValidToken, getLocalToken, clearData/*, logout, refreshToken*/ } from '@/scripts/auth/auth.js';
 import {appRouter} from "@/router/router.js";
 //import store from '@/store/index';
+import auth from "@/scripts/auth/auth";
 
 //https://backend.relivr-integration.nuromedia.com/swagger-ui/index.html
 //https://backend.relivr-integration.nuromedia.com/swagger-ui/api_changelog
@@ -17,9 +18,11 @@ const contentPackages = "/content-packages/";
 
 const procedures = "/procedures/";
 
-const usersEndoint = "/users/";
+const usersEndpoint = "/users/";
+const patientsEndpoint = "/users/patients/";
+const therapistsEndpoint = "/users/therapists/";
 
-const voiceRecordEndoint = "/voice-records/";
+const voiceRecordEndpoint = "/voice-records/";
 
 /*
 
@@ -52,9 +55,9 @@ var api = {
 
             const response = await request("GET", BASE_BACKEND_URL+userEndpoint, null, null,
             {
-              tokenValidationMiddleware: false,
+              tokenValidationMiddleware: true,
               withAuthorization: true,
-              withTokenAutoRefresh: false,
+              withTokenAutoRefresh: true,
             });
 
             if (response.status == 200) {
@@ -68,6 +71,7 @@ var api = {
         } catch (error) {
 
             // fallback
+/*
             sessionStorage.setItem(
                 "user", 
                 JSON.stringify({
@@ -83,7 +87,7 @@ var api = {
                     "patients": []
                 })
             );
-
+*/
             console.log('Api.getUserData Error: ', error);
         }
     },
@@ -92,19 +96,23 @@ var api = {
     //---------------------------------------------
     getAvailableActivitys: async function (userId) {
         try {
-            const response = await request("GET", BASE_BACKEND_URL+userActivitysEndpoint, new URLSearchParams({
-                fhirPatient: userId,
-            }), null,
-            {
-              tokenValidationMiddleware: false,
-              withAuthorization: true,
-              withTokenAutoRefresh: false,
-            });
+            const response = await request(
+                "GET", 
+                BASE_BACKEND_URL+userActivitysEndpoint, 
+                {
+                    fhirPatient: userId,
+                }, 
+                null,
+                {
+                tokenValidationMiddleware: false,
+                withAuthorization: true,
+                withTokenAutoRefresh: false,
+                });
 
             if (response.status == 200) {
                 console.log(response);
-
-                alert("USER - GET  /user/available-activities/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
+                return response;
+                //alert("USER - GET  /user/available-activities/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
             } else {
                 console.error(response);
             }
@@ -442,7 +450,7 @@ var api = {
     //----------------------------------------------------------------------------
     getPatients: async function (userId) {
         try {
-            const response = await request("GET", BASE_BACKEND_URL+usersEndoint+"patients/", new URLSearchParams({
+            const response = await request("GET", BASE_BACKEND_URL+patientsEndpoint, new URLSearchParams({
                 fhirPatient: userId,
             }), null,
             {
@@ -453,10 +461,70 @@ var api = {
 
             if (response.status == 200) {
                 console.log(response);
-
-                alert("PATIENTS - GET  /users/patients/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
+                return response.data;
+                //alert("PATIENTS - GET  /users/patients/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
             } else {
                 console.error(response);
+            }
+        } catch (error) {
+            console.log('Api.getPatients Error: ', error);
+        } 
+    },
+    getPatientsConsents: async function (userId, fhir_uuid) {
+        try {
+
+            const response = await request(
+                "GET", 
+                BASE_BACKEND_URL+patientsEndpoint+fhir_uuid+"/consents/", new URLSearchParams({
+                    fhirPatient: userId,
+                }), null,
+                {
+                  tokenValidationMiddleware: false,
+                  withAuthorization: true,
+                  withTokenAutoRefresh: false,
+                });
+    
+            if (response.status == 200 || response.status == 201) {
+                console.log(response);
+                return response.data;
+                //alert("THERAPIST - GET  /users/therapists/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
+            } else {
+                console.error(response);
+                alert(response);
+            }
+        } catch (error) {
+            console.log('Api.getPatients Error: ', error);
+        } 
+    },
+    postPatientsConsents: async function (userId, fhir_uuid, payload) {
+        try {
+            console.log("payload: " + JSON.stringify(payload))
+
+            const response = await request(
+                "POST", 
+                BASE_BACKEND_URL+patientsEndpoint+fhir_uuid+"/consents/", 
+                payload, 
+                {
+                    fhirPatient: userId,
+                    headers: {
+                        "Content-Type": "application/json",
+                        //"accept": "*/*" 
+                    }
+                },
+                //null,
+                {
+                  tokenValidationMiddleware: false,
+                  withAuthorization: true,
+                  withTokenAutoRefresh: false,
+                });
+    
+            if (response.status == 200 || response.status == 201) {
+                console.log(response);
+                return response.data;
+                //alert("THERAPIST - GET  /users/therapists/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
+            } else {
+                console.error(response);
+                alert(response);
             }
         } catch (error) {
             console.log('Api.getPatients Error: ', error);
@@ -467,21 +535,113 @@ var api = {
     //----------------------------------------------------------------------------
     getPatientById: async function (userId, patientId) {
         try {
-            const response = await request("GET", BASE_BACKEND_URL+usersEndoint+"patients/"+patientId+"/", new URLSearchParams({
-                fhirPatient: userId,
-            }), null,
-            {
-              tokenValidationMiddleware: false,
-              withAuthorization: true,
-              withTokenAutoRefresh: false,
-            });
+            const response = await request(
+                "GET", 
+                BASE_BACKEND_URL+usersEndpoint+"patients/"+patientId+"/", 
+                new URLSearchParams({
+                    fhirPatient: userId,
+                }), 
+                null,
+                {
+                    tokenValidationMiddleware: false,
+                    withAuthorization: true,
+                    withTokenAutoRefresh: false,
+                });
 
             if (response.status == 200) {
                 console.log(response);
+                return response.data;
 
-                alert("PATIENTS - GET  /users/patients/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
+                //alert("PATIENTS - GET  /users/patients/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
             } else {
                 console.error(response);
+            }
+        } catch (error) {
+            console.log('Api.getPatients Error: ', error);
+        } 
+    },
+    getTherapists: async function (userId) {
+        try {
+
+            const response = await request(
+                "GET", 
+                BASE_BACKEND_URL+therapistsEndpoint, new URLSearchParams({
+                    fhirPatient: userId,
+                }), null,
+                {
+                  tokenValidationMiddleware: false,
+                  withAuthorization: true,
+                  withTokenAutoRefresh: false,
+                });
+    
+            if (response.status == 200 || response.status == 201) {
+                console.log(response);
+                return response.data;
+                //alert("THERAPIST - GET  /users/therapists/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
+            } else {
+                console.error(response);
+                alert(response);
+            }
+        } catch (error) {
+            console.log('Api.getPatients Error: ', error);
+        } 
+    },
+    getTherapistsConsents: async function (userId, fhir_uuid) {
+        try {
+
+            const response = await request(
+                "GET", 
+                BASE_BACKEND_URL+therapistsEndpoint+fhir_uuid+"/consents/", new URLSearchParams({
+                    fhirPatient: userId,
+                }), null,
+                {
+                  tokenValidationMiddleware: false,
+                  withAuthorization: true,
+                  withTokenAutoRefresh: false,
+                });
+    
+            if (response.status == 200 || response.status == 201) {
+                console.log(response);
+                return response.data;
+                //alert("THERAPIST - GET  /users/therapists/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
+            } else {
+                console.error(response);
+                alert(response);
+            }
+        } catch (error) {
+            console.log('Api.getPatients Error: ', error);
+        } 
+    },
+    postTherapistsConsents: async function (userId, fhir_uuid, payload) {
+        try {
+            
+            console.log("payload: " + payload)
+
+            const response = await request(
+                "POST", 
+                BASE_BACKEND_URL+therapistsEndpoint+fhir_uuid+"/consents/", 
+                payload, 
+                {
+                    fhirPatient: userId,
+                    headers: {
+                        "Content-Type": "application/json",
+                        //"accept": "*/*" 
+                    }
+                },
+                //null,
+                {
+                  tokenValidationMiddleware: false,
+                  withAuthorization: true,
+                  withTokenAutoRefresh: false,
+                });
+    
+            if (response.status == 200 || response.status == 201) {
+                console.log(response);
+                return response.data;
+                //alert("THERAPIST - GET  /users/therapists/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
+            } else {
+                console.error(response);
+                alert(response);
             }
         } catch (error) {
             console.log('Api.getPatients Error: ', error);
@@ -495,17 +655,15 @@ var api = {
         try {
             const response = await request(
                 "POST", 
-                BASE_BACKEND_URL+usersEndoint, 
+                BASE_BACKEND_URL+usersEndpoint, 
                 payload, 
-                new URLSearchParams({
+                {
                     fhirPatient: userId,
                     headers: {
-                        //"Content-Type": "application/json",
-                        //"accept": "*/*"
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json' 
+                        "Content-Type": "application/json",
+                        //"accept": "*/*" 
                     }
-                }), 
+                },
                 //null,
                 {
                     tokenValidationMiddleware: false,
@@ -514,15 +672,16 @@ var api = {
                 }
             );
 
-            if (response.status == 200) {
+            if (response.status == 200 || response.status == 201) {
                 console.log(response);
-
-                alert("CREATE USER - POST  /users/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
+                alert("User successfully created!");
             } else {
                 console.error(response);
+                alert("Oops, something went wrong.");
             }
         } catch (error) {
             console.log('Api.getPatients Error: ', error);
+            alert("Oops, something went wrong.");
         } 
     },
     //----------------------------------------------------------------------------
@@ -531,7 +690,7 @@ var api = {
     //----------------------------------------------------------------------------
     getVoiceRecords: async function (userId) {
         try {
-            const response = await request("GET", BASE_BACKEND_URL+voiceRecordEndoint, new URLSearchParams({
+            const response = await request("GET", BASE_BACKEND_URL+voiceRecordEndpoint, new URLSearchParams({
                 fhirPatient: userId,
             }), /*null,*/
             {
@@ -560,7 +719,7 @@ var api = {
 
             const response = await request(
                 "GET", 
-                BASE_BACKEND_URL+voiceRecordEndoint+recordId+"/", 
+                BASE_BACKEND_URL+voiceRecordEndpoint+recordId+"/", 
                 new URLSearchParams({
                     fhirPatient: userId,
                 }), 
@@ -595,7 +754,7 @@ var api = {
 
             const response = await request(
                 "POST", 
-                BASE_BACKEND_URL+voiceRecordEndoint, 
+                BASE_BACKEND_URL+voiceRecordEndpoint, 
                 formData,  // payload,
                 {
                     fhirPatient: userId,
@@ -629,32 +788,64 @@ var api = {
     //----------------------------------------------------------------------------
     // PROCEDURES - GET  /procedures/
     //----------------------------------------------------------------------------
-    getProcedures: async function (userId) {
+    getRunningProcedures: async function (userId) {
         try {
-            const response = await request("GET", BASE_BACKEND_URL+procedures, new URLSearchParams({
-                fhirPatient: userId,
-            }), null,
-            {
-              tokenValidationMiddleware: false,
-              withAuthorization: true,
-              withTokenAutoRefresh: false,
-            });
+            const response = await request(
+                "GET", 
+                BASE_BACKEND_URL+"/user/running-procedure/", 
+                new URLSearchParams({
+                    fhirPatient: userId,
+                }), 
+                null,
+                {
+                tokenValidationMiddleware: false,
+                withAuthorization: true,
+                withTokenAutoRefresh: false,
+                });
 
-            if (response.status == 200) {
-                console.log(response);
-                alert("PROCEDURES - GET  /procedures/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
-
-                return response;
-            } else {
-                console.error(response);
-            }
+                if (response.status == 200) {
+                    console.log(response);
+                    //alert("PROCEDURES - GET  /procedures/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
+                    return response;
+                } else {
+                    console.error(response);
+                }
         } catch (error) {
             console.log('Api.getProcedures Error: ', error);
         } 
     },
     //----------------------------------------------------------------------------
-    // CREATE USER - POST  /users/patients/{id}/
-    // Register a new user in the application
+    // PROCEDURES - GET  /procedures/
+    //----------------------------------------------------------------------------
+    getProcedures: async function (userId) {
+        try {
+            const response = await request(
+                "GET", 
+                BASE_BACKEND_URL+procedures, 
+                new URLSearchParams({
+                    fhirPatient: userId,
+                }), 
+                null,
+                {
+                tokenValidationMiddleware: false,
+                withAuthorization: true,
+                withTokenAutoRefresh: false,
+                });
+
+                if (response.status == 200) {
+                    console.log(response);
+                    //alert("PROCEDURES - GET  /procedures/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
+                    return response;
+                } else {
+                    console.error(response);
+                }
+        } catch (error) {
+            console.log('Api.getProcedures Error: ', error);
+        } 
+    },
+    //----------------------------------------------------------------------------
+    // CREATE PROCEDURE - POST  /procedures/
+    // ...
     //----------------------------------------------------------------------------
     postProcedures: async function (userId, payload) {
         try {
@@ -679,10 +870,83 @@ var api = {
                 }
             );
 
+            if (response.status == 200 || response.status == 201) {
+                console.log(response);
+                return response
+                //alert("CREATE USER - POST  /users/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
+            } else {
+                console.error(response);
+            }
+        } catch (error) {
+            console.log('Api.getPatients Error: ', error);
+        } 
+    },
+    patchProcedures: async function (userId, id, payload) {
+        try {
+            const response = await request(
+                "PATCH", 
+                BASE_BACKEND_URL+procedures+id+"/", 
+                payload, 
+                new URLSearchParams({
+                    fhirPatient: userId,
+                    headers: {
+                        //"Content-Type": "application/json",
+                        //"accept": "*/*"
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json' 
+                    }
+                }), 
+                //null,
+                {
+                    tokenValidationMiddleware: false,
+                    withAuthorization: true,
+                    withTokenAutoRefresh: false,
+                }
+            );
+
+            if (response.status == 200 || response.status == 201) {
+                console.log(response);
+                return response
+                //alert("CREATE USER - POST  /users/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
+            } else {
+                console.error(response);
+            }
+        } catch (error) {
+            console.log('Api.getPatients Error: ', error);
+        } 
+    },
+    //----------------------------------------------------------------------------
+    // CREATE PROCEDURE RESULT - POST  /procedures/{id}/units/{unitid}/results
+    // ...
+    //----------------------------------------------------------------------------
+    postProcedureResultBatch: async function (userId, id, unitId, payload) {
+        try {
+            const response = await request(
+                "POST", 
+                BASE_BACKEND_URL+procedures+id+"/units/"+unitId+"/results/batch/", 
+                payload, 
+                new URLSearchParams({
+                    fhirPatient: userId,
+                    headers: {
+                        //"Content-Type": "application/json",
+                        //"accept": "*/*"
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json' 
+                    }
+                }), 
+                //null,
+                {
+                    tokenValidationMiddleware: false,
+                    withAuthorization: true,
+                    withTokenAutoRefresh: false,
+                }
+            );
+
             if (response.status == 200) {
                 console.log(response);
 
-                alert("CREATE USER - POST  /users/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
+                //alert("CREATE PROCEDURE RESULT - POST  /procedures/{id}/units/{unitid}/results\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
+                return response;
             } else {
                 console.error(response);
             }
@@ -715,18 +979,26 @@ export async function request (
 
         let config = { headers: {} };
     
-        
         if (customConfig) {
             config = { ...customConfig };
         }
     
         if (validations.withAuthorization) {
             let token = getLocalToken();
-            /*
+            
             if (validations.withTokenAutoRefresh) {
-            token = await getAuthTokenWithRefresh();
+                //console.log("token vorher: " + token)
+                console.log("api call with autorefresh token...")
+                if (!isValidToken()) {
+                    await auth.refreshToken();
+                    token = getLocalToken();
+                    console.log("token refreshed!")
+                } else {
+                    console.log("token still valid!")
+                }
+                //console.log("token jetzt: " + token)
             }
-            */
+            
             config.headers = {
             ...config.headers,
             Authorization: `Bearer ${token}`,
@@ -754,7 +1026,24 @@ export async function request (
             response = await axios.get(url, config);
             break;
         }
-        return response;
+
+        /*
+        console.log("status: " + response)
+        if (response.status == 401) {
+            //alert("no auth!")
+            auth.logout();
+        }*/
+
+        if (response) {
+            /*
+            console.log("status: " + response)
+            if (response.status == 401) {
+                //alert("no auth!")
+                auth.logout();
+            }
+            */
+            return response;
+        }
     }
 }
 

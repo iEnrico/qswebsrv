@@ -7,14 +7,14 @@
         aspect-ratio="16:9"
         :src="require('@/assets/reliVRLogo.svg')"
       ></v-img>
-
+      <!-- @click="!access_token ? login() : routeDashboard()" -->
       <div class="row pt-0" style="vertical-align: center">
         <v-btn
           variant="outlined"
           class="ma-0"
-          @click="!access_token ? login() : routeDashboard(therapist_role ? 1 : 0)"
+          @click="login()"
         >
-          {{ !access_token ? $t("login_button_signin") : "Anmelden" /*getUsername()*/ }}
+          {{ !access_token ? $t("login_button_signin") : "Anmelden" }}
         </v-btn>
         <v-tooltip location="bottom" :text="access_token">
           <template v-slot:activator="{ props }">
@@ -31,12 +31,6 @@
           </template>
         </v-tooltip>
       </div>
-
-      <v-checkbox
-        v-if="access_token"
-        v-model="therapist_role"
-        :label="`Therapist`"
-      ></v-checkbox>
     </div>
     <v-spacer></v-spacer>
     <v-footer style="background-color: #e0f2f1; flex: 0 0 0" height="48px">
@@ -45,22 +39,27 @@
       </v-row>
     </v-footer>
   </v-app>
+  
+  <PickerDialogDashboardSelection v-if="this.user" :show="access_token!=null" />
+ 
 </template>
 
 <script>
+import api from "@/scripts/api/api.js";
 import auth from "@/scripts/auth/auth";
+import PickerDialogDashboardSelection from "@/components/pickerDialogDashboardSelection.vue";
 
 export default {
   name: "LoginView",
   data: function () {
     return {
-      therapist_role: false,
+      user: null,
       access_token: sessionStorage.getItem("access_token"),
       id_token: sessionStorage.getItem("id_token"),
     };
   },
-  components: {},
-  mounted: function () {
+  components: { PickerDialogDashboardSelection },
+  mounted: async function () {
     if (!this.access_token) {
       auth.generateToken();
 
@@ -68,6 +67,11 @@ export default {
       var args = new URLSearchParams(window.location.search);
       var code = args.get("code");
       window.sessionStorage.setItem("keycloak_code", code);
+    } else {
+
+      await api.getUserData();
+      this.user = JSON.parse(sessionStorage.getItem("user"));
+
     }
   },
   methods: {
@@ -82,9 +86,19 @@ export default {
       console.log(value);
       navigator.clipboard.writeText(value);
     },
-    routeDashboard: function (login_role) {
-      this.$router.push(login_role == 0 ? "/dashboard1" : "/dashboardTherapist3");
+    /*
+    routeDashboard: function () {
+      if (this.admin_role) {
+        this.$router.push("/dashboardadmin1");
+      }
+      else if (this.therapist_role) {
+        this.$router.push("/dashboardTherapist3");
+      }
+      else {
+        this.$router.push("/dashboard1" );
+      }
     },
+    */
   },
 };
 </script>

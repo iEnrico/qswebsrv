@@ -16,6 +16,10 @@
           <v-btn variant="outlined" class="ma-0" @click="availableActivitys()">
             {{ "/user/available-activities/" }}
           </v-btn>
+          
+          <v-btn variant="outlined" class="ma-0" @click="postProcedures()">
+            {{ "/user/post_procedure/" }}
+          </v-btn>
         </v-col>
 
         <v-col dens align="start" justify="start">
@@ -145,6 +149,15 @@
             {{ "/procedures/" }}
           </v-btn>
         </v-col>
+
+        <v-col dens align="start" justify="start">
+          PATCH PROCEDURES
+
+          <v-btn variant="outlined" class="ma-0" @click="patchProcedure()">
+            {{ "/procedures/{id}" }}
+          </v-btn>
+        </v-col>
+        
       </v-col>
     </v-container>
   </v-card>
@@ -161,34 +174,65 @@ export default {
   props: {},
   components: {},
   mounted: function () {
-    /*
     if (!this.access_token) {
       api.getUserData();
       this.user = JSON.parse(sessionStorage.getItem("user"));
-    }*/
+    }
   },
   methods: {
     // USER
     userData: async function () {
       console.log("request backend data with following params: " + this.user.id);
       const response = await api.getUserData();
-      alert(
-        "USER - GET  /user/\n\n" +
-          (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data))
-      );
+      if (response) {
+        alert(
+          "USER - GET  /user/\n\n" +
+            (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data))
+        );
+      }
     },
-    availableActivitys: function () {
+    availableActivitys: async function () {
       console.log("request backend data with following params: " + this.user.id);
-      api.getAvailableActivitys(this.user.id);
+      const response = await api.getAvailableActivitys(this.user.id);
+      if (response) {
+
+        /*
+        alert(
+          "USER - GET  /user/available-activities/\n\n" +
+            (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data))
+        );*/
+
+        response.data.forEach((element) => {
+
+          let unitsInfo = ""
+          let carePlanUnitsInfo = ""
+
+          element.units.forEach((unit) => {
+            unitsInfo = "id: " + unit.id + ", name: " + unit.contentPackage.name + ", " 
+          });
+
+          element.carePlanUnits.forEach((unit) => {
+            carePlanUnitsInfo = "id: " + unit.id + ", planid: " + unit.carePlan.id + ", planuuid: " + unit.carePlan.uuid + ", " 
+          });
+
+          alert(
+            "Activity:\n" + "id: " + element.id + ", avail. " + element.available + ", name: " + element.name + "\n\n" +
+            "units: " + element.units.length + "\n" + unitsInfo + "\n\n" +
+            "carePlanUnits: " + element.carePlanUnits.length + "\n" + carePlanUnitsInfo + "\n" 
+          );
+        });
+      }
     },
     // CAREPLAN RECORDS
     careplanRecords: async function () {
       console.log("request backend data with following params: " + this.user.id);
       const response = await api.getCareplanRecords(this.user.id);
-      alert(
-        "CAREPLAN RECORDS - GET  /care-plans/records/\n\n" +
-          (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data))
-      );
+      if (response) {
+        alert(
+          "CAREPLAN RECORDS - GET  /care-plans/records/\n\n" +
+            (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data))
+        );
+      }
     },
     careplanRecordsById: function () {
       console.log("request backend data with following params: " + this.user.id + ", 1");
@@ -203,21 +247,15 @@ export default {
       api.getCareplanRecordUnits(this.user.id, 1);
     },
     careplanRecordUnitByUnitId: function () {
-      console.log(
-        "request backend data with following params: " + this.user.id + ", 1, 1"
-      );
+      console.log("request backend data with following params: " + this.user.id + ", 1, 1");
       api.getCareplanRecordUnitByUnitId(this.user.id, 1, 1);
     },
     careplanRecordUnitSchedules: function () {
-      console.log(
-        "request backend data with following params: " + this.user.id + ", 1, 1"
-      );
+      console.log("request backend data with following params: " + this.user.id + ", 1, 1");
       api.getCareplanRecordUnitSchedules(this.user.id, 1, 1);
     },
     careplanRecordUnitSchedulesById: function () {
-      console.log(
-        "request backend data with following params: " + this.user.id + ", 1, 1, 1"
-      );
+      console.log("request backend data with following params: " + this.user.id + ", 1, 1, 1");
       api.getCareplanRecordUnitSchedulesById(this.user.id, 1, 1, 1);
     },
     careplanRecordUpdateCheck: function () {
@@ -237,10 +275,12 @@ export default {
     contentPackage: async function () {
       console.log("request backend data with following params: " + this.user.id);
       const result = await api.getContentPackage(this.user.id);
-      alert(
-        "CONTENT PACKAGE - GET  /content-packages/\n\n" +
-          (result.data.length == 0 ? "empty :(" : JSON.stringify(result.data))
-      );
+      if (result) {
+        alert(
+          "CONTENT PACKAGE - GET  /content-packages/\n\n" +
+            (result.data.length == 0 ? "empty :(" : JSON.stringify(result.data))
+        );
+      }
     },
     contentPackageByName: function () {
       console.log(
@@ -346,15 +386,40 @@ export default {
     postProcedures() {
       console.log("posting data to backend with following params: {debug}");
       const sampledata = JSON.stringify({
-        patient: "string",
-        carePlanUuid: "string",
-        carePlanUnitId: 1,
-        startMoment: "2023-05-30T08:26:35.689Z",
-        fhirProcedure: "string",
+        patient: "<own fhirResourceId>",
+        carePlanUuid: "<careplan.uuid>",
+        carePlanUnitId: 1, //"<careplanUnits.id>"
+        fhirProcedure: 0,
+        units: [{
+          activityUnitId: 0, //<units.id>
+          contentPackageResourceId: 0, //<contentPackage.resources.id>
+          packageParametersIds: [],
+          resourceParametersIds: [],
+        }]
       });
 
       api.postProcedures(this.user.id, sampledata);
     },
+    postProcedureResult() {
+      console.log("posting data to backend with following params: {debug}");
+      
+      const id = 1
+      const unitId = 1
+      const sampledata = JSON.stringify(
+      {
+        "resultTemplateId": 1,
+        "value": "string",
+        "fhirPatient": "string",
+        "fhirTherapist": "string"
+      });
+
+      api.postProcedureResult(this.user.id, id, unitId, sampledata);
+    },
+    patchProcedure() {
+      const sampledata = {"state": "ABORTED"};
+
+      api.patchProcedures(this.user.id, 2, sampledata)
+    }
   },
 };
 </script>

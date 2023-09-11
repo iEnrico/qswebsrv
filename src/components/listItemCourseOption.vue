@@ -19,6 +19,8 @@
 </template>
 
 <script>
+//import { parseDate } from "@/scripts/media/utils";
+
 export default {
   name: "listItemCourseOption",
   data: () => ({}),
@@ -39,17 +41,6 @@ export default {
           }),
         },
       });*/
-    },
-    parseDate(timecode) {
-      return new Date(timecode).toLocaleDateString("de-DE", {
-        // you can use undefined as first argument
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        //second: "2-digit",
-      });
     },
   },
 };

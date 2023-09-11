@@ -1,29 +1,37 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 import LoginView from '@/views/LoginView.vue';
+
 // patient
-import DashBoard from '@/views/DashBoard.vue';
-import HomeView from '@/views/HomeView.vue';
-import SessionsView from '@/views/SessionsView.vue';
-import CalendarView from '@/views/CalendarView.vue';
-import NotesIntroVue from '@/views/NotesIntro.vue';
-import NotesView from '@/views/NotesView.vue';
-import NotesViewAdd1 from '@/views/NotesViewAdd1.vue';
-import NotesViewShow1 from '@/views/NotesViewShow1.vue';
-import HelpView from '@/views/HelpView.vue';
-import HelpViewTherapist from '@/views/HelpViewTherapist.vue';
+import DashBoard from '@/views/patient/DashBoard.vue';
+import HomeView from '@/views/patient/HomeView.vue';
+import SessionsView from '@/views/patient/SessionsView.vue';
+import SessionsStepMeditation from '@/components/SessionsStepMeditation.vue';
+import CalendarView from '@/views/patient/CalendarView.vue';
+import NotesIntroVue from '@/views/patient/NotesIntro.vue';
+import NotesView from '@/views/patient/NotesView.vue';
+import NotesViewAdd1 from '@/views/patient/NotesViewAdd1.vue';
+import NotesViewShow1 from '@/views/patient/NotesViewShow1.vue';
+import HelpView from '@/views/patient/HelpView.vue';
+
 //therapist
-import DashBoardTherapist from '@/views/DashboardTherapist.vue';
-import HomeViewTherapist from '@/views/HomeViewTherapist.vue';
-import PatientsViewTherapist from '@/views/PatientsViewTherapist.vue';
-import PatientsViewAddTherapist from '@/views/PatientsViewAddTherapist.vue';
-import CoursesViewTherapist from '@/views/CoursesViewTherapist.vue';
-import CoursesViewAddTherapist from '@/views/CoursesViewAddTherapist.vue';
+import DashBoardTherapist from '@/views/therapist/DashboardTherapist.vue';
+import HomeViewTherapist from '@/views/therapist/HomeViewTherapist.vue';
+import PatientsView from '@/views/therapist/PatientsView.vue';
+import PatientsViewDetails from '@/views/therapist/PatientsViewDetails.vue';
+import PatientsResultsView from '@/views/therapist/PatientsResultsView.vue';
+import CoursesViewTherapist from '@/views/therapist/CoursesViewTherapist.vue';
+import CoursesViewAddTherapist from '@/views/therapist/CoursesViewAddTherapist.vue';
+import HelpViewTherapist from '@/views/therapist/HelpViewTherapist.vue';
+
+//admin
+import DashboardAdmin from '@/views/admin/DashboardAdmin.vue';
+import HomeViewAdmin from '@/views/admin/HomeViewAdmin.vue';
+import DetailViewAdmin from '@/views/admin/DetailViewAdmin.vue';
 
 //debug
 import DebugView from '@/views/DebugView.vue';
 import DebugApiView from '@/views/DebugApiView.vue';
-import DebugMeditationView from '@/views/DebugMeditationView.vue';
 
 var router = {
   
@@ -79,6 +87,7 @@ var router = {
                 },
                 {
                 path: 'dashboard3a',
+                name: 'Dashboard3a',
                 component: NotesViewAdd1,
                 },
                 {
@@ -105,8 +114,8 @@ var router = {
                 },
                 {
                 path: 'debug2',
-                component: DebugMeditationView,
-                }
+                component: SessionsStepMeditation,
+                },
             ],
             meta: {
                 allowAnonymous: true,
@@ -123,13 +132,19 @@ var router = {
               },
               {
               path: 'dashboardtherapist3',
-              component: PatientsViewTherapist,
+              component: PatientsView,
               },
               {
               path: 'dashboardtherapist3b/:data',
               name: 'DashboardTherapist3b',
-              component: PatientsViewAddTherapist,
+              component: PatientsViewDetails,
               props: true,
+              },
+              {
+                path: 'dashboardtherapist3c/:data',
+                name: 'DashboardTherapist3c',
+                component: PatientsResultsView,
+                props: true,
               },
               {
               path: 'dashboardtherapist4',
@@ -149,7 +164,28 @@ var router = {
             meta: {
                 allowAnonymous: true,
             },
-        }
+        },
+        { 
+          path: '/', 
+          name: "DashboardAdmin",
+          component: DashboardAdmin,
+          children: [
+              {
+              path: 'dashboardadmin1',
+              name: 'DashboardAdmin1',
+              component: HomeViewAdmin,
+              },
+              {
+              path: 'dashboardadmin2/:data',
+              name: 'DashboardAdmin2',
+              component: DetailViewAdmin,
+              props: true,
+              },
+            ],
+            meta: {
+                allowAnonymous: true,
+            },
+        },
     ]
 
     export const appRouter = createRouter({
