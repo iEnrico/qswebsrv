@@ -14,7 +14,7 @@
         </v-row>
         <v-card-title> Nutzerinformationen: </v-card-title>
         <v-card-subtitle style="font-size: large;"> {{ session_data.item.keycloakUsers[0].username }} </v-card-subtitle>
-        <v-card-subtitle> fhirID: {{ getFhirID(session_data.item) }} </v-card-subtitle>
+        <v-card-subtitle> fhirID: {{ this.session_data.item.fhirResourceId }} </v-card-subtitle>
         <v-card-subtitle> keycloakID: {{ session_data.item.keycloakUsers[0].id }} </v-card-subtitle>
         <v-card-subtitle> {{ parseDate(session_data.item.keycloakUsers[0].createdTimestamp) }} </v-card-subtitle>
         <v-card-subtitle> {{ session_data.item.keycloakUsers[0].firstName }} </v-card-subtitle>
@@ -23,8 +23,8 @@
         <PickerDialogSelectUser :role="session_data.role" :action="createConsent"/>
         <!-- height: 550px; -->
         <v-list
-          class="mt-8 pt-0 pa-4"
-          style="overflow-y: auto; background-color: #F6F6F6"
+            class="mt-8 pt-0 pa-4"
+            style="overflow-y: auto; background-color: #F6F6F6"
         >
           <center style="height: 100%" v-if="!consents.length >0">
             <v-card-subtitle> Sie haben noch keine Consents hinterlegt. </v-card-subtitle>
@@ -33,16 +33,16 @@
             <v-card-subtitle style="font-size: large;"> Consents: </v-card-subtitle>
           </center>
           <ListItemUserConsents
-            :item="consent"
-            :index="i"
-            v-for="(consent, i) in consents"
-            :key="i"
+              :item="consent"
+              :index="i"
+              v-for="(consent, i) in consents"
+              :key="i"
           />
         </v-list>
         <!-- height: 550px; -->
         <v-list
-          class="mt-8 pt-0 pa-4"
-          style="overflow-y: auto; background-color: #F6F6F6"
+            class="mt-8 pt-0 pa-4"
+            style="overflow-y: auto; background-color: #F6F6F6"
         >
           <center style="height: 100%" v-if="!consents.length >0">
             <v-card-subtitle> Sie haben noch keine Aktivitäten hinterlegt. </v-card-subtitle>
@@ -51,10 +51,10 @@
             <v-card-subtitle style="font-size: large;"> Aktivitäten: </v-card-subtitle>
           </center>
           <ListItemUserActivitys
-            :item="procedure"
-            :index="i"
-            v-for="(procedure, i) in procedures.data"
-            :key="i"
+              :item="procedure"
+              :index="i"
+              v-for="(procedure, i) in procedures.data"
+              :key="i"
           />
         </v-list>
       </v-col>
@@ -79,9 +79,9 @@ export default {
     };
   },*/
   data: () => ({
-      session_data: {},
-      consents: [],
-      procedures: []
+    session_data: {},
+    consents: [],
+    procedures: []
   }),
   components: { PickerDialogSelectUser, ListItemUserConsents, ListItemUserActivitys /*PickerDialogNewUser*/  },
   mounted: async function () {
@@ -95,7 +95,7 @@ export default {
       console.log("DATA FOR COURSES JSON: " + this.sessions.data.length);
       */
     }
-    
+
     /*
     alert("getPatientById\n" + JSON.stringify(
       await api.getPatientById(this.user, this.getFhirID(this.session_data.item))
@@ -104,9 +104,9 @@ export default {
 
     this.consents = [
       {"fhirPatient":"patient fhir id (mocked)",
-      "fhirTherapist":"therapist fhir id (mocked, click reload)"},
+        "fhirTherapist":"therapist fhir id (mocked, click reload)"},
       {"fhirPatient":"patient fhir id (mocked)",
-      "fhirTherapist":"therapist fhir id (mocked, click reload)"}
+        "fhirTherapist":"therapist fhir id (mocked, click reload)"}
     ]
 
     await this.getConsents()
@@ -133,8 +133,8 @@ export default {
     createConsent: function (data) {
 
       if (this.session_data.role == 'PATIENT') {
-        
-        const id = this.getFhirID(this.session_data.item)
+
+        const id = this.session_data.item.fhirResourceId
         const requestBody = JSON.stringify({
           //"fhirPatient": id,
           "fhirTherapist": data
@@ -142,12 +142,12 @@ export default {
 
         alert("create consent from patient\n"+id+"\nto therapist:\n" + data);
         console.log(data);
-        
+
         api.postPatientsConsents(this.user.id, id, requestBody);
 
       } else if (this.session_data.role == 'THERAPIST') {
-        
-        const id = this.getFhirID(this.session_data.item)
+
+        const id = this.session_data.item.fhirResourceId
         const requestBody = JSON.stringify({
           "fhirPatient": data,
           //"fhirTherapist": id
@@ -155,28 +155,29 @@ export default {
 
         alert("create consent from therapist\n"+id+"\nto patient:\n" + data);
         console.log(data);
-        
+
         api.postTherapistsConsents(this.user.id, id, requestBody);
       }
-      
+
     },
     getConsents: async function () {
       if (this.session_data.role == "THERAPIST") {
-        this.consents = await api.getTherapistsConsents(this.user.id, this.getFhirID(this.session_data.item))//this.session_data.item.keycloakUsers[0].id)
+        this.consents = await api.getTherapistsConsents(this.user.id, this.session_data.item.fhirResourceId)//this.session_data.item.keycloakUsers[0].id)
         //alert("THERAPIST CONSENTS:\n" + JSON.stringify(this.consents));
-      } 
+      }
       else if (this.session_data.role == "PATIENT") {
-        this.consents = await api.getPatientsConsents(this.user.id, this.getFhirID(this.session_data.item))//this.session_data.item.keycloakUsers[0].id)
+        this.consents = await api.getPatientsConsents(this.user.id, this.session_data.item.fhirResourceId)//this.session_data.item.keycloakUsers[0].id)
         //alert("PATIENT CONSENTS:\n" + JSON.stringify(this.consents));
       }
     },
+    /*
     getFhirID: function (object) {
       console.log(object)
       // id: "https://relivr-integration--fhir:8585/fhir-server/api/v4/Practitioner/18828ccb859-800f782b-51cd-4107-9f5c-4faab7a38d6d/_history/1"
       let array = object.fhirPatient ? object.fhirPatient.id.split('/') : object.fhirTherapist ? object.fhirTherapist.id.split('/') : ""
       const fhirId = array[array.length-3]
       return fhirId
-    },
+    },*/
     parseDate(timecode) {
       return new Date(timecode).toLocaleDateString("de-DE", {
         // you can use undefined as first argument
