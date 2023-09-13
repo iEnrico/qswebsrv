@@ -1,9 +1,15 @@
 <template>
+  <ConfirmDlg ref="confirm" />
   <v-container style="min-width: 100%; min-height: 100%" class="mx-0 my-0">
     <v-row no-gutters>
       <v-col cols="12" sm="6">
         <v-row no-gutters>
-          <v-btn variant="elevated" class="ml-4 mb-2" style="background-color: #28B9AF;" @click="routeBack">
+          <v-btn
+            variant="elevated"
+            class="ml-4 mb-2"
+            style="background-color: #28b9af"
+            @click="routeBack"
+          >
             <span class="text-white">{{ "< back" }}</span>
           </v-btn>
           <!--
@@ -26,17 +32,23 @@
             class="mt-8 pt-0 pa-4"
             style="overflow-y: auto; background-color: #F6F6F6"
         >
-          <center style="height: 100%" v-if="!consents.length >0">
-            <v-card-subtitle> Sie haben noch keine Consents hinterlegt. </v-card-subtitle>
+          <center style="height: 100%" v-if="!consents.length > 0">
+            <v-card-subtitle>
+              Sie haben noch keine Consents hinterlegt.
+            </v-card-subtitle>
           </center>
-          <center v-if="consents.length >0">
-            <v-card-subtitle style="font-size: large;"> Consents: </v-card-subtitle>
+          <center v-if="consents.length > 0">
+            <v-card-subtitle style="font-size: large">
+              Consents:
+            </v-card-subtitle>
           </center>
           <ListItemUserConsents
               :item="consent"
               :index="i"
               v-for="(consent, i) in consents"
               :key="i"
+              :actionDelete="deleteConsent"
+              :session_data="session_data"
           />
         </v-list>
         <!-- height: 550px; -->
@@ -44,11 +56,15 @@
             class="mt-8 pt-0 pa-4"
             style="overflow-y: auto; background-color: #F6F6F6"
         >
-          <center style="height: 100%" v-if="!consents.length >0">
-            <v-card-subtitle> Sie haben noch keine Aktivitäten hinterlegt. </v-card-subtitle>
+          <center style="height: 100%" v-if="!consents.length > 0">
+            <v-card-subtitle>
+              Sie haben noch keine Aktivitäten hinterlegt.
+            </v-card-subtitle>
           </center>
-          <center v-if="consents.length >0">
-            <v-card-subtitle style="font-size: large;"> Aktivitäten: </v-card-subtitle>
+          <center v-if="consents.length > 0">
+            <v-card-subtitle style="font-size: large">
+              Aktivitäten:
+            </v-card-subtitle>
           </center>
           <ListItemUserActivitys
               :item="procedure"
@@ -67,6 +83,7 @@
 import ListItemUserConsents from "@/components/listItemUserConsents.vue";
 import ListItemUserActivitys from "@/components/listItemUserActivitys.vue";
 import PickerDialogSelectUser from "@/components/pickerDialogSelectUser.vue";
+import ConfirmDlg from "@/components/dialogConfirmation.vue";
 
 import api from "@/scripts/api/api";
 
@@ -83,34 +100,24 @@ export default {
     consents: [],
     procedures: []
   }),
-  components: { PickerDialogSelectUser, ListItemUserConsents, ListItemUserActivitys /*PickerDialogNewUser*/  },
+  components: {
+    PickerDialogSelectUser,
+    ListItemUserConsents,
+    ListItemUserActivitys /*PickerDialogNewUser*/,
+    ConfirmDlg,
+  },
   mounted: async function () {
     if (!this.access_token) {
       api.getUserData();
       this.user = JSON.parse(sessionStorage.getItem("user"));
 
-      /*
-      this.sessions = await api.getContentPackage(this.user.id);
-      console.log("DATA FOR COURSES JSON: " + JSON.stringify(this.sessions));
-      console.log("DATA FOR COURSES JSON: " + this.sessions.data.length);
-      */
+
     }
 
-    /*
-    alert("getPatientById\n" + JSON.stringify(
-      await api.getPatientById(this.user, this.getFhirID(this.session_data.item))
-    ));
-    */
+    this.consents = [];
 
-    this.consents = [
-      {"fhirPatient":"patient fhir id (mocked)",
-        "fhirTherapist":"therapist fhir id (mocked, click reload)"},
-      {"fhirPatient":"patient fhir id (mocked)",
-        "fhirTherapist":"therapist fhir id (mocked, click reload)"}
-    ]
-
-    await this.getConsents()
-    await this.getProcedures()
+    await this.getConsents();
+    await this.getProcedures();
   },
   created: function () {
     this.session_data = JSON.parse(this.$route.params.data);
@@ -127,57 +134,107 @@ export default {
   },*/
   methods: {
     getProcedures: async function () {
-      this.procedures = await api.getProcedures(this.user)
-      //alert(JSON.stringify(this.procedures.data))
+      this.procedures = await api.getProcedures(this.user);
     },
-    createConsent: function (data) {
+    createConsent: async function (data) {
 
       if (this.session_data.role == 'PATIENT') {
 
         const id = this.session_data.item.fhirResourceId
         const requestBody = JSON.stringify({
-          //"fhirPatient": id,
-          "fhirTherapist": data
+          fhirResourceId: data.fhirResourceId,
         });
+        const result = await api.postPatientsConsents(
+          this.user.id,
+          id,
+          requestBody
+        );
+                  debugger;
+        if (result.fhirPatient && result.fhirTherapist) {
+          this.consents = [...this.consents, data];
+        }
 
-        alert("create consent from patient\n"+id+"\nto therapist:\n" + data);
-        console.log(data);
 
-        api.postPatientsConsents(this.user.id, id, requestBody);
 
       } else if (this.session_data.role == 'THERAPIST') {
 
         const id = this.session_data.item.fhirResourceId
         const requestBody = JSON.stringify({
-          "fhirPatient": data,
-          //"fhirTherapist": id
+          fhirResourceId: data.fhirResourceId,
         });
-
-        alert("create consent from therapist\n"+id+"\nto patient:\n" + data);
-        console.log(data);
-
-        api.postTherapistsConsents(this.user.id, id, requestBody);
+        const result = await api.postTherapistsConsents(
+          this.user.id,
+          id,
+          requestBody
+        );
+        if (result.fhirPatient && result.fhirTherapist) {
+          this.consents = [...this.consents, data];
+        }
       }
 
     },
     getConsents: async function () {
       if (this.session_data.role == "THERAPIST") {
-        this.consents = await api.getTherapistsConsents(this.user.id, this.session_data.item.fhirResourceId)//this.session_data.item.keycloakUsers[0].id)
-        //alert("THERAPIST CONSENTS:\n" + JSON.stringify(this.consents));
+        const consentsRelations= await api.getTherapistsConsents(this.user.id, this.session_data.item.fhirResourceId)
+        const patients=[];
+        if(consentsRelations && consentsRelations.length > 0){
+          for (const consentRelation of consentsRelations) {
+            const patient=  await api.getPatientById(this.user.id, consentRelation.fhirPatient);
+            if(patient){
+              patients.push(patient);
+            }
+          }
+        }
+        this.consents=patients;
+
       }
       else if (this.session_data.role == "PATIENT") {
-        this.consents = await api.getPatientsConsents(this.user.id, this.session_data.item.fhirResourceId)//this.session_data.item.keycloakUsers[0].id)
-        //alert("PATIENT CONSENTS:\n" + JSON.stringify(this.consents));
+
+        const consentsRelations= await api.getPatientsConsents(this.user.id, this.session_data.item.fhirResourceId)
+        const therapists=[];
+        if(consentsRelations && consentsRelations.length > 0){
+          for (const consentRelation of consentsRelations) {
+            const therapist=  await api.getTherapistByID(this.user.id, consentRelation.fhirTherapist);
+            if(therapist){
+              therapists.push(therapist);
+            }
+          }
+        }
+        this.consents=therapists;
+
       }
     },
-    /*
-    getFhirID: function (object) {
-      console.log(object)
-      // id: "https://relivr-integration--fhir:8585/fhir-server/api/v4/Practitioner/18828ccb859-800f782b-51cd-4107-9f5c-4faab7a38d6d/_history/1"
-      let array = object.fhirPatient ? object.fhirPatient.id.split('/') : object.fhirTherapist ? object.fhirTherapist.id.split('/') : ""
-      const fhirId = array[array.length-3]
-      return fhirId
-    },*/
+    deleteConsent: async function (fhirResourceId) {
+      if (
+        await this.$refs.confirm.open(
+          "Confirm",
+          "Sind Sie sicher, dass Sie diesen Datensatz löschen möchten?"
+        )
+      ) {
+        if (this.session_data.role == "THERAPIST") {
+          const result = await api.deleteTherapistsConsents(
+            this.session_data.item.fhirResourceId,
+            fhirResourceId
+          ); 
+          this.consents = this.consents.filter((c) => {
+            return (
+              c.fhirResourceId !== fhirResourceId );
+          });
+          
+
+        } else if (this.session_data.role == "PATIENT") {
+          const result = await api.deletePatientsConsents(
+            this.session_data.item.fhirResourceId,
+            fhirResourceId
+          ); 
+          this.consents = this.consents.filter((c) => {
+            return (
+              c.fhirResourceId !== fhirResourceId );
+          });
+
+        }
+      }
+    },
     parseDate(timecode) {
       return new Date(timecode).toLocaleDateString("de-DE", {
         // you can use undefined as first argument
@@ -193,7 +250,7 @@ export default {
       this.$router.push({
         name: "DashboardAdmin1",
       });
-    }
+    },
   },
 };
 </script>

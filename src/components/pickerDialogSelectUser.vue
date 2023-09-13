@@ -17,24 +17,35 @@
           <span style="color: #000">{{ "Nutzer auswählen" }}</span>
         </v-card-title>
         <v-autocomplete
-            class="mt-8"
-            label="Nutzerliste"
-            v-model="model"
-            :items="data"
+          class="mt-8"
+          label="Nutzerliste"
+          v-model="model"
+          item-value="fhirResourceId"
+          item-title="keycloakUsers[0].username"
+          @change="change()"
+          :items="data"
+          return-object
         ></v-autocomplete>
       </v-container>
       <v-card-actions class="pa-4">
         <v-spacer></v-spacer>
-        <v-btn variant="elevated" @click="cancel()"><span color="#000">Abbrechen</span></v-btn>
+        <v-btn variant="elevated" @click="cancel()">
+          <span color="#000">Abbrechen</span>
+        </v-btn>
         <v-spacer></v-spacer>
-        <v-btn variant="elevated" style="background-color: #28B9AF;" @click="save()"><span class="text-white">Übernehmen</span></v-btn>
+        <v-btn
+          variant="elevated"
+          style="background-color: #28b9af"
+          @click="save()"
+          >
+          <span class="text-white">Übernehmen</span></v-btn
+        >
         <v-spacer></v-spacer>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 <script>
-
 import api from "@/scripts/api/api";
 
 export default {
@@ -53,68 +64,29 @@ export default {
       api.getUserData();
       this.user = JSON.parse(sessionStorage.getItem("user"));
     }
-
-    let results = ""
-    if (this.role == 'PATIENT') {
-      results = await api.getTherapists(this.user.id)
-      results.forEach((item) => {
-        //this.data.push(item.keycloakUsers[0].username)
-        this.data.push(item.fhirResourceId);//item.fhirTherapist. //keycloakUsers[0].username)
-        console.log(item)
-      });
+    let results = "";
+    if (this.role == "PATIENT") {
+      results = await api.getTherapists(this.user.id);
+      this.data=results;
     } else {
-      results = await api.getPatients(this.user.id)
-      results.forEach((item) => {
-        this.data.push(item.fhirResourceId);//item.keycloakUsers[0].username)
-        console.log(item)
-      });
+      results = await api.getPatients(this.user.id);
+      this.data=results;
+
     }
 
-    this.model = this.data[0];
-
-    /*
-    for (item of results) {
-      this.data.push(item.username);
-    }
-    */
-    //alert(this.action);
   },
+
   methods: {
-    /*
-    getFhirID: function (object) {
-      console.log(object)
-      // id: "https://relivr-integration--fhir:8585/fhir-server/api/v4/Practitioner/18828ccb859-800f782b-51cd-4107-9f5c-4faab7a38d6d/_history/1"
-      let array = object.fhirPatient ? object.fhirPatient.id.split('/') : object.fhirTherapist ? object.fhirTherapist.id.split('/') : ""
-      const fhirId = array[array.length-3]
-      return fhirId
-    },*/
+
     save: function () {
-      /*
-      if (this.password != this.password_repeat) {
-        alert("passwords don't match!")
-      } else {
-        const sampledata = JSON.stringify({
-          //fhirResourceId: "0",
-          role: this.role,
-          email: this.email,
-          username: this.alias,
-          password: this.password,
-          name: this.firstname,
-          lastName: this.lastname
-        });
-        this.action(sampledata);
-        //this.dialog = false;
-      }
-      */
       this.action(this.model);
       this.dialog = false;
     },
-    cancel: function() {
+    cancel: function () {
       this.dialog = false;
-    }
+    },
   },
 };
 </script>
 
-<style>
-</style>
+<style></style>

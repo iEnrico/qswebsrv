@@ -496,6 +496,7 @@ var api = {
             console.log('Api.getPatients Error: ', error);
         } 
     },
+    
     postPatientsConsents: async function (userId, fhir_uuid, payload) {
         try {
             console.log("payload: " + JSON.stringify(payload))
@@ -529,6 +530,37 @@ var api = {
         } catch (error) {
             console.log('Api.getPatients Error: ', error);
         } 
+    },
+    deletePatientsConsents: async function (fhir_uuid, therapist_fhir_uuid) {
+      try {
+        const response = await request(
+          "DELETE",
+          BASE_BACKEND_URL +
+          patientsEndpoint +
+          fhir_uuid +
+          "/consents/therapist/" +
+          therapist_fhir_uuid +
+          "/",
+
+          //null,
+          {
+            tokenValidationMiddleware: false,
+            withAuthorization: true,
+            withTokenAutoRefresh: false,
+          }
+        );
+
+        if (response.status == 200 || response.status == 201) {
+          console.log(response);
+          return response.data;
+          //alert("THERAPIST - GET  /users/therapists/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
+        } else {
+          console.error(response);
+          alert(response);
+        }
+      } catch (error) {
+        console.log("Api.getPatients Error: ", error);
+      }
     },
     //----------------------------------------------------------------------------
     // PATIENTS - GET  /users/patients/{id}/
@@ -586,6 +618,31 @@ var api = {
             console.log('Api.getPatients Error: ', error);
         } 
     },
+    getTherapistByID: async function (userId, fhir_uuid) {
+      try {
+
+        const response = await request(
+          "GET",
+            BASE_BACKEND_URL + therapistsEndpoint + fhir_uuid + "/", new URLSearchParams({
+                fhirPatient: userId,
+            }),null,
+          {
+            tokenValidationMiddleware: false,
+            withAuthorization: true,
+            withTokenAutoRefresh: false,
+          });
+
+        if (response.status == 200 || response.status == 201) {
+          console.log(response);
+          return response.data;
+        } else {
+          console.error(response);
+          alert(response);
+        }
+      } catch (error) {
+        console.log('Api.getPatients Error: ', error);
+      }
+    },
     getTherapistsConsents: async function (userId, fhir_uuid) {
         try {
 
@@ -613,40 +670,72 @@ var api = {
         } 
     },
     postTherapistsConsents: async function (userId, fhir_uuid, payload) {
-        try {
-            
-            console.log("payload: " + payload)
+      try {
+        console.log("payload: " + payload);
 
-            const response = await request(
-                "POST", 
-                BASE_BACKEND_URL+therapistsEndpoint+fhir_uuid+"/consents/", 
-                payload, 
-                {
-                    fhirPatient: userId,
-                    headers: {
-                        "Content-Type": "application/json",
-                        //"accept": "*/*" 
-                    }
-                },
-                //null,
-                {
-                  tokenValidationMiddleware: false,
-                  withAuthorization: true,
-                  withTokenAutoRefresh: false,
-                });
-    
-            if (response.status == 200 || response.status == 201) {
-                console.log(response);
-                return response.data;
-                //alert("THERAPIST - GET  /users/therapists/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
-            } else {
-                console.error(response);
-                alert(response);
-            }
-        } catch (error) {
-            console.log('Api.getPatients Error: ', error);
-        } 
+        const response = await request(
+          "POST",
+          BASE_BACKEND_URL + therapistsEndpoint + fhir_uuid + "/consents/",
+          payload,
+          {
+            fhirPatient: userId,
+            headers: {
+              "Content-Type": "application/json",
+              //"accept": "*/*"
+            },
+          },
+          //null,
+          {
+            tokenValidationMiddleware: false,
+            withAuthorization: true,
+            withTokenAutoRefresh: false,
+          }
+        );
+
+        if (response.status == 200 || response.status == 201) {
+          console.log(response);
+          return response.data;
+          //alert("THERAPIST - GET  /users/therapists/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
+        } else {
+          console.error(response);
+          alert(response);
+        }
+      } catch (error) {
+        console.log("Api.getPatients Error: ", error);
+      }
     },
+    deleteTherapistsConsents: async function (fhir_uuid, patient_fhir_uuid) {
+      try {
+        const response = await request(
+          "DELETE",
+          BASE_BACKEND_URL +
+          therapistsEndpoint +
+          fhir_uuid +
+          "/consents/patient/" +
+          patient_fhir_uuid +
+          "/",
+
+          //null,
+          {
+            tokenValidationMiddleware: false,
+            withAuthorization: true,
+            withTokenAutoRefresh: false,
+          }
+        );
+
+        if (response.status == 200 || response.status == 201) {
+          console.log(response);
+          return response.data;
+          //alert("THERAPIST - GET  /users/therapists/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
+        } else {
+          console.error(response);
+          alert(response);
+        }
+      } catch (error) {
+        console.log("Api.getPatients Error: ", error);
+      }
+    },
+
     //----------------------------------------------------------------------------
     // CREATE USER - POST  /users/patients/{id}/
     // Register a new user in the application
