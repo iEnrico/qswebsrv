@@ -15,7 +15,7 @@
         </v-tooltip>-->
       </template>
       <v-card min-width="300" class="rounded-lg">
-        
+
         <!--
 
         <v-list>
@@ -36,7 +36,7 @@
           <v-list-item>
             <v-btn variant="flat" @click="logout()"> logout </v-btn>
           </v-list-item>
-          
+
           <!--
           <v-list-item>
             <v-btn variant="flat" @click="refreshToken()"> refresh token </v-btn>
@@ -45,9 +45,9 @@
 
           <v-list-item>
             <v-combobox
-              label="Sprache"
-              :items="$i18n.availableLocales"
-              v-model="$i18n.locale"
+                label="Sprache"
+                :items="$i18n.availableLocales"
+                v-model="$i18n.locale"
             ></v-combobox>
           </v-list-item>
         </v-list>
@@ -93,7 +93,7 @@ export default {
     redirectProfile: function () {
       window.location.href = "https://keycloak.relivr-integration.nuromedia.com/realms/relivr/account/#/personal-info"
       //https://keycloak.relivr-integration.nuromedia.com/realms/relivr/account
-      
+
       //<a href="https://www.google.com" target="_blank">
       //auth.refreshToken();
     },

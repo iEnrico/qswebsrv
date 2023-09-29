@@ -1,19 +1,19 @@
 <template>
   <v-navigation-drawer
-    expand-on-hover
-    rail
-    @mouseenter="mouseenter"
-    @mouseleave="mouseleave"
-    :color="login_role == 1 ? '#28B9AF' : '#FFFFFF'"
+      expand-on-hover
+      rail
+      @mouseenter="mouseenter"
+      @mouseleave="mouseleave"
+      :color="login_role == 1 ? '#28B9AF' : '#FFFFFF'"
   >
     <v-list>
       <v-list-item
-        v-if="!isOpen"
-        prepend-icon="mdi-menu"
-        :style="login_role == 1 ? 'color: #FFFFFF' : 'color: #404040'"
+          v-if="!isOpen"
+          prepend-icon="mdi-menu"
+          :style="login_role == 1 ? 'color: #FFFFFF' : 'color: #404040'"
       ></v-list-item>
       <v-list-item v-if="isOpen"
-        ><img
+      ><img
           v-if="isOpen"
           :src="
             login_role == 0
@@ -41,13 +41,13 @@ v-on:click="route('/')"
 
     <v-list density="compact" nav>
       <v-list-item
-        v-for="(item, i) in getItems"
-        class="rounded-pill"
-        :key="i"
-        :variant="selectedIndex == i ? 'elevated' : 'flat'"
-        @click="route(i, item.route)"
-        :prepend-icon="item.icon"
-        :style="
+          v-for="(item, i) in getItems"
+          class="rounded-pill"
+          :key="i"
+          :variant="selectedIndex == i ? 'elevated' : 'flat'"
+          @click="route(i, item.route)"
+          :prepend-icon="item.icon"
+          :style="
           login_role == 0
             ? 'color: ' +
               (selectedIndex == i ? '#ffffff' : '#404040') +
@@ -58,7 +58,7 @@ v-on:click="route('/')"
               '; background-color: ' +
               (selectedIndex == i ? '#ffffff' : '#28B9AF')
         "
-        :title="$t(item.title)"
+          :title="$t(item.title)"
       ></v-list-item>
     </v-list>
   </v-navigation-drawer>
@@ -98,7 +98,7 @@ export default {
     // a computed getter
     getItems() {
       return this.login_role == 0
-        ? [
+          ? [
             {
               route: "/Dashboard1",
               icon: "mdi-home-outline", //view-dashboard-outline
@@ -115,12 +115,17 @@ export default {
               title: "sidebar_notes",
             },
             {
+              route: "/Dashboard5",
+              icon: "mdi-file-question outline",
+              title: "sidebar_questionnaires",
+            },
+            {
               route: "/Debug",
               icon: "mdi-hammer-wrench",
               title: "Debug",
             },
           ]
-        : [
+          : [
             /*
             {
               route: "/DashboardTherapist1",
@@ -154,12 +159,12 @@ export default {
     },
     getDestination(id) {
       return id == 0
-        ? window.sessionStorage.getItem("notes_history_seen")
-          ? "/Dashboard3"
-          : "/Dashboard3Pre"
-        : window.sessionStorage.getItem("notes_history_seen")
-        ? "/DashboardTherapist3"
-        : "/DashboardTherapist3Pre";
+          ? window.sessionStorage.getItem("notes_history_seen")
+              ? "/Dashboard3"
+              : "/Dashboard3Pre"
+          : window.sessionStorage.getItem("notes_history_seen")
+              ? "/DashboardTherapist3"
+              : "/DashboardTherapist3Pre";
     },
     route: function (index, route) {
       this.selectedIndex = index;

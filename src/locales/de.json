@@ -1,43 +1,46 @@
 
-    {
+{
 
-        "login_info_loggedin": "Du bist mit folgendem Token eingeloggt ",
-        "login_info_loggedout": "Du bist nicht eingeloggt!",
-        "login_button_signin": "Anmelden mit KeyCloak",
-        "login_button_signout": "Abmelden",
+    "login_info_loggedin": "Du bist mit folgendem Token eingeloggt ",
+    "login_info_loggedout": "Du bist nicht eingeloggt!",
+    "login_button_signin": "Anmelden mit KeyCloak",
+    "login_button_signout": "Abmelden",
 
-        "sidebar_start": "Übersicht",
-        "sidebar_session": "Tagebuch",
-        "sidebar_notes": "Kalender",
+    "sidebar_start": "Übersicht",
+    "sidebar_session": "Tagebuch",
+    "sidebar_notes": "Kalender",
+    "sidebar_questionnaires": "Fragebögen",
 
-        "sidebar_therapist_start": "Übersicht",
-        "sidebar_therapist_session": "Patienten",
-        "sidebar_therapist_notes": "Kurse",
+    "sidebar_therapist_start": "Übersicht",
+    "sidebar_therapist_session": "Patienten",
+    "sidebar_therapist_notes": "Kurse",
 
-        "navigation_vrlogin": "VR-Login",
-        "navigation_user": "Benutzer",
+    "navigation_vrlogin": "VR-Login",
+    "navigation_user": "Benutzer",
 
-        "title_view_login": "LoginView",
-        "title_view_dashboard": "DashBoard",
-        "title_view_home": "HomeView",
-        "title_view_notes": "NotesView",
-        "title_view_sessions": "SessionsView",
+    "title_view_login": "LoginView",
+    "title_view_dashboard": "DashBoard",
+    "title_view_home": "HomeView",
+    "title_view_notes": "NotesView",
+    "title_view_sessions": "SessionsView",
 
-        "notes_history_title": "Ihre bisherigen Einträge",
+    "notes_history_title": "Ihre bisherigen Einträge",
 
-        "title_dashboard_news": "Nachrichten",
-        "title_dashboard_courses": "Kurs Programm",
-        "placeholder_view3": "ReliVR Web-Platform DE",
+    "title_dashboard_news": "Nachrichten",
+    "title_dashboard_activities": "Fragebogen Aktivitäten",
+    "description_dashboard_activities": "Alle Aktivitäten zu den Fragebögen",
+    "title_dashboard_courses": "Kurs Programm",
+    "placeholder_view3": "ReliVR Web-Platform DE",
 
-        "session_object_meditation_info_text": "Ziel der Objektmeditation ist es, seinen Fokus auf einen Gegenstand zu leiten und auf diese Weise Achtsamkeit sowie Bewusstsein für das Hier und Jetzt zu generieren. Die Meditationsübungen werden angeleitet und finden in einer virtuellen Umgebung statt. Sie können hierbei zwischen drei unterschiedlichen Übungen wählen: der 'Lupenübung', der 'Telefonübung' oder der 'Imagination'. Diese dauern jeweils ca. 6 - 9 Minuten. Bei allen drei Meditationsübungen können Sie zudem auswählen, ob der Gegenstand ein Stein, ein Stock oder eine Statue sein soll. Was haben ein Stein, ein Stock und eine Statue gemeinsam? - Nicht nur die Anfangsbuchstaben! Eines dieser Gegenstände kann Ihnen dabei helfen Ihre Achtsamkeit und Ihr Bewusstsein für das Hier und jetzt zu verbessern. Aus drei Optionen wählen Sie die Objektmeditationsübung, in der eines dieser Gegenstände sehr bewusst wahrgenommen werden soll. Lassen Sie sich darauf ein und sehen Sie, wie in nur 6-9 Minuten leblose Gegenstände, Sie mehr am Leben teilhaben lassen.",
-        "session_surrounding_meditation_info_text": "Bei der Umgebungsmeditation wird der Fokus auf die wahrgenommene Umgebung gelegt. Diese soll bewusste und detailliert erlebt werden und auf diese Weise Achtsamkeit erhöhen. Hier lässt sich zwischen drei Übungen wählen. Die erste Übung 'Farben und Formen' dauert ca. 11 Minuten und bezieht sich sehr ausführlich auf die komplette Umgebung. Die zweite Übung 'Objektfokus: Ich sehe was, was du nicht siehst.' dauert ca. 8 Minuten und die dritte Übung 'Kurze Umgebungsmeditation' ist mit ca. 5 Minuten die kürzeste. Erinnern Sie sich noch an die Farbe der letzten Tür, durch die Sie gegangen sind? Mithilfe dieser Übung vielleicht schon eher. Die detaillierte Wahrnehmung der Umgebung soll durch die Umgebungsmeditation gefördert werden. Das bewusste Erleben der Umgebung soll auch mehr Bewusstsein für das Hier und Jetzt schaffen. Dies geschieht in einer von Ihnen wählbaren Übung. Sie explorieren hier eine virtuelle Realität und nehmen daraus bestenfalls Erkenntnisse für Ihre eigene Realität mit.",
-        "session_attention_training_info_text": "Beim Aufmerksamkeitstraining soll die Achtsamkeit gesteigert werden, in dem Sie Ihre Aufmerksamkeit auf das Hören konzentrieren. Töne, Geräusche und Klänge der virtuellen Umgebung sollen bewusst wahrgenommen werden.",
-        "session_free_meditation_info_text": "Endlich mal selbst entscheiden! Die freie Meditation bietet Ihnen Raum, Ihre Meditation selbst zu gestalten. Sie dürfen das Thema frei wählen. Als Unterstützung haben Sie einen Gong. Er erinntert mit seinem Klang daran, wieder präsent im Hier und Jetzt zu sein. Die Dauer der Meditationsübung und das Zeitintervall bis zum nächsten Gongklang sind ebenfalls frei von Ihnen wählbar.",
-        "session_body_scan_info_text": "Wie bewusst ist Ihnen Ihr Körper? Spüren Sie auch mal bewusst in Ihren linken kleinen Zeh hinein! Der Body-Scan ist eine ca. 10 Minütige Achtsamkeitsübung, bei der es um die bewusste Wahrnehmung des Körpers geht. In dieser angeleiteten Übung lernen Sie Ihren Körper nochmal ganz neu kennen.",
+    "session_object_meditation_info_text": "Ziel der Objektmeditation ist es, seinen Fokus auf einen Gegenstand zu leiten und auf diese Weise Achtsamkeit sowie Bewusstsein für das Hier und Jetzt zu generieren. Die Meditationsübungen werden angeleitet und finden in einer virtuellen Umgebung statt. Sie können hierbei zwischen drei unterschiedlichen Übungen wählen: der 'Lupenübung', der 'Telefonübung' oder der 'Imagination'. Diese dauern jeweils ca. 6 - 9 Minuten. Bei allen drei Meditationsübungen können Sie zudem auswählen, ob der Gegenstand ein Stein, ein Stock oder eine Statue sein soll. Was haben ein Stein, ein Stock und eine Statue gemeinsam? - Nicht nur die Anfangsbuchstaben! Eines dieser Gegenstände kann Ihnen dabei helfen Ihre Achtsamkeit und Ihr Bewusstsein für das Hier und jetzt zu verbessern. Aus drei Optionen wählen Sie die Objektmeditationsübung, in der eines dieser Gegenstände sehr bewusst wahrgenommen werden soll. Lassen Sie sich darauf ein und sehen Sie, wie in nur 6-9 Minuten leblose Gegenstände, Sie mehr am Leben teilhaben lassen.",
+    "session_surrounding_meditation_info_text": "Bei der Umgebungsmeditation wird der Fokus auf die wahrgenommene Umgebung gelegt. Diese soll bewusste und detailliert erlebt werden und auf diese Weise Achtsamkeit erhöhen. Hier lässt sich zwischen drei Übungen wählen. Die erste Übung 'Farben und Formen' dauert ca. 11 Minuten und bezieht sich sehr ausführlich auf die komplette Umgebung. Die zweite Übung 'Objektfokus: Ich sehe was, was du nicht siehst.' dauert ca. 8 Minuten und die dritte Übung 'Kurze Umgebungsmeditation' ist mit ca. 5 Minuten die kürzeste. Erinnern Sie sich noch an die Farbe der letzten Tür, durch die Sie gegangen sind? Mithilfe dieser Übung vielleicht schon eher. Die detaillierte Wahrnehmung der Umgebung soll durch die Umgebungsmeditation gefördert werden. Das bewusste Erleben der Umgebung soll auch mehr Bewusstsein für das Hier und Jetzt schaffen. Dies geschieht in einer von Ihnen wählbaren Übung. Sie explorieren hier eine virtuelle Realität und nehmen daraus bestenfalls Erkenntnisse für Ihre eigene Realität mit.",
+    "session_attention_training_info_text": "Beim Aufmerksamkeitstraining soll die Achtsamkeit gesteigert werden, in dem Sie Ihre Aufmerksamkeit auf das Hören konzentrieren. Töne, Geräusche und Klänge der virtuellen Umgebung sollen bewusst wahrgenommen werden.",
+    "session_free_meditation_info_text": "Endlich mal selbst entscheiden! Die freie Meditation bietet Ihnen Raum, Ihre Meditation selbst zu gestalten. Sie dürfen das Thema frei wählen. Als Unterstützung haben Sie einen Gong. Er erinntert mit seinem Klang daran, wieder präsent im Hier und Jetzt zu sein. Die Dauer der Meditationsübung und das Zeitintervall bis zum nächsten Gongklang sind ebenfalls frei von Ihnen wählbar.",
+    "session_body_scan_info_text": "Wie bewusst ist Ihnen Ihr Körper? Spüren Sie auch mal bewusst in Ihren linken kleinen Zeh hinein! Der Body-Scan ist eine ca. 10 Minütige Achtsamkeitsübung, bei der es um die bewusste Wahrnehmung des Körpers geht. In dieser angeleiteten Übung lernen Sie Ihren Körper nochmal ganz neu kennen.",
 
-        "overlay_btn_close": "Abbrechen",
+    "overlay_btn_close": "Abbrechen",
 
-        "diary_recording_missing_microphone_title": "Fehlende Mikrofonberechtigung!",
-        "diary_recording_missing_microphone_msg": "Sie müssen für diese Funktion den Zugriff auf ihr Mikrofon freigeben."
-    }
+    "diary_recording_missing_microphone_title": "Fehlende Mikrofonberechtigung!",
+    "diary_recording_missing_microphone_msg": "Sie müssen für diese Funktion den Zugriff auf ihr Mikrofon freigeben."
+}
 
