@@ -103,6 +103,7 @@ const routes = [
             },
             {
                 path: 'dashboard5',
+                name: 'Dashboard5',
                 component: QuestionnairesView,
             },
             {

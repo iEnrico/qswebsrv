@@ -11,6 +11,8 @@ const BASE_BACKEND_URL = "https://backend.relivr-integration.nuromedia.com";
 const userEndpoint = "/user/";
 const userActivitysEndpoint = "/user/available-activities/";
 
+const availableActivities = "/activities/";
+
 const carePlanPresets = "/care-plans/presets/";
 const carePlanRecords = "/care-plans/records/";
 
@@ -119,6 +121,31 @@ var api = {
         } catch (error) {
             console.log('Api.getAvailableActivitys Error: ', error);
         } 
+    },
+
+    getQuestionnaireAvailableActivities: async function () {
+        try {
+            const response = await request(
+                "GET",
+                BASE_BACKEND_URL + `${availableActivities}?available=true&primaryType=QUESTIONNAIRE`,
+                {
+                },
+                null,
+                {
+                    tokenValidationMiddleware: false,
+                    withAuthorization: true,
+                    withTokenAutoRefresh: false,
+                });
+
+            if (response.status == 200) {
+                console.log(response);
+                return response;
+            } else {
+                console.error(response);
+            }
+        } catch (error) {
+            console.log('Api.getAvailableActivitys Error: ', error);
+        }
     },
     //----------------------------------------------------------------------------
     // CAREPLAN PRESETS - GET  /care-plans/presets/
