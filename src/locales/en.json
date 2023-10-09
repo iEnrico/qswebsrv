@@ -5,14 +5,17 @@
     "login_info_loggedout": "You are not logged in!",
     "login_button_signin": "Login via KeyCloak",
     "login_button_signout": "Logout",
+    "login_button_account": "Account",
 
     "sidebar_start": "Overview",
     "sidebar_session": "Journal",
     "sidebar_notes": "Calendar",
-
+    "sidebar_questionnaires": "Questionnaires",
     "sidebar_therapist_start": "Übersicht",
     "sidebar_therapist_session": "Patienten",
     "sidebar_therapist_notes": "Kurse",
+    "sidebar_act_courses": "Courses",
+
 
     "navigation_vrlogin": "VR-Login",
     "navigation_user": "User",
@@ -28,6 +31,10 @@
     "title_dashboard_news": "News",
     "title_dashboard_courses": "Courses",
     "title_dashboard_activities": "Questionnaire Activities",
+    "title_dashboard_activity_courses": "Programme Courses",
+    "description_dashboard_activity_courses": "All activities to the other topics",
+
+
     "description_dashboard_activities": "All activities to the questionnaires",
     "placeholder_view3": "ReliVR Web-Platform EN",
 
@@ -40,7 +47,9 @@
     "overlay_btn_close": "Cancel",
 
     "diary_recording_missing_microphone_title": "Fehlende Mikrofonberechtigung!",
-    "diary_recording_missing_microphone_msg": "Sie müssen für diese Funktion den Zugriff auf ihr Mikrofon freigeben."
+    "diary_recording_missing_microphone_msg": "Sie müssen für diese Funktion den Zugriff auf ihr Mikrofon freigeben.",
+
+    "Debug": "Debug"
 
 }
 

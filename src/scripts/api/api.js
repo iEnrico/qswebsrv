@@ -28,7 +28,7 @@ const voiceRecordEndpoint = "/voice-records/";
 
 /*
 
-Keycloak (and session management), 
+Keycloak (and session management),
 https://keycloak.relivr-integration.nuromedia.com/auth/
 
 -- Java backend application --
@@ -48,7 +48,7 @@ https://svn.local.nurogames.com/ReliVR/trunk/Documentation/StarterPack/
 */
 
 var api = {
-   
+
     //---------------------------------------------
     // USER - GET  /user/
     //---------------------------------------------
@@ -56,40 +56,19 @@ var api = {
         try {
 
             const response = await request("GET", BASE_BACKEND_URL+userEndpoint, null, null,
-            {
-              tokenValidationMiddleware: true,
-              withAuthorization: true,
-              withTokenAutoRefresh: true,
-            });
+                {
+                    tokenValidationMiddleware: true,
+                    withAuthorization: true,
+                    withTokenAutoRefresh: true,
+                });
 
             if (response.status == 200) {
-                console.log(response);
-                //alert(JSON.stringify(response.data));
                 sessionStorage.setItem("user", JSON.stringify(response.data));
                 return response;
             } else {
                 console.error(response);
             }
         } catch (error) {
-
-            // fallback
-/*
-            sessionStorage.setItem(
-                "user", 
-                JSON.stringify({
-                    "id": "00000000-0000-0000-0000-000000000000",
-                    "firstName": "firstname",
-                    "lastName": "lastname",
-                    "fullName": "full name",
-                    "email": "name@company.domain",
-                    "fhirResourceId": null,
-                    "roles": [
-                        "ADMIN"
-                    ],
-                    "patients": []
-                })
-            );
-*/
             console.log('Api.getUserData Error: ', error);
         }
     },
@@ -99,29 +78,30 @@ var api = {
     getAvailableActivitys: async function (userId) {
         try {
             const response = await request(
-                "GET", 
-                BASE_BACKEND_URL+userActivitysEndpoint, 
+                "GET",
+                BASE_BACKEND_URL+userActivitysEndpoint,
                 {
                     fhirPatient: userId,
-                }, 
+                },
                 null,
                 {
-                tokenValidationMiddleware: false,
-                withAuthorization: true,
-                withTokenAutoRefresh: false,
+                    tokenValidationMiddleware: false,
+                    withAuthorization: true,
+                    withTokenAutoRefresh: true,
                 });
 
             if (response.status == 200) {
-                console.log(response);
                 return response;
-                //alert("USER - GET  /user/available-activities/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
             } else {
                 console.error(response);
             }
         } catch (error) {
             console.log('Api.getAvailableActivitys Error: ', error);
-        } 
+        }
     },
+    //----------------------------------------------------------------------------
+    // PATIENT - GET /activities/?available=true
+    //----------------------------------------------------------------------------
 
     getQuestionnaireAvailableActivities: async function () {
         try {
@@ -147,459 +127,19 @@ var api = {
             console.log('Api.getAvailableActivitys Error: ', error);
         }
     },
+
+
     //----------------------------------------------------------------------------
-    // CAREPLAN PRESETS - GET  /care-plans/presets/
+    // PATIENT - overview with all relevant activities to the other topics inside “Kurs-Programm” - GET /activities/?available=true
     //----------------------------------------------------------------------------
-    getCareplanPresets: async function (userId) {
+
+    getOtherAvailableActivities: async function () {
         try {
-            const response = await request("GET", BASE_BACKEND_URL+carePlanPresets, new URLSearchParams({
-                fhirPatient: userId,
-            }), null,
-            {
-              tokenValidationMiddleware: false,
-              withAuthorization: true,
-              withTokenAutoRefresh: false,
-            });
-
-            if (response.status == 200) {
-                console.log(response);
-
-                alert("CAREPLAN PRESETS - GET  /care-plans/presets/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
-            } else {
-                console.error(response);
-            }
-        } catch (error) {
-            console.log('Api.getAvailableActivitys Error: ', error);
-        } 
-    },
-    //----------------------------------------------------------------------------
-    // CAREPLAN PRESETS - GET  /care-plans/presets/{presetId}/
-    //----------------------------------------------------------------------------
-    getCareplanPresetById: async function (userId, id) {
-        try {
-            const response = await request("GET", BASE_BACKEND_URL+carePlanPresets+id+"/", new URLSearchParams({
-                fhirPatient: userId,
-            }), null,
-            {
-              tokenValidationMiddleware: false,
-              withAuthorization: true,
-              withTokenAutoRefresh: false,
-            });
-
-            if (response.status == 200) {
-                console.log(response);
-
-                alert("CAREPLAN PRESETS - GET  /care-plans/presets/{presetId}/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
-            } else {
-                console.error(response);
-            }
-        } catch (error) {
-            console.log('Api.getAvailableActivitys Error: ', error);
-        } 
-    },
-    //---------------------------------------------
-    // CAREPLAN RECORDS - GET  /care-plans/records/
-    //---------------------------------------------
-    getCareplanRecords: async function (userId) {
-        try {
-            const response = await request("GET", BASE_BACKEND_URL+carePlanRecords, new URLSearchParams({
-                fhirPatient: userId,
-            }), null,
-            {
-              tokenValidationMiddleware: false,
-              withAuthorization: true,
-              withTokenAutoRefresh: false,
-            });
-
-            if (response.status == 200) {
-                console.log(response);
-
-                return response;
-            } else {
-                console.error(response);
-            }
-        } catch (error) {
-            console.log('Api.getAvailableActivitys Error: ', error);
-        } 
-    },
-    //--------------------------------------------------
-    // CAREPLAN RECORDS - GET  /care-plans/records/{ID}/
-    //--------------------------------------------------
-    getCareplanRecordById: async function (userId, id) {
-        try {
-            const response = await request("GET", BASE_BACKEND_URL+carePlanRecords+id+"/", new URLSearchParams({
-                fhirPatient: userId,
-            }), null,
-            {
-              tokenValidationMiddleware: false,
-              withAuthorization: true,
-              withTokenAutoRefresh: false,
-            });
-
-            if (response.status == 200) {
-                console.log(response);
-
-                alert("CAREPLAN RECORDS - GET  /care-plans/records/{ID}/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
-            } else {
-                console.error(response);
-            }
-        } catch (error) {
-            console.log('Api.getAvailableActivitys Error: ', error);
-        } 
-    },
-    //-----------------------------------------------------------
-    // CAREPLAN RECORDS - GET  /care-plans/records/{ID}/history/
-    //-----------------------------------------------------------
-    getCareplanRecordHistory: async function (userId, id) {
-        try {
-            const response = await request("GET", BASE_BACKEND_URL+carePlanRecords+id+"/history/", new URLSearchParams({
-                fhirPatient: userId,
-            }), null,
-            {
-              tokenValidationMiddleware: false,
-              withAuthorization: true,
-              withTokenAutoRefresh: false,
-            });
-
-            if (response.status == 200) {
-                console.log(response);
-
-                alert("CAREPLAN RECORDS - GET  /care-plans/records/{ID}/history/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
-            } else {
-                console.error(response);
-            }
-        } catch (error) {
-            console.log('Api.getAvailableActivitys Error: ', error);
-        } 
-    },
-    //-------------------------------------------------------------
-    // CAREPLAN RECORDS - GET  /care-plans/records/{ID}/units/
-    //-------------------------------------------------------------
-    getCareplanRecordUnits: async function (userId, id) {
-        try {
-            const response = await request("GET", BASE_BACKEND_URL+carePlanRecords+id+"/units/", new URLSearchParams({
-                fhirPatient: userId,
-            }), null,
-            {
-              tokenValidationMiddleware: false,
-              withAuthorization: true,
-              withTokenAutoRefresh: false,
-            });
-
-            if (response.status == 200) {
-                console.log(response);
-
-                alert("CAREPLAN RECORDS - GET  /care-plans/records/{ID}/units/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
-            } else {
-                console.error(response);
-            }
-        } catch (error) {
-            console.log('Api.getAvailableActivitys Error: ', error);
-        } 
-    },
-    //------------------------------------------------------------------
-    // CAREPLAN RECORDS - GET  /care-plans/records/{ID}/units/{UnitID}/
-    //------------------------------------------------------------------
-    getCareplanRecordUnitByUnitId: async function (userId, id, unitId) {
-        try {
-            const response = await request("GET", BASE_BACKEND_URL+carePlanRecords+id+"/units/"+unitId+"/", new URLSearchParams({
-                fhirPatient: userId,
-            }), null,
-            {
-              tokenValidationMiddleware: false,
-              withAuthorization: true,
-              withTokenAutoRefresh: false,
-            });
-
-            if (response.status == 200) {
-                console.log(response);
-
-                alert("CAREPLAN RECORDS - GET  /care-plans/records/{ID}/units/{UnitID}/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
-            } else {
-                console.error(response);
-            }
-        } catch (error) {
-            console.log('Api.getAvailableActivitys Error: ', error);
-        } 
-    },
-    //----------------------------------------------------------------------------
-    // CAREPLAN RECORDS - GET  /care-plans/records/{ID}/units/{UnitID}/schedules/
-    //----------------------------------------------------------------------------
-    getCareplanRecordUnitSchedules: async function (userId, id, unitId) {
-        try {
-            const response = await request("GET", BASE_BACKEND_URL+carePlanRecords+id+"/units/"+unitId+"/schedules/", new URLSearchParams({
-                fhirPatient: userId,
-            }), null,
-            {
-              tokenValidationMiddleware: false,
-              withAuthorization: true,
-              withTokenAutoRefresh: false,
-            });
-
-            if (response.status == 200) {
-                console.log(response);
-
-                alert("CAREPLAN RECORDS - GET  /care-plans/records/{ID}/units/{UnitID}/schedules/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
-            } else {
-                console.error(response);
-            }
-        } catch (error) {
-            console.log('Api.getAvailableActivitys Error: ', error);
-        } 
-    },
-    //----------------------------------------------------------------------------
-    // CAREPLAN RECORDS - GET  /care-plans/records/{ID}/units/{UnitID}/schedules/{ScheduleID}/
-    //----------------------------------------------------------------------------
-    getCareplanRecordUnitSchedulesById: async function (userId, id, unitId, scheduleId) {
-        try {
-            const response = await request("GET", BASE_BACKEND_URL+carePlanRecords+id+"/units/"+unitId+"/schedules/"+scheduleId+"/", new URLSearchParams({
-                fhirPatient: userId,
-            }), null,
-            {
-              tokenValidationMiddleware: false,
-              withAuthorization: true,
-              withTokenAutoRefresh: false,
-            });
-
-            if (response.status == 200) {
-                console.log(response);
-
-                alert("CAREPLAN RECORDS - GET  /care-plans/records/{ID}/units/{UnitID}/schedules/{ScheduleID}/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
-            } else {
-                console.error(response);
-            }
-        } catch (error) {
-            console.log('Api.getAvailableActivitys Error: ', error);
-        } 
-    },
-    //----------------------------------------------------------------------------
-    // CAREPLAN RECORDS - GET  /care-plans/records/{ID}/update-check/
-    //----------------------------------------------------------------------------
-    getCareplanRecordUpdateCheck: async function (userId, id) {
-        try {
-            const response = await request("GET", BASE_BACKEND_URL+carePlanRecords+id+"/update-check/", new URLSearchParams({
-                fhirPatient: userId,
-            }), null,
-            {
-              tokenValidationMiddleware: false,
-              withAuthorization: true,
-              withTokenAutoRefresh: false,
-            });
-
-            if (response.status == 200) {
-                console.log(response);
-
-                alert("CAREPLAN RECORDS - GET  /care-plans/records/{ID}/update-check/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
-            } else {
-                console.error(response);
-            }
-        } catch (error) {
-            console.log('Api.getAvailableActivitys Error: ', error);
-        } 
-    },
-    //----------------------------------------------------------------------------
-    // CONTENT PACKAGE - GET  /content-packages/
-    //----------------------------------------------------------------------------
-    getContentPackage: async function (userId) {
-        try {
-            const response = await request("GET", BASE_BACKEND_URL+contentPackages, new URLSearchParams({
-                fhirPatient: userId,
-            }), null,
-            {
-              tokenValidationMiddleware: false,
-              withAuthorization: true,
-              withTokenAutoRefresh: false,
-            });
-
-            if (response.status == 200) {
-                console.log(response);
-
-                return response;
-            } else {
-                console.error(response);
-            }
-        } catch (error) {
-            console.log('Api.getAvailableActivitys Error: ', error);
-        } 
-    },
-    //----------------------------------------------------------------------------
-    // CONTENT PACKAGE - GET  /content-packages/{name}/
-    //----------------------------------------------------------------------------
-    getContentPackageByName: async function (userId, name) {
-        try {
-            const response = await request("GET", BASE_BACKEND_URL+contentPackages+name+"/", new URLSearchParams({
-                fhirPatient: userId,
-            }), null,
-            {
-              tokenValidationMiddleware: false,
-              withAuthorization: true,
-              withTokenAutoRefresh: false,
-            });
-
-            if (response.status == 200) {
-                console.log(response);
-
-                alert("CONTENT PACKAGE - GET  /content-packages/{name}/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
-            } else {
-                console.error(response);
-            }
-        } catch (error) {
-            console.log('Api.getAvailableActivitys Error: ', error);
-        } 
-    },
-    //----------------------------------------------------------------------------
-    // CONTENT PACKAGE - GET  /content-packages/{name}/{version}/
-    //----------------------------------------------------------------------------
-    getContentPackageByNameVersion: async function (userId, name, version) {
-        try {
-            const response = await request("GET", BASE_BACKEND_URL+contentPackages+name+"/"+version+"/", new URLSearchParams({
-                fhirPatient: userId,
-            }), null,
-            {
-              tokenValidationMiddleware: false,
-              withAuthorization: true,
-              withTokenAutoRefresh: false,
-            });
-
-            if (response.status == 200) {
-                console.log(response);
-
-                alert("CONTENT PACKAGE - GET  /content-packages/{name}/{version}/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
-            } else {
-                console.error(response);
-            }
-        } catch (error) {
-            console.log('Api.getAvailableActivitys Error: ', error);
-        } 
-    },
-    //----------------------------------------------------------------------------
-    // PATIENTS - GET  /users/patients/
-    //----------------------------------------------------------------------------
-    getPatients: async function (userId) {
-        try {
-            const response = await request("GET", BASE_BACKEND_URL+patientsEndpoint, new URLSearchParams({
-                fhirPatient: userId,
-            }), null,
-            {
-              tokenValidationMiddleware: false,
-              withAuthorization: true,
-              withTokenAutoRefresh: false,
-            });
-
-            if (response.status == 200) {
-                console.log(response);
-                return response.data;
-                //alert("PATIENTS - GET  /users/patients/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
-            } else {
-                console.error(response);
-            }
-        } catch (error) {
-            console.log('Api.getPatients Error: ', error);
-        } 
-    },
-    getPatientsConsents: async function (userId, fhir_uuid) {
-        try {
-
             const response = await request(
-                "GET", 
-                BASE_BACKEND_URL+patientsEndpoint+fhir_uuid+"/consents/", new URLSearchParams({
-                    fhirPatient: userId,
-                }), null,
+                "GET",
+                BASE_BACKEND_URL + `${availableActivities}?available=true`,
                 {
-                  tokenValidationMiddleware: false,
-                  withAuthorization: true,
-                  withTokenAutoRefresh: false,
-                });
-    
-            if (response.status == 200 || response.status == 201) {
-                console.log(response);
-                return response.data;
-                //alert("THERAPIST - GET  /users/therapists/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
-            } else {
-                console.error(response);
-                alert(response);
-            }
-        } catch (error) {
-            console.log('Api.getPatients Error: ', error);
-        } 
-    },
-    
-    postPatientsConsents: async function (userId, fhir_uuid, payload) {
-        try {
-            console.log("payload: " + JSON.stringify(payload))
-
-            const response = await request(
-                "POST", 
-                BASE_BACKEND_URL+patientsEndpoint+fhir_uuid+"/consents/", 
-                payload, 
-                {
-                    fhirPatient: userId,
-                    headers: {
-                        "Content-Type": "application/json",
-                        //"accept": "*/*" 
-                    }
                 },
-                //null,
-                {
-                  tokenValidationMiddleware: false,
-                  withAuthorization: true,
-                  withTokenAutoRefresh: false,
-                });
-    
-            if (response.status == 200 || response.status == 201) {
-                console.log(response);
-                return response.data;
-                //alert("THERAPIST - GET  /users/therapists/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
-            } else {
-                console.error(response);
-                alert(response);
-            }
-        } catch (error) {
-            console.log('Api.getPatients Error: ', error);
-        } 
-    },
-    deletePatientsConsents: async function (fhir_uuid, therapist_fhir_uuid) {
-      try {
-        const response = await request(
-          "DELETE",
-          BASE_BACKEND_URL +
-          patientsEndpoint +
-          fhir_uuid +
-          "/consents/therapist/" +
-          therapist_fhir_uuid +
-          "/",
-
-          //null,
-          {
-            tokenValidationMiddleware: false,
-            withAuthorization: true,
-            withTokenAutoRefresh: false,
-          }
-        );
-
-        if (response.status == 200 || response.status == 201) {
-          console.log(response);
-          return response.data;
-          //alert("THERAPIST - GET  /users/therapists/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
-        } else {
-          console.error(response);
-          alert(response);
-        }
-      } catch (error) {
-        console.log("Api.getPatients Error: ", error);
-      }
-    },
-    //----------------------------------------------------------------------------
-    // PATIENTS - GET  /users/patients/{id}/
-    //----------------------------------------------------------------------------
-    getPatientById: async function (userId, patientId) {
-        try {
-            const response = await request(
-                "GET", 
-                BASE_BACKEND_URL+usersEndpoint+"patients/"+patientId+"/", 
-                new URLSearchParams({
-                    fhirPatient: userId,
-                }), 
                 null,
                 {
                     tokenValidationMiddleware: false,
@@ -609,158 +149,563 @@ var api = {
 
             if (response.status == 200) {
                 console.log(response);
-                return response.data;
+                return response;
+            } else {
+                console.error(response);
+            }
+        } catch (error) {
+            console.log('Api.getAvailableActivitys Error: ', error);
+        }
+    },
+    //----------------------------------------------------------------------------
+    // CAREPLAN PRESETS - GET  /care-plans/presets/
+    //----------------------------------------------------------------------------
+    getCareplanPresets: async function (userId) {
+        try {
+            const response = await request("GET", BASE_BACKEND_URL+carePlanPresets, new URLSearchParams({
+                    fhirPatient: userId,
+                }), null,
+                {
+                    tokenValidationMiddleware: false,
+                    withAuthorization: true,
+                    withTokenAutoRefresh: false,
+                });
 
-                //alert("PATIENTS - GET  /users/patients/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
+            if (response.status == 200) {
+                alert("CAREPLAN PRESETS - GET  /care-plans/presets/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
+            } else {
+                console.error(response);
+            }
+        } catch (error) {
+            console.log('Api.getAvailableActivitys Error: ', error);
+        }
+    },
+    //----------------------------------------------------------------------------
+    // CAREPLAN PRESETS - GET  /care-plans/presets/{presetId}/
+    //----------------------------------------------------------------------------
+    getCareplanPresetById: async function (userId, id) {
+        try {
+            const response = await request("GET", BASE_BACKEND_URL+carePlanPresets+id+"/", new URLSearchParams({
+                    fhirPatient: userId,
+                }), null,
+                {
+                    tokenValidationMiddleware: false,
+                    withAuthorization: true,
+                    withTokenAutoRefresh: false,
+                });
+
+            if (response.status == 200) {
+                alert("CAREPLAN PRESETS - GET  /care-plans/presets/{presetId}/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
+            } else {
+                console.error(response);
+            }
+        } catch (error) {
+            console.log('Api.getAvailableActivitys Error: ', error);
+        }
+    },
+    //---------------------------------------------
+    // CAREPLAN RECORDS - GET  /care-plans/records/
+    //---------------------------------------------
+    getCareplanRecords: async function (userId) {
+        try {
+            const response = await request("GET", BASE_BACKEND_URL+carePlanRecords, new URLSearchParams({
+                    fhirPatient: userId,
+                }), null,
+                {
+                    tokenValidationMiddleware: false,
+                    withAuthorization: true,
+                    withTokenAutoRefresh: false,
+                });
+
+            if (response.status == 200) {
+                return response;
+            } else {
+                console.error(response);
+            }
+        } catch (error) {
+            console.log('Api.getAvailableActivitys Error: ', error);
+        }
+    },
+    //--------------------------------------------------
+    // CAREPLAN RECORDS - GET  /care-plans/records/{ID}/
+    //--------------------------------------------------
+    getCareplanRecordById: async function (userId, id) {
+        try {
+            const response = await request("GET", BASE_BACKEND_URL+carePlanRecords+id+"/", new URLSearchParams({
+                    fhirPatient: userId,
+                }), null,
+                {
+                    tokenValidationMiddleware: false,
+                    withAuthorization: true,
+                    withTokenAutoRefresh: false,
+                });
+
+            if (response.status == 200) {
+                alert("CAREPLAN RECORDS - GET  /care-plans/records/{ID}/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
+            } else {
+                console.error(response);
+            }
+        } catch (error) {
+            console.log('Api.getAvailableActivitys Error: ', error);
+        }
+    },
+    //-----------------------------------------------------------
+    // CAREPLAN RECORDS - GET  /care-plans/records/{ID}/history/
+    //-----------------------------------------------------------
+    getCareplanRecordHistory: async function (userId, id) {
+        try {
+            const response = await request("GET", BASE_BACKEND_URL+carePlanRecords+id+"/history/", new URLSearchParams({
+                    fhirPatient: userId,
+                }), null,
+                {
+                    tokenValidationMiddleware: false,
+                    withAuthorization: true,
+                    withTokenAutoRefresh: false,
+                });
+
+            if (response.status == 200) {
+                alert("CAREPLAN RECORDS - GET  /care-plans/records/{ID}/history/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
+            } else {
+                console.error(response);
+            }
+        } catch (error) {
+            console.log('Api.getAvailableActivitys Error: ', error);
+        }
+    },
+    //-------------------------------------------------------------
+    // CAREPLAN RECORDS - GET  /care-plans/records/{ID}/units/
+    //-------------------------------------------------------------
+    getCareplanRecordUnits: async function (userId, id) {
+        try {
+            const response = await request("GET", BASE_BACKEND_URL+carePlanRecords+id+"/units/", new URLSearchParams({
+                    fhirPatient: userId,
+                }), null,
+                {
+                    tokenValidationMiddleware: false,
+                    withAuthorization: true,
+                    withTokenAutoRefresh: false,
+                });
+
+            if (response.status == 200) {
+                alert("CAREPLAN RECORDS - GET  /care-plans/records/{ID}/units/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
+            } else {
+                console.error(response);
+            }
+        } catch (error) {
+            console.log('Api.getAvailableActivitys Error: ', error);
+        }
+    },
+    //------------------------------------------------------------------
+    // CAREPLAN RECORDS - GET  /care-plans/records/{ID}/units/{UnitID}/
+    //------------------------------------------------------------------
+    getCareplanRecordUnitByUnitId: async function (userId, id, unitId) {
+        try {
+            const response = await request("GET", BASE_BACKEND_URL+carePlanRecords+id+"/units/"+unitId+"/", new URLSearchParams({
+                    fhirPatient: userId,
+                }), null,
+                {
+                    tokenValidationMiddleware: false,
+                    withAuthorization: true,
+                    withTokenAutoRefresh: false,
+                });
+
+            if (response.status == 200) {
+                alert("CAREPLAN RECORDS - GET  /care-plans/records/{ID}/units/{UnitID}/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
+            } else {
+                console.error(response);
+            }
+        } catch (error) {
+            console.log('Api.getAvailableActivitys Error: ', error);
+        }
+    },
+    //----------------------------------------------------------------------------
+    // CAREPLAN RECORDS - GET  /care-plans/records/{ID}/units/{UnitID}/schedules/
+    //----------------------------------------------------------------------------
+    getCareplanRecordUnitSchedules: async function (userId, id, unitId) {
+        try {
+            const response = await request("GET", BASE_BACKEND_URL+carePlanRecords+id+"/units/"+unitId+"/schedules/", new URLSearchParams({
+                    fhirPatient: userId,
+                }), null,
+                {
+                    tokenValidationMiddleware: false,
+                    withAuthorization: true,
+                    withTokenAutoRefresh: false,
+                });
+
+            if (response.status == 200) {
+                alert("CAREPLAN RECORDS - GET  /care-plans/records/{ID}/units/{UnitID}/schedules/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
+            } else {
+                console.error(response);
+            }
+        } catch (error) {
+            console.log('Api.getAvailableActivitys Error: ', error);
+        }
+    },
+    //----------------------------------------------------------------------------
+    // CAREPLAN RECORDS - GET  /care-plans/records/{ID}/units/{UnitID}/schedules/{ScheduleID}/
+    //----------------------------------------------------------------------------
+    getCareplanRecordUnitSchedulesById: async function (userId, id, unitId, scheduleId) {
+        try {
+            const response = await request("GET", BASE_BACKEND_URL+carePlanRecords+id+"/units/"+unitId+"/schedules/"+scheduleId+"/", new URLSearchParams({
+                    fhirPatient: userId,
+                }), null,
+                {
+                    tokenValidationMiddleware: false,
+                    withAuthorization: true,
+                    withTokenAutoRefresh: false,
+                });
+
+            if (response.status == 200) {
+                alert("CAREPLAN RECORDS - GET  /care-plans/records/{ID}/units/{UnitID}/schedules/{ScheduleID}/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
+            } else {
+                console.error(response);
+            }
+        } catch (error) {
+            console.log('Api.getAvailableActivitys Error: ', error);
+        }
+    },
+    //----------------------------------------------------------------------------
+    // CAREPLAN RECORDS - GET  /care-plans/records/{ID}/update-check/
+    //----------------------------------------------------------------------------
+    getCareplanRecordUpdateCheck: async function (userId, id) {
+        try {
+            const response = await request("GET", BASE_BACKEND_URL+carePlanRecords+id+"/update-check/", new URLSearchParams({
+                    fhirPatient: userId,
+                }), null,
+                {
+                    tokenValidationMiddleware: false,
+                    withAuthorization: true,
+                    withTokenAutoRefresh: false,
+                });
+
+            if (response.status == 200) {
+                alert("CAREPLAN RECORDS - GET  /care-plans/records/{ID}/update-check/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
+            } else {
+                console.error(response);
+            }
+        } catch (error) {
+            console.log('Api.getAvailableActivitys Error: ', error);
+        }
+    },
+    //----------------------------------------------------------------------------
+    // CONTENT PACKAGE - GET  /content-packages/
+    //----------------------------------------------------------------------------
+    getContentPackage: async function (userId) {
+        try {
+            const response = await request("GET", BASE_BACKEND_URL+contentPackages, new URLSearchParams({
+                    fhirPatient: userId,
+                }), null,
+                {
+                    tokenValidationMiddleware: false,
+                    withAuthorization: true,
+                    withTokenAutoRefresh: false,
+                });
+
+            if (response.status == 200) {
+                return response;
+            } else {
+                console.error(response);
+            }
+        } catch (error) {
+            console.log('Api.getAvailableActivitys Error: ', error);
+        }
+    },
+    //----------------------------------------------------------------------------
+    // CONTENT PACKAGE - GET  /content-packages/{name}/
+    //----------------------------------------------------------------------------
+    getContentPackageByName: async function (userId, name) {
+        try {
+            const response = await request("GET", BASE_BACKEND_URL+contentPackages+name+"/", new URLSearchParams({
+                    fhirPatient: userId,
+                }), null,
+                {
+                    tokenValidationMiddleware: false,
+                    withAuthorization: true,
+                    withTokenAutoRefresh: false,
+                });
+
+            if (response.status == 200) {
+                alert("CONTENT PACKAGE - GET  /content-packages/{name}/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
+            } else {
+                console.error(response);
+            }
+        } catch (error) {
+            console.log('Api.getAvailableActivitys Error: ', error);
+        }
+    },
+    //----------------------------------------------------------------------------
+    // CONTENT PACKAGE - GET  /content-packages/{name}/{version}/
+    //----------------------------------------------------------------------------
+    getContentPackageByNameVersion: async function (userId, name, version) {
+        try {
+            const response = await request("GET", BASE_BACKEND_URL+contentPackages+name+"/"+version+"/", new URLSearchParams({
+                    fhirPatient: userId,
+                }), null,
+                {
+                    tokenValidationMiddleware: false,
+                    withAuthorization: true,
+                    withTokenAutoRefresh: false,
+                });
+
+            if (response.status == 200) {
+                alert("CONTENT PACKAGE - GET  /content-packages/{name}/{version}/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
+            } else {
+                console.error(response);
+            }
+        } catch (error) {
+            console.log('Api.getAvailableActivitys Error: ', error);
+        }
+    },
+    //----------------------------------------------------------------------------
+    // PATIENTS - GET  /users/patients/
+    //----------------------------------------------------------------------------
+    getPatients: async function (userId) {
+        try {
+            const response = await request("GET", BASE_BACKEND_URL+patientsEndpoint, new URLSearchParams({
+                    fhirPatient: userId,
+                }), null,
+                {
+                    tokenValidationMiddleware: false,
+                    withAuthorization: true,
+                    withTokenAutoRefresh: true,
+                });
+
+            if (response.status == 200) {
+                return response.data;
             } else {
                 console.error(response);
             }
         } catch (error) {
             console.log('Api.getPatients Error: ', error);
-        } 
+        }
+    },
+    getPatientsConsents: async function (userId, fhir_uuid) {
+        try {
+
+            const response = await request(
+                "GET",
+                BASE_BACKEND_URL+patientsEndpoint+fhir_uuid+"/consents/", new URLSearchParams({
+                    fhirPatient: userId,
+                }), null,
+                {
+                    tokenValidationMiddleware: false,
+                    withAuthorization: true,
+                    withTokenAutoRefresh: true,
+                });
+
+            if (response.status == 200 || response.status == 201) {
+                return response.data;
+            } else {
+                console.error(response);
+            }
+        } catch (error) {
+            console.log('Api.getPatients Error: ', error);
+        }
+    },
+
+    postPatientsConsents: async function (userId, fhir_uuid, payload) {
+        try {
+            console.log("payload: " + JSON.stringify(payload))
+
+            const response = await request(
+                "POST",
+                BASE_BACKEND_URL+patientsEndpoint+fhir_uuid+"/consents/",
+                payload,
+                {
+                    fhirPatient: userId,
+                    headers: {
+                        "Content-Type": "application/json",
+                        //"accept": "*/*"
+                    }
+                },
+                {
+                    tokenValidationMiddleware: false,
+                    withAuthorization: true,
+                    withTokenAutoRefresh: true,
+                });
+
+            if (response.status == 200 || response.status == 201) {
+                return response.data;
+            } else {
+                console.error(response);
+            }
+        } catch (error) {
+            console.log('Api.getPatients Error: ', error);
+        }
+    },
+    deletePatientsConsents: async function (fhir_uuid, therapist_fhir_uuid) {
+        try {
+            const response = await request(
+                "DELETE",
+                BASE_BACKEND_URL +
+                patientsEndpoint +
+                fhir_uuid +
+                "/consents/therapist/" +
+                therapist_fhir_uuid +
+                "/",
+                {
+                    tokenValidationMiddleware: false,
+                    withAuthorization: true,
+                    withTokenAutoRefresh: true,
+                }
+            );
+
+            if (response.status == 200 || response.status == 201) {
+                return response.data;
+            } else {
+                console.error(response);
+            }
+        } catch (error) {
+            console.log("Api.getPatients Error: ", error);
+        }
+    },
+    //----------------------------------------------------------------------------
+    // PATIENTS - GET  /users/patients/{id}/
+    //----------------------------------------------------------------------------
+    getPatientById: async function (userId, patientId) {
+        try {
+            const response = await request(
+                "GET",
+                BASE_BACKEND_URL+usersEndpoint+"patients/"+patientId+"/",
+                new URLSearchParams({
+                    fhirPatient: userId,
+                }),
+                null,
+                {
+                    tokenValidationMiddleware: false,
+                    withAuthorization: true,
+                    withTokenAutoRefresh: true,
+                });
+            if (response.status == 200) {
+                return response.data;
+            } else {
+                console.error(response);
+            }
+        } catch (error) {
+            console.log('Api.getPatients Error: ', error);
+        }
     },
     getTherapists: async function (userId) {
         try {
 
             const response = await request(
-                "GET", 
+                "GET",
                 BASE_BACKEND_URL+therapistsEndpoint, new URLSearchParams({
                     fhirPatient: userId,
                 }), null,
                 {
-                  tokenValidationMiddleware: false,
-                  withAuthorization: true,
-                  withTokenAutoRefresh: false,
+                    tokenValidationMiddleware: false,
+                    withAuthorization: true,
+                    withTokenAutoRefresh: true,
                 });
-    
+
             if (response.status == 200 || response.status == 201) {
-                console.log(response);
                 return response.data;
-                //alert("THERAPIST - GET  /users/therapists/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
             } else {
                 console.error(response);
-                alert(response);
             }
         } catch (error) {
             console.log('Api.getPatients Error: ', error);
-        } 
+        }
     },
     getTherapistByID: async function (userId, fhir_uuid) {
-      try {
-
-        const response = await request(
-          "GET",
-            BASE_BACKEND_URL + therapistsEndpoint + fhir_uuid + "/", new URLSearchParams({
-                fhirPatient: userId,
-            }),null,
-          {
-            tokenValidationMiddleware: false,
-            withAuthorization: true,
-            withTokenAutoRefresh: false,
-          });
-
-        if (response.status == 200 || response.status == 201) {
-          console.log(response);
-          return response.data;
-        } else {
-          console.error(response);
-          alert(response);
+        try {
+            const response = await request(
+                "GET",
+                BASE_BACKEND_URL + therapistsEndpoint + fhir_uuid + "/", new URLSearchParams({
+                    fhirPatient: userId,
+                }),null,
+                {
+                    tokenValidationMiddleware: false,
+                    withAuthorization: true,
+                    withTokenAutoRefresh: true,
+                });
+            if (response.status == 200 || response.status == 201) {
+                return response.data;
+            } else {
+                console.error(response);
+            }
+        } catch (error) {
+            console.log('Api.getPatients Error: ', error);
         }
-      } catch (error) {
-        console.log('Api.getPatients Error: ', error);
-      }
     },
     getTherapistsConsents: async function (userId, fhir_uuid) {
         try {
-
             const response = await request(
-                "GET", 
+                "GET",
                 BASE_BACKEND_URL+therapistsEndpoint+fhir_uuid+"/consents/", new URLSearchParams({
                     fhirPatient: userId,
                 }), null,
                 {
-                  tokenValidationMiddleware: false,
-                  withAuthorization: true,
-                  withTokenAutoRefresh: false,
+                    tokenValidationMiddleware: false,
+                    withAuthorization: true,
+                    withTokenAutoRefresh: true,
                 });
-    
             if (response.status == 200 || response.status == 201) {
-                console.log(response);
                 return response.data;
-                //alert("THERAPIST - GET  /users/therapists/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
             } else {
                 console.error(response);
-                alert(response);
             }
         } catch (error) {
             console.log('Api.getPatients Error: ', error);
-        } 
+        }
     },
     postTherapistsConsents: async function (userId, fhir_uuid, payload) {
-      try {
-        console.log("payload: " + payload);
+        try {
+            console.log("payload: " + payload);
 
-        const response = await request(
-          "POST",
-          BASE_BACKEND_URL + therapistsEndpoint + fhir_uuid + "/consents/",
-          payload,
-          {
-            fhirPatient: userId,
-            headers: {
-              "Content-Type": "application/json",
-              //"accept": "*/*"
-            },
-          },
-          //null,
-          {
-            tokenValidationMiddleware: false,
-            withAuthorization: true,
-            withTokenAutoRefresh: false,
-          }
-        );
+            const response = await request(
+                "POST",
+                BASE_BACKEND_URL + therapistsEndpoint + fhir_uuid + "/consents/",
+                payload,
+                {
+                    fhirPatient: userId,
+                    headers: {
+                        "Content-Type": "application/json",
+                        //"accept": "*/*"
+                    },
+                },
+                {
+                    tokenValidationMiddleware: false,
+                    withAuthorization: true,
+                    withTokenAutoRefresh: true,
+                }
+            );
 
-        if (response.status == 200 || response.status == 201) {
-          console.log(response);
-          return response.data;
-          //alert("THERAPIST - GET  /users/therapists/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
-        } else {
-          console.error(response);
-          alert(response);
+            if (response.status == 200 || response.status == 201) {
+                return response.data;
+            } else {
+                console.error(response);
+            }
+        } catch (error) {
+            console.log("Api.getPatients Error: ", error);
         }
-      } catch (error) {
-        console.log("Api.getPatients Error: ", error);
-      }
     },
     deleteTherapistsConsents: async function (fhir_uuid, patient_fhir_uuid) {
-      try {
-        const response = await request(
-          "DELETE",
-          BASE_BACKEND_URL +
-          therapistsEndpoint +
-          fhir_uuid +
-          "/consents/patient/" +
-          patient_fhir_uuid +
-          "/",
+        try {
+            const response = await request(
+                "DELETE",
+                BASE_BACKEND_URL +
+                therapistsEndpoint +
+                fhir_uuid +
+                "/consents/patient/" +
+                patient_fhir_uuid +
+                "/",
+                {
+                    tokenValidationMiddleware: false,
+                    withAuthorization: true,
+                    withTokenAutoRefresh: true,
+                }
+            );
 
-          //null,
-          {
-            tokenValidationMiddleware: false,
-            withAuthorization: true,
-            withTokenAutoRefresh: false,
-          }
-        );
-
-        if (response.status == 200 || response.status == 201) {
-          console.log(response);
-          return response.data;
-          //alert("THERAPIST - GET  /users/therapists/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
-        } else {
-          console.error(response);
-          alert(response);
+            if (response.status == 200 || response.status == 201) {
+                return response.data;
+            } else {
+                console.error(response);
+            }
+        } catch (error) {
+            console.log("Api.getPatients Error: ", error);
         }
-      } catch (error) {
-        console.log("Api.getPatients Error: ", error);
-      }
     },
 
     //----------------------------------------------------------------------------
@@ -770,35 +715,32 @@ var api = {
     postCreateNewUser: async function (userId, payload) {
         try {
             const response = await request(
-                "POST", 
-                BASE_BACKEND_URL+usersEndpoint, 
-                payload, 
+                "POST",
+                BASE_BACKEND_URL+usersEndpoint,
+                payload,
                 {
                     fhirPatient: userId,
                     headers: {
                         "Content-Type": "application/json",
-                        //"accept": "*/*" 
+                        //"accept": "*/*"
                     }
                 },
-                //null,
                 {
                     tokenValidationMiddleware: false,
                     withAuthorization: true,
-                    withTokenAutoRefresh: false,
+                    withTokenAutoRefresh: true,
                 }
             );
 
             if (response.status == 200 || response.status == 201) {
-                console.log(response);
                 alert("User successfully created!");
             } else {
-                console.error(response);
                 alert("Oops, something went wrong.");
             }
         } catch (error) {
             console.log('Api.getPatients Error: ', error);
             alert("Oops, something went wrong.");
-        } 
+        }
     },
     //----------------------------------------------------------------------------
     // VOICE RECORDS - GET  /voice-records/
@@ -807,24 +749,22 @@ var api = {
     getVoiceRecords: async function (userId) {
         try {
             const response = await request("GET", BASE_BACKEND_URL+voiceRecordEndpoint, new URLSearchParams({
-                fhirPatient: userId,
-            }), /*null,*/
-            {
-              tokenValidationMiddleware: false,
-              withAuthorization: true,
-              withTokenAutoRefresh: false,
-            });
+                    fhirPatient: userId,
+                }), /*null,*/
+                {
+                    tokenValidationMiddleware: false,
+                    withAuthorization: true,
+                    withTokenAutoRefresh: false,
+                });
 
             if (response.status == 200) {
-                console.log(userId, response);
-
                 alert("VOICE RECORDS - GET  /voice-records/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
             } else {
                 console.error(response);
             }
         } catch (error) {
             console.log('Api.getVoiceRecords Error: ', error);
-        } 
+        }
     },
     //----------------------------------------------------------------------------
     // VOICE RECORDS - GET  /voice-records/{id}/
@@ -834,11 +774,11 @@ var api = {
         try {
 
             const response = await request(
-                "GET", 
-                BASE_BACKEND_URL+voiceRecordEndpoint+recordId+"/", 
+                "GET",
+                BASE_BACKEND_URL+voiceRecordEndpoint+recordId+"/",
                 new URLSearchParams({
                     fhirPatient: userId,
-                }), 
+                }),
                 null,
                 {
                     tokenValidationMiddleware: false,
@@ -848,7 +788,7 @@ var api = {
             );
 
             if (response.status == 200) {
-                console.log(response);
+                //console.log(response);
                 alert("VOICE RECORDS - GET  /voice-records/{id}/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
             } else {
                 console.error(response);
@@ -856,7 +796,7 @@ var api = {
 
         } catch (error) {
             console.log('Api.getVoiceRecordById Error: ', error);
-        } 
+        }
     },
     //----------------------------------------------------------------------------
     // VOICE RECORD - POST  /voice-records/
@@ -869,8 +809,8 @@ var api = {
             formData.append("file", payload);
 
             const response = await request(
-                "POST", 
-                BASE_BACKEND_URL+voiceRecordEndpoint, 
+                "POST",
+                BASE_BACKEND_URL+voiceRecordEndpoint,
                 formData,  // payload,
                 {
                     fhirPatient: userId,
@@ -879,10 +819,6 @@ var api = {
                         "accept": "*/*"
                     }
                 },
-                /*
-                new URLSearchParams({
-                    fhirPatient: userId,
-                }),*/
                 {
                     tokenValidationMiddleware: false,
                     withAuthorization: true,
@@ -891,7 +827,6 @@ var api = {
             );
 
             if (response.status == 200) {
-                console.log(response);
                 alert("VOICE RECORD - POST  /voice-records/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
             } else {
                 console.error(response);
@@ -899,7 +834,7 @@ var api = {
 
         } catch (error) {
             console.log('Api.postVoiceRecords Error: ', error);
-        } 
+        }
     },
     //----------------------------------------------------------------------------
     // PROCEDURES - GET  /procedures/
@@ -907,28 +842,26 @@ var api = {
     getRunningProcedures: async function (userId) {
         try {
             const response = await request(
-                "GET", 
-                BASE_BACKEND_URL+"/user/running-procedure/", 
+                "GET",
+                BASE_BACKEND_URL+"/user/running-procedure/",
                 new URLSearchParams({
                     fhirPatient: userId,
-                }), 
+                }),
                 null,
                 {
-                tokenValidationMiddleware: false,
-                withAuthorization: true,
-                withTokenAutoRefresh: false,
+                    tokenValidationMiddleware: false,
+                    withAuthorization: true,
+                    withTokenAutoRefresh: true,
                 });
 
-                if (response.status == 200) {
-                    console.log(response);
-                    //alert("PROCEDURES - GET  /procedures/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
-                    return response;
-                } else {
-                    console.error(response);
-                }
+            if (response.status == 200) {
+                return response;
+            } else {
+                console.error(response);
+            }
         } catch (error) {
             console.log('Api.getProcedures Error: ', error);
-        } 
+        }
     },
     //----------------------------------------------------------------------------
     // PROCEDURES - GET  /procedures/
@@ -936,28 +869,26 @@ var api = {
     getProcedures: async function (userId) {
         try {
             const response = await request(
-                "GET", 
-                BASE_BACKEND_URL+procedures, 
+                "GET",
+                BASE_BACKEND_URL+procedures,
                 new URLSearchParams({
                     fhirPatient: userId,
-                }), 
+                }),
                 null,
                 {
-                tokenValidationMiddleware: false,
-                withAuthorization: true,
-                withTokenAutoRefresh: false,
+                    tokenValidationMiddleware: false,
+                    withAuthorization: true,
+                    withTokenAutoRefresh: true,
                 });
 
-                if (response.status == 200) {
-                    console.log(response);
-                    //alert("PROCEDURES - GET  /procedures/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
-                    return response;
-                } else {
-                    console.error(response);
-                }
+            if (response.status == 200) {
+                return response;
+            } else {
+                console.error(response);
+            }
         } catch (error) {
             console.log('Api.getProcedures Error: ', error);
-        } 
+        }
     },
     //----------------------------------------------------------------------------
     // CREATE PROCEDURE - POST  /procedures/
@@ -966,70 +897,64 @@ var api = {
     postProcedures: async function (userId, payload) {
         try {
             const response = await request(
-                "POST", 
-                BASE_BACKEND_URL+procedures, 
-                payload, 
+                "POST",
+                BASE_BACKEND_URL+procedures,
+                payload,
                 new URLSearchParams({
                     fhirPatient: userId,
                     headers: {
                         //"Content-Type": "application/json",
                         //"accept": "*/*"
                         'Accept': 'application/json',
-                        'Content-Type': 'application/json' 
+                        'Content-Type': 'application/json'
                     }
-                }), 
-                //null,
+                }),
                 {
                     tokenValidationMiddleware: false,
                     withAuthorization: true,
-                    withTokenAutoRefresh: false,
+                    withTokenAutoRefresh: true,
                 }
             );
 
             if (response.status == 200 || response.status == 201) {
-                console.log(response);
                 return response
-                //alert("CREATE USER - POST  /users/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
             } else {
                 console.error(response);
             }
         } catch (error) {
             console.log('Api.getPatients Error: ', error);
-        } 
+        }
     },
     patchProcedures: async function (userId, id, payload) {
         try {
             const response = await request(
-                "PATCH", 
-                BASE_BACKEND_URL+procedures+id+"/", 
-                payload, 
+                "PATCH",
+                BASE_BACKEND_URL+procedures+id+"/",
+                payload,
                 new URLSearchParams({
                     fhirPatient: userId,
                     headers: {
                         //"Content-Type": "application/json",
                         //"accept": "*/*"
                         'Accept': 'application/json',
-                        'Content-Type': 'application/json' 
+                        'Content-Type': 'application/json'
                     }
-                }), 
-                //null,
+                }),
                 {
                     tokenValidationMiddleware: false,
                     withAuthorization: true,
-                    withTokenAutoRefresh: false,
+                    withTokenAutoRefresh: true,
                 }
             );
 
             if (response.status == 200 || response.status == 201) {
-                console.log(response);
                 return response
-                //alert("CREATE USER - POST  /users/\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
             } else {
                 console.error(response);
             }
         } catch (error) {
             console.log('Api.getPatients Error: ', error);
-        } 
+        }
     },
     //----------------------------------------------------------------------------
     // CREATE PROCEDURE RESULT - POST  /procedures/{id}/units/{unitid}/results
@@ -1038,73 +963,65 @@ var api = {
     postProcedureResultBatch: async function (userId, id, unitId, payload) {
         try {
             const response = await request(
-                "POST", 
-                BASE_BACKEND_URL+procedures+id+"/units/"+unitId+"/results/batch/", 
-                payload, 
+                "POST",
+                BASE_BACKEND_URL+procedures+id+"/units/"+unitId+"/results/batch/",
+                payload,
                 new URLSearchParams({
                     fhirPatient: userId,
                     headers: {
                         //"Content-Type": "application/json",
                         //"accept": "*/*"
                         'Accept': 'application/json',
-                        'Content-Type': 'application/json' 
+                        'Content-Type': 'application/json'
                     }
-                }), 
-                //null,
+                }),
                 {
                     tokenValidationMiddleware: false,
                     withAuthorization: true,
-                    withTokenAutoRefresh: false,
+                    withTokenAutoRefresh: true,
                 }
             );
 
             if (response.status == 200) {
-                console.log(response);
-
-                //alert("CREATE PROCEDURE RESULT - POST  /procedures/{id}/units/{unitid}/results\n\n" + (response.data.length == 0 ? "empty :(" : JSON.stringify(response.data)));
                 return response;
             } else {
                 console.error(response);
             }
         } catch (error) {
             console.log('Api.getPatients Error: ', error);
-        } 
+        }
     },
 }
 
 export async function request (
-    method, 
-    url, 
-    options, 
-    customConfig, 
+    method,
+    url,
+    options,
+    customConfig,
     validations = {
         tokenValidationMiddleware: true,
         withAuthorization: true,
         withTokenAutoRefresh: true,
-    } 
+    }
 ) {
     if (!isValidToken() && validations.tokenValidationMiddleware) {
-        //store.commit('alerts/setAlertMessage', 'The session has expired');
-        //store.commit('alerts/setShowAlert', true);
-        
+
         clearData();
-        
+
         await appRouter.push({ path: '/'});
         throw new Error('Session expired, going to login!');
     } else {
 
         let config = { headers: {} };
-    
+
         if (customConfig) {
             config = { ...customConfig };
         }
-    
+
         if (validations.withAuthorization) {
             let token = getLocalToken();
-            
+
             if (validations.withTokenAutoRefresh) {
-                //console.log("token vorher: " + token)
-                console.log("api call with autorefresh token...")
                 if (!isValidToken()) {
                     await auth.refreshToken();
                     token = getLocalToken();
@@ -1112,52 +1029,42 @@ export async function request (
                 } else {
                     console.log("token still valid!")
                 }
-                //console.log("token jetzt: " + token)
             }
-            
+
             config.headers = {
-            ...config.headers,
-            Authorization: `Bearer ${token}`,
+                ...config.headers,
+                Authorization: `Bearer ${token}`,
             };
         }
-            
+
         let response = null;
         switch (method) {
-        case "GET":
-            response = await axios.get(url, config);
-            break;
-        case "POST":
-            response = await axios.post(url, options, config);
-            break;
-        case "PATCH":
-            response = await axios.patch(url, options, config);
-            break;
-        case "PUT":
-            response = await axios.put(url, options, config);
-            break;
-        case "DELETE":
-            response = await axios.delete(url, config);
-            break;
-        default:
-            response = await axios.get(url, config);
-            break;
+            case "GET":
+                response = await axios.get(url, config);
+                break;
+            case "POST":
+                response = await axios.post(url, options, config);
+                break;
+            case "PATCH":
+                response = await axios.patch(url, options, config);
+                break;
+            case "PUT":
+                response = await axios.put(url, options, config);
+                break;
+            case "DELETE":
+                response = await axios.delete(url, config);
+                break;
+            default:
+                response = await axios.get(url, config);
+                break;
         }
 
-        /*
-        console.log("status: " + response)
-        if (response.status == 401) {
-            //alert("no auth!")
-            auth.logout();
-        }*/
-
         if (response) {
-            /*
             console.log("status: " + response)
             if (response.status == 401) {
                 //alert("no auth!")
                 auth.logout();
             }
-            */
             return response;
         }
     }

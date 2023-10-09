@@ -8,12 +8,14 @@ import HomeView from '@/views/patient/HomeView.vue';
 import SessionsView from '@/views/patient/SessionsView.vue';
 import SessionsStepMeditation from '@/components/SessionsStepMeditation.vue';
 import CalendarView from '@/views/patient/CalendarView.vue';
-import QuestionnairesView from '@/views/patient/QuestionnairesView.vue';
 import NotesIntroVue from '@/views/patient/NotesIntro.vue';
 import NotesView from '@/views/patient/NotesView.vue';
 import NotesViewAdd1 from '@/views/patient/NotesViewAdd1.vue';
 import NotesViewShow1 from '@/views/patient/NotesViewShow1.vue';
 import HelpView from '@/views/patient/HelpView.vue';
+import QuestionnairesView from '@/views/patient/QuestionnairesView.vue';
+import ActivityCoursesView from '@/views/patient/ActivityCoursesesView.vue';
+
 
 //therapist
 import DashBoardTherapist from '@/views/therapist/DashboardTherapist.vue';
@@ -29,6 +31,7 @@ import HelpViewTherapist from '@/views/therapist/HelpViewTherapist.vue';
 import DashboardAdmin from '@/views/admin/DashboardAdmin.vue';
 import HomeViewAdmin from '@/views/admin/HomeViewAdmin.vue';
 import DetailViewAdmin from '@/views/admin/DetailViewAdmin.vue';
+import DetailViewAdminResultsView from '@/views/admin/DetailViewAdminResultsView.vue';
 
 //debug
 import DebugView from '@/views/DebugView.vue';
@@ -84,6 +87,7 @@ const routes = [
             },
             {
                 path: 'dashboard3',
+                name: 'Dashboard3',
                 component: NotesView,
             },
             {
@@ -105,6 +109,11 @@ const routes = [
                 path: 'dashboard5',
                 name: 'Dashboard5',
                 component: QuestionnairesView,
+            },
+            {
+                path: 'dashboard6',
+                name: 'Dashboard6',
+                component: ActivityCoursesView,
             },
             {
                 path: 'help',
@@ -185,6 +194,12 @@ const routes = [
                 path: 'dashboardadmin2/:data',
                 name: 'DashboardAdmin2',
                 component: DetailViewAdmin,
+                props: true,
+            },
+            {
+                path: 'dashboardadmin3/:data',
+                name: 'DashboardAdmin3',
+                component: DetailViewAdminResultsView,
                 props: true,
             },
         ],

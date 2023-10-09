@@ -8,7 +8,7 @@
     @click="routeCourse(item)"
   >
     <v-row class="pa-2 ma-0" justify="top" align="top">
-      <v-card-text class="pa-2 ma-0" style="max-width: 80%; font-size: 0.8em"><b>{{item.name}}</b></v-card-text>
+      <v-card-text class="pa-2 ma-0" style="max-width: 80%; font-size: 0.8em"><b>{{ getTextByLanguage(item.translations) }}</b></v-card-text>
       <v-tooltip location="bottom" :text="getStateMsg(item.state)">
         <template v-slot:activator="{ props }">
           <v-icon
@@ -28,7 +28,7 @@
         </template>
       </v-tooltip>
       <v-card-text class="pa-0 mt-0 mb-0 ml-2 mr-0"
-        ><span class="text-grey" >{{ getTextByLanguage(item.translations) }}</span></v-card-text
+        ><span class="text-grey" ></span>{{item.name}}</v-card-text
       >
     </v-row>
   </v-card>
@@ -73,7 +73,7 @@ export default {
     getTextByLanguage:function(translations){
         let lan="en";
         if(this.$i18n.locale === "Deutsch"){
-           lan= "de" 
+           lan= "de"
         }
       const translation=  translations.find((trans)=>trans.locale ===lan);
 

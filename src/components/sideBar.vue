@@ -84,6 +84,9 @@ export default {
     $route(to /*, from*/) {
       console.log("route target: " + to.name);
       switch (to.name) {
+        case "Dashboard3":
+          this.selectedIndex = 1;
+          break;
         case "Dashboard3b":
           this.selectedIndex = 1;
           break;
@@ -93,7 +96,7 @@ export default {
       }
     },
   },
-  props: ["login_role"],
+  props: ["login_role", "index"],
   computed: {
     // a computed getter
     getItems() {
@@ -118,6 +121,11 @@ export default {
               route: "/Dashboard5",
               icon: "mdi-file-question outline",
               title: "sidebar_questionnaires",
+            },
+            {
+              route: "/Dashboard6",
+              icon: "mdi-file-sign outline",
+              title: "sidebar_act_courses",
             },
             {
               route: "/Debug",
@@ -146,7 +154,9 @@ export default {
     },
   },
   components: {},
-  mounted: function () {},
+  mounted: function () {
+    this.selectedIndex = this.index;
+  },
   unmounted: function () {
     window.sessionStorage.setItem("navdrawer_last_index", 0);
   },
