@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia'
 //import { Notifications } from "@/types/notification";
-import data from "@/scripts/data/data"
+//import data from "@/scripts/data/data"
 
 export const useNotificationStore = defineStore('notifications', {
     state: () => ({
-        notifications: data.getNotifications(),
+        notifications: []//data.getNotifications(),
     }),
     getters: {
         getNotifications: (state) => state.notifications,

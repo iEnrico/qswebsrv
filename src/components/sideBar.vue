@@ -1,19 +1,19 @@
 <template>
   <v-navigation-drawer
-      expand-on-hover
-      rail
-      @mouseenter="mouseenter"
-      @mouseleave="mouseleave"
-      :color="login_role == 1 ? '#28B9AF' : '#FFFFFF'"
+    expand-on-hover
+    rail
+    @mouseenter="mouseenter"
+    @mouseleave="mouseleave"
+    :color="login_role == 1 ? '#28B9AF' : '#FFFFFF'"
   >
     <v-list>
       <v-list-item
-          v-if="!isOpen"
-          prepend-icon="mdi-menu"
-          :style="login_role == 1 ? 'color: #FFFFFF' : 'color: #404040'"
+        v-if="!isOpen"
+        prepend-icon="mdi-menu"
+        :style="login_role == 1 ? 'color: #FFFFFF' : 'color: #404040'"
       ></v-list-item>
       <v-list-item v-if="isOpen"
-      ><img
+        ><img
           v-if="isOpen"
           :src="
             login_role == 0
@@ -23,6 +23,7 @@
           width="120"
           alt="no logo :("
           class="mx-2"
+          @click="route(0, '/')"
       /></v-list-item>
 
       <!--
@@ -41,13 +42,13 @@ v-on:click="route('/')"
 
     <v-list density="compact" nav>
       <v-list-item
-          v-for="(item, i) in getItems"
-          class="rounded-pill"
-          :key="i"
-          :variant="selectedIndex == i ? 'elevated' : 'flat'"
-          @click="route(i, item.route)"
-          :prepend-icon="item.icon"
-          :style="
+        v-for="(item, i) in getItems"
+        class="rounded-pill"
+        :key="i"
+        :variant="selectedIndex == i ? 'elevated' : 'flat'"
+        @click="route(i, item.route)"
+        :prepend-icon="item.icon"
+        :style="
           login_role == 0
             ? 'color: ' +
               (selectedIndex == i ? '#ffffff' : '#404040') +
@@ -58,7 +59,7 @@ v-on:click="route('/')"
               '; background-color: ' +
               (selectedIndex == i ? '#ffffff' : '#28B9AF')
         "
-          :title="$t(item.title)"
+        :title="$t(item.title)"
       ></v-list-item>
     </v-list>
   </v-navigation-drawer>
@@ -82,18 +83,47 @@ export default {
   }),
   watch: {
     $route(to /*, from*/) {
-      console.log("route target: " + to.name);
+      console.log("sidebar route target: " + to.name);
       switch (to.name) {
+        case "Dashboard1":
+          this.selectedIndex = 0;
+          break;
+        case "Dashboard2a":
+          this.selectedIndex = 0;
+          break;
         case "Dashboard3":
           this.selectedIndex = 1;
           break;
         case "Dashboard3b":
           this.selectedIndex = 1;
           break;
-        case "Dashboard2a":
+        case "Dashboard4":
+          this.selectedIndex = 2;
+          break;  
+        case "Dashboard5":
+          this.selectedIndex = 3;
+          break;  
+        case "Dashboard6":
+          this.selectedIndex = 4;
+          break;  
+        case "Debug":
+          this.selectedIndex = 5;
+          break;  
+          
+        case "DashboardTherapist3":
           this.selectedIndex = 0;
           break;
+        case "DashboardTherapist4":
+          this.selectedIndex = 1;
+          break;
+        case "DashboardTherapist5":
+          this.selectedIndex = 2;
+          break;
+        case "DashboardTherapist6":
+          this.selectedIndex = 3;
+          break;
       }
+      window.sessionStorage.setItem("navdrawer_last_index", this.selectedIndex);
     },
   },
   props: ["login_role", "index"],
@@ -101,7 +131,7 @@ export default {
     // a computed getter
     getItems() {
       return this.login_role == 0
-          ? [
+        ? [
             {
               route: "/Dashboard1",
               icon: "mdi-home-outline", //view-dashboard-outline
@@ -126,14 +156,14 @@ export default {
               route: "/Dashboard6",
               icon: "mdi-file-sign outline",
               title: "sidebar_act_courses",
-            },
+            },/*
             {
               route: "/Debug",
               icon: "mdi-hammer-wrench",
               title: "Debug",
-            },
+            },*/
           ]
-          : [
+        : [
             /*
             {
               route: "/DashboardTherapist1",
@@ -150,15 +180,22 @@ export default {
               icon: "mdi-calendar-month-outline",
               title: "sidebar_therapist_notes",
             },
+            {
+              route: "/DashboardTherapist5",
+              icon: "mdi-account-switch-outline",
+              title: "sidebar_therapist_control",
+            },
+            {
+              route: "/DashboardTherapist6",
+              icon: "mdi-video",
+              title: "sidebar_therapist_replay",
+            },
           ];
     },
   },
   components: {},
   mounted: function () {
-    this.selectedIndex = this.index;
-  },
-  unmounted: function () {
-    window.sessionStorage.setItem("navdrawer_last_index", 0);
+    this.selectedIndex = sessionStorage.getItem("navdrawer_last_index") //this.index;
   },
   methods: {
     mouseenter() {
@@ -169,16 +206,10 @@ export default {
     },
     getDestination(id) {
       return id == 0
-          ? window.sessionStorage.getItem("notes_history_seen")
-              ? "/Dashboard3"
-              : "/Dashboard3Pre"
-          : window.sessionStorage.getItem("notes_history_seen")
-              ? "/DashboardTherapist3"
-              : "/DashboardTherapist3Pre";
+        ? "/Dashboard3"
+        : "/DashboardTherapist3";
     },
     route: function (index, route) {
-      this.selectedIndex = index;
-      window.sessionStorage.setItem("navdrawer_last_index", this.selectedIndex);
       this.$router.push(route);
     },
   },

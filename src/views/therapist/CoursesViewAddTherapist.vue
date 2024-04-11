@@ -1,6 +1,7 @@
 <template>
-  <v-container fluid class="pa-0 ma-0 fill-height">
-    <v-row class="pa-0 ma-0 fill-height">
+  <v-container fluid class="pa-2 ma-0 fill-height">
+    <v-row class="pa-4 ma-0 fill-height">
+      <!--
       <v-col class="pa-0 ma-0" :cols="12" style="height: 14%">
         <v-card
           variant="text"
@@ -31,7 +32,8 @@
           </v-row>
         </v-card>
       </v-col>
-      <v-col class="pa-0 ma-0" :cols="12" style="height: 10%">
+      -->
+      <v-col class="pa-0 ma-0" :cols="8" >
         <v-text-field
           v-model="this.data.item.title"
           variant="outlined"

@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import ListItemCourseOption from "@/components/listItemCourseOption.vue";
+import ListItemCourseOption from "@/components/listItems/listItemCourseOption.vue";
 import { VueDraggableNext } from "vue-draggable-next";
 export default {
   name: "CoursesList",

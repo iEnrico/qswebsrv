@@ -4,9 +4,11 @@
       <v-col :cols="12" align="start" justify="start">
         <v-row dens align="start" justify="start">
           <MeditationPlayer
-            :playerdata="task_data[this.user_config.session_typeAlternate]"
-            :type="this.user_config.session_typeAlternate"
+            :playerdata="task_data[config_index]"
+            :type=config_index
             :setProgress="this.setProgress"
+            :onNext="this.onNext"
+            :sendResults="this.sendResults"
           />
         </v-row>
       </v-col>
@@ -17,6 +19,21 @@
 <script>
 import MeditationPlayer from "@/components/meditationPlayer.vue";
 
+import api from "@/scripts/api/api";
+import data from "@/scripts/data/data.js";
+
+import { 
+  //getContainingUnitsFromProcedure,
+  getNextAvailableProcedures, 
+  //isAllUnitsCompleteSync, 
+  getUser,
+  //getCourseIcon, 
+  //getCourseInfo, 
+  //getStateIcon, 
+  //getStateMsg, 
+  //getStateColor 
+} from "@/scripts/procedureEngine";
+
 export default {
   name: "SessionsStepMeditation",
   data: () => ({
@@ -25,1357 +42,152 @@ export default {
     // only if type is audio
     // only if type is interact
     // pause after
-    
-    task_data: [
-      // --------------------------------
-      // 1. Lupenübung Stein (ca. 9 Minuten)
-      // --------------------------------
-      [
-        {
-          id: 0,
-          type: 0,
-          text: "Einleitung 1.1.ogg",
-          audio: "/MindfulnessExercises/Intros/Einleitung 1.1.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 1,
-          type: 0,
-          text: "Einleitung 2.1.ogg",
-          audio: "/MindfulnessExercises/Intros/Einleitung 2.1.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 2,
-          type: 1,
-          text: "Einleitung 2.2.ogg",
-          audio: "/MindfulnessExercises/Intros/Einleitung 2.2.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 3,
-          type: 2,
-          text: "Object Meditations/1/1.1.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/1/1.1.ogg",
-          model: "/3d/Stone2023.glb",
-          pause: 10,
-        },
-        {
-          id: 4,
-          type: 2,
-          text: "Object Meditations/1/1.2.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/1/1.2.ogg",
-          model: "/3d/Stone2023.glb",
-          pause: 10,
-        },
-        {
-          id: 4,
-          type: 2,
-          text: "Object Meditations/1/1.3.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/1/1.3.ogg",
-          model: "/3d/Stone2023.glb",
-          pause: 10,
-        },
-        {
-          id: 5,
-          type: 2,
-          text: "Object Meditations/1/1.4.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/1/1.4.ogg",
-          model: "/3d/Stone2023.glb",
-          pause: 10,
-        },
-        {
-          id: 6,
-          type: 2,
-          text: "Object Meditations/1/1.5.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/1/1.5.ogg",
-          model: "/3d/Stone2023.glb",
-          pause: 10,
-        },
-        {
-          id: 7,
-          type: 2,
-          text: "Object Meditations/1/1.6.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/1/1.6.ogg",
-          model: "/3d/Stone2023.glb",
-          pause: 10,
-        },
-        {
-          id: 8,
-          type: 2,
-          text: "Object Meditations/1/1.7.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/1/1.7.ogg",
-          model: "/3d/Stone2023.glb",
-          pause: 10,
-        },
-        {
-          id: 9,
-          type: 2,
-          text: "Object Meditations/1/1.8.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/1/1.8.ogg",
-          model: "/3d/Stone2023.glb",
-          pause: 10,
-        },
-        {
-          id: 10,
-          type: 2,
-          text: "Object Meditations/1/1.9.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/1/1.9.ogg",
-          model: "/3d/Stone2023.glb",
-          pause: 10,
-        },
-        {
-          id: 11,
-          type: 2,
-          text: "Object Meditations/1/1.10.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/1/1.10.ogg",
-          model: "/3d/Stone2023.glb",
-          pause: 10,
-        },
-        {
-          id: 12,
-          type: 2,
-          text: "Object Meditations/1/1.11.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/1/1.11.ogg",
-          model: "/3d/Stone2023.glb",
-          pause: 10,
-        },
-        {
-          id: 13,
-          type: 2,
-          text: "Object Meditations/1/1.12.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/1/1.12.ogg",
-          model: "/3d/Stone2023.glb",
-          pause: 10,
-        },
-        {
-          id: 14,
-          type: 3,
-          text: "Abschluss 1.1.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.1.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 15,
-          type: 3,
-          text: "Abschluss 1.2.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.2.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 16,
-          type: 3,
-          text: "Abschluss 1.3.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.3.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 17,
-          type: 3,
-          text: "Abschluss 1.4.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.4.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 18,
-          type: 3,
-          text: "Abschluss 1.5.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.5.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 19,
-          type: 3,
-          text: "End1.1",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/1/End1.1.ogg",
-          model: "",
-          pause: 10,
-        },
-      ],
-      // --------------------------------
-      // 2. Lupenübung Stock (ca. 9 Minuten)
-      // --------------------------------
-      [
-        {
-          id: 0,
-          type: 0,
-          text: "Einleitung 1.2.ogg",
-          audio: "/MindfulnessExercises/Intros/Einleitung 1.2.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 1,
-          type: 0,
-          text: "Einleitung 2.1.ogg",
-          audio: "/MindfulnessExercises/Intros/Einleitung 2.1.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 2,
-          type: 1,
-          text: "Einleitung 2.3.ogg",
-          audio: "/MindfulnessExercises/Intros/Einleitung 2.3.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 3,
-          type: 2,
-          text: "Object Meditations/2/2.1.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/2/2.1.ogg",
-          model: "/3d/astMitBlatt.glb",
-          pause: 10,
-        },
-        {
-          id: 4,
-          type: 2,
-          text: "Object Meditations/2/2.2.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/2/2.2.ogg",
-          model: "/3d/astMitBlatt.glb",
-          pause: 10,
-        },
-        {
-          id: 5,
-          type: 2,
-          text: "Object Meditations/2/2.3.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/2/2.3.ogg",
-          model: "/3d/astMitBlatt.glb",
-          pause: 10,
-        },
-        {
-          id: 6,
-          type: 2,
-          text: "Object Meditations/2/2.4.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/2/2.4.ogg",
-          model: "/3d/astMitBlatt.glb",
-          pause: 10,
-        },
-        {
-          id: 7,
-          type: 2,
-          text: "Object Meditations/2/2.5.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/2/2.5.ogg",
-          model: "/3d/astMitBlatt.glb",
-          pause: 10,
-        },
-        {
-          id: 8,
-          type: 2,
-          text: "Object Meditations/2/2.6.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/2/2.6.ogg",
-          model: "/3d/astMitBlatt.glb",
-          pause: 10,
-        },
-        {
-          id: 9,
-          type: 2,
-          text: "Object Meditations/2/2.7.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/2/2.7.ogg",
-          model: "/3d/astMitBlatt.glb",
-          pause: 10,
-        },
-        {
-          id: 10,
-          type: 2,
-          text: "Object Meditations/2/2.8.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/2/2.8.ogg",
-          model: "/3d/astMitBlatt.glb",
-          pause: 10,
-        },
-        {
-          id: 11,
-          type: 2,
-          text: "Object Meditations/2/2.9.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/2/2.9.ogg",
-          model: "/3d/astMitBlatt.glb",
-          pause: 10,
-        },
-        {
-          id: 12,
-          type: 2,
-          text: "Object Meditations/2/2.10.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/2/2.10.ogg",
-          model: "/3d/astMitBlatt.glb",
-          pause: 10,
-        },
-        {
-          id: 13,
-          type: 2,
-          text: "Object Meditations/2/2.11.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/2/2.11.ogg",
-          model: "/3d/astMitBlatt.glb",
-          pause: 10,
-        },
-        {
-          id: 14,
-          type: 3,
-          text: "Abschluss 2.1.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 2.1.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 15,
-          type: 3,
-          text: "Abschluss 1.2.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.2.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 16,
-          type: 3,
-          text: "Abschluss 1.3.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.3.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 17,
-          type: 3,
-          text: "Abschluss 1.4.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.4.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 18,
-          type: 3,
-          text: "Abschluss 2.5.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 2.5.ogg",
-          model: "",
-          pause: 10,
-        },
-      ],
-      // ---------------------------------
-      // 3. Lupenübung Statue (ca. 9 Minuten)
-      // ---------------------------------
-      [
-        {
-          id: 0,
-          type: 0,
-          text: "Einleitung 1.1.ogg",
-          audio: "/MindfulnessExercises/Intros/Einleitung 1.1.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 1,
-          type: 0,
-          text: "Einleitung 2.1.ogg",
-          audio: "/MindfulnessExercises/Intros/Einleitung 2.1.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 2,
-          type: 1,
-          text: "Einleitung 2.4.ogg",
-          audio: "/MindfulnessExercises/Intros/Einleitung 2.4.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 3,
-          type: 2,
-          text: "Object Meditations/3/3.1.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/3/3.1.ogg",
-          model: "/3d/InteractableStatue.glb",
-          pause: 10,
-        },
-        {
-          id: 4,
-          type: 2,
-          text: "Object Meditations/3/3.2.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/3/3.2.ogg",
-          model: "/3d/InteractableStatue.glb",
-          pause: 10,
-        },
-        {
-          id: 5,
-          type: 2,
-          text: "Object Meditations/3/3.3.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/3/3.3.ogg",
-          model: "/3d/InteractableStatue.glb",
-          pause: 10,
-        },
-        {
-          id: 6,
-          type: 2,
-          text: "Object Meditations/3/3.4.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/3/3.4.ogg",
-          model: "/3d/InteractableStatue.glb",
-          pause: 10,
-        },
-        {
-          id: 7,
-          type: 2,
-          text: "Object Meditations/3/3.5.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/3/3.5.ogg",
-          model: "/3d/InteractableStatue.glb",
-          pause: 10,
-        },
-        {
-          id: 8,
-          type: 2,
-          text: "Object Meditations/3/3.6.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/3/3.6.ogg",
-          model: "/3d/InteractableStatue.glb",
-          pause: 10,
-        },
-        {
-          id: 9,
-          type: 2,
-          text: "Object Meditations/3/3.7.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/3/3.7.ogg",
-          model: "/3d/InteractableStatue.glb",
-          pause: 10,
-        },
-        {
-          id: 10,
-          type: 2,
-          text: "Object Meditations/3/3.8.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/3/3.8.ogg",
-          model: "/3d/InteractableStatue.glb",
-          pause: 10,
-        },
-        {
-          id: 11,
-          type: 2,
-          text: "Object Meditations/3/3.9.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/3/3.9.ogg",
-          model: "/3d/InteractableStatue.glb",
-          pause: 10,
-        },
-        {
-          id: 14,
-          type: 3,
-          text: "Abschluss 1.1.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.1.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 16,
-          type: 3,
-          text: "Abschluss 1.3.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.3.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 17,
-          type: 3,
-          text: "Abschluss 1.4.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.4.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 18,
-          type: 3,
-          text: "Abschluss 1.5.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.5.ogg",
-          model: "",
-          pause: 10,
-        },
-      ],
-      // ---------------------------------
-      // 4. Telefonübung Stein (ca. 6 Minuten)
-      // ---------------------------------
-      [
-        {
-          id: 0,
-          type: 0,
-          text: "Einleitung 1.1.ogg",
-          audio: "/MindfulnessExercises/Intros/Einleitung 1.1.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 1,
-          type: 0,
-          text: "Einleitung 3.1.ogg",
-          audio: "/MindfulnessExercises/Intros/Einleitung 3.1.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 2,
-          type: 0,
-          text: "Einleitung 2.2.ogg",
-          audio: "/MindfulnessExercises/Intros/Einleitung 2.2.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 3,
-          type: 2,
-          text: "Object Meditations/4/4.4.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/4/4.4.ogg",
-          model: "/3d/Stone2023.glb",
-          pause: 10,
-        },
-        {
-          id: 4,
-          type: 2,
-          text: "Object Meditations/4/4.5.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/4/4.5.ogg",
-          model: "/3d/Stone2023.glb",
-          pause: 10,
-        },
-        {
-          id: 5,
-          type: 2,
-          text: "Object Meditations/4/4.5a.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/4/4.5a.ogg",
-          model: "/3d/Stone2023.glb",
-          pause: 10,
-        },
-        {
-          id: 6,
-          type: 2,
-          text: "Object Meditations/4/4.6.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/4/4.6.ogg",
-          model: "/3d/Stone2023.glb",
-          pause: 10,
-        },
-        {
-          id: 7,
-          type: 2,
-          text: "Object Meditations/4/4.7.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/4/4.7.ogg",
-          model: "/3d/Stone2023.glb",
-          pause: 10,
-        },
-        {
-          id: 8,
-          type: 2,
-          text: "Object Meditations/4/4.8.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/4/4.8.ogg",
-          model: "/3d/Stone2023.glb",
-          pause: 10,
-        },
-        {
-          id: 9,
-          type: 2,
-          text: "Object Meditations/4/4.9.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/4/4.9.ogg",
-          model: "/3d/Stone2023.glb",
-          pause: 10,
-        },
-        {
-          id: 10,
-          type: 2,
-          text: "Object Meditations/4/4.10.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/4/4.10.ogg",
-          model: "/3d/Stone2023.glb",
-          pause: 10,
-        },
-        {
-          id: 11,
-          type: 2,
-          text: "Object Meditations/4/4.11.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/4/4.11.ogg",
-          model: "/3d/Stone2023.glb",
-          pause: 10,
-        },
-        {
-          id: 12,
-          type: 2,
-          text: "Object Meditations/4/4.12.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/4/4.12.ogg",
-          model: "/3d/Stone2023.glb",
-          pause: 10,
-        },
-        {
-          id: 13,
-          type: 3,
-          text: "Abschluss 1.1.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.1.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 14,
-          type: 3,
-          text: "Abschluss 1.3.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.3.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 15,
-          type: 3,
-          text: "Abschluss 1.4.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.4.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 16,
-          type: 3,
-          text: "Abschluss 1.5.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.5.ogg",
-          model: "",
-          pause: 10,
-        },
-      ],
-      //-----------------------------------
-      // 5. Telefonübung Stock (ca. 6 Minuten)
-      //-----------------------------------
-      [
-        {
-          id: 0,
-          type: 0,
-          text: "Einleitung 1.1.ogg",
-          audio: "/MindfulnessExercises/Intros/Einleitung 1.1.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 1,
-          type: 0,
-          text: "Einleitung 3.1.ogg",
-          audio: "/MindfulnessExercises/Intros/Einleitung 3.1.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 2,
-          type: 0,
-          text: "Einleitung 2.2.ogg",
-          audio: "/MindfulnessExercises/Intros/Einleitung 2.2.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 3,
-          type: 2,
-          text: "Object Meditations/5/5.4.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/5/5.4.ogg",
-          model: "/3d/astMitBlatt.glb",
-          pause: 10,
-        },
-        {
-          id: 4,
-          type: 2,
-          text: "Object Meditations/5/5.5.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/5/5.5.ogg",
-          model: "/3d/astMitBlatt.glb",
-          pause: 10,
-        },
-        {
-          id: 5,
-          type: 2,
-          text: "Object Meditations/5/5.5a.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/5/5.5a.ogg",
-          model: "/3d/astMitBlatt.glb",
-          pause: 10,
-        },
-        {
-          id: 6,
-          type: 2,
-          text: "Object Meditations/5/5.6.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/5/5.6.ogg",
-          model: "/3d/astMitBlatt.glb",
-          pause: 10,
-        },
-        {
-          id: 7,
-          type: 2,
-          text: "Object Meditations/5/5.7.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/5/5.7.ogg",
-          model: "/3d/astMitBlatt.glb",
-          pause: 10,
-        },
-        {
-          id: 8,
-          type: 2,
-          text: "Object Meditations/5/5.8.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/5/5.8.ogg",
-          model: "/3d/astMitBlatt.glb",
-          pause: 10,
-        },
-        {
-          id: 9,
-          type: 2,
-          text: "Object Meditations/5/5.9.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/5/5.9.ogg",
-          model: "/3d/astMitBlatt.glb",
-          pause: 10,
-        },
-        {
-          id: 10,
-          type: 2,
-          text: "Object Meditations/5/5.10.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/5/5.10.ogg",
-          model: "/3d/astMitBlatt.glb",
-          pause: 10,
-        },
-        {
-          id: 11,
-          type: 2,
-          text: "Object Meditations/5/5.11.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/5/5.11.ogg",
-          model: "/3d/astMitBlatt.glb",
-          pause: 10,
-        },
-        {
-          id: 12,
-          type: 2,
-          text: "Object Meditations/5/5.12.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/5/5.12.ogg",
-          model: "/3d/astMitBlatt.glb",
-          pause: 10,
-        },
-        {
-          id: 13,
-          type: 3,
-          text: "Abschluss 1.1.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.1.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 14,
-          type: 3,
-          text: "Abschluss 1.3.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.3.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 15,
-          type: 3,
-          text: "Abschluss 1.4.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.4.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 16,
-          type: 3,
-          text: "Abschluss 1.5.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.5.ogg",
-          model: "",
-          pause: 10,
-        },
-      ],
-      //-----------------------------------
-      // 6. Telefonübung Statue (ca. 7 Minuten)
-      //-----------------------------------
-      [
-        {
-          id: 0,
-          type: 0,
-          text: "Einleitung 1.1.ogg",
-          audio: "/MindfulnessExercises/Intros/Einleitung 1.1.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 1,
-          type: 0,
-          text: "Einleitung 3.1.ogg",
-          audio: "/MindfulnessExercises/Intros/Einleitung 3.1.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 2,
-          type: 0,
-          text: "Einleitung 2.2.ogg",
-          audio: "/MindfulnessExercises/Intros/Einleitung 2.2.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 3,
-          type: 2,
-          text: "Object Meditations/6/6.4.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/6/6.4.ogg",
-          model: "/3d/InteractableStatue.glb",
-          pause: 10,
-        },
-        {
-          id: 4,
-          type: 2,
-          text: "Object Meditations/6/6.5.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/6/6.5.ogg",
-          model: "/3d/InteractableStatue.glb",
-          pause: 10,
-        },
-        {
-          id: 5,
-          type: 2,
-          text: "Object Meditations/6/6.5a.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/6/6.5a.ogg",
-          model: "/3d/InteractableStatue.glb",
-          pause: 10,
-        },
-        {
-          id: 6,
-          type: 2,
-          text: "Object Meditations/6/6.6.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/6/6.6.ogg",
-          model: "/3d/InteractableStatue.glb",
-          pause: 10,
-        },
-        {
-          id: 7,
-          type: 2,
-          text: "Object Meditations/6/6.7.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/6/6.7.ogg",
-          model: "/3d/InteractableStatue.glb",
-          pause: 10,
-        },
-        {
-          id: 8,
-          type: 2,
-          text: "Object Meditations/6/6.8.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/6/6.8.ogg",
-          model: "/3d/InteractableStatue.glb",
-          pause: 10,
-        },
-        {
-          id: 9,
-          type: 2,
-          text: "Object Meditations/6/6.9.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/6/6.9.ogg",
-          model: "/3d/InteractableStatue.glb",
-          pause: 10,
-        },
-        {
-          id: 10,
-          type: 2,
-          text: "Object Meditations/6/6.10.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/6/6.10.ogg",
-          model: "/3d/InteractableStatue.glb",
-          pause: 10,
-        },
-        {
-          id: 11,
-          type: 2,
-          text: "Object Meditations/6/6.11.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/6/6.11.ogg",
-          model: "/3d/InteractableStatue.glb",
-          pause: 10,
-        },
-        {
-          id: 12,
-          type: 2,
-          text: "Object Meditations/6/6.12.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/6/6.12.ogg",
-          model: "/3d/InteractableStatue.glb",
-          pause: 10,
-        },
-        {
-          id: 13,
-          type: 3,
-          text: "Abschluss 1.1.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.1.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 14,
-          type: 3,
-          text: "Abschluss 1.3.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.3.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 15,
-          type: 3,
-          text: "Abschluss 1.4.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.4.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 16,
-          type: 3,
-          text: "Abschluss 1.5.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.5.ogg",
-          model: "",
-          pause: 10,
-        },
-      ],
-      //-----------------------------------
-      // 7. Imaginationsübung Stein (ca. 7 Minuten)
-      //-----------------------------------
-      [
-        {
-          id: 0,
-          type: 0,
-          text: "Einleitung 1.1.ogg",
-          audio: "/MindfulnessExercises/Intros/Einleitung 1.1.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 1,
-          type: 0,
-          text: "Einleitung 4.1.ogg",
-          audio: "/MindfulnessExercises/Intros/Einleitung 4.1.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 2,
-          type: 0,
-          text: "Einleitung 2.2.ogg",
-          audio: "/MindfulnessExercises/Intros/Einleitung 2.2.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 3,
-          type: 2,
-          text: "Object Meditations/7/7.4.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/7/7.4.ogg",
-          model: "/3d/Stone2023.glb",
-          pause: 10,
-        },
-        {
-          id: 4,
-          type: 2,
-          text: "Object Meditations/7/7.5.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/7/7.5.ogg",
-          model: "/3d/Stone2023.glb",
-          pause: 10,
-        },
-        {
-          id: 5,
-          type: 2,
-          text: "Object Meditations/7/7.6.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/7/7.6.ogg",
-          model: "/3d/Stone2023.glb",
-          pause: 10,
-        },
-        {
-          id: 6,
-          type: 2,
-          text: "Object Meditations/7/7.7.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/7/7.7.ogg",
-          model: "/3d/Stone2023.glb",
-          pause: 10,
-        },
-        {
-          id: 7,
-          type: 2,
-          text: "Object Meditations/7/7.8.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/7/7.8.ogg",
-          model: "/3d/Stone2023.glb",
-          pause: 10,
-        },
-        {
-          id: 8,
-          type: 2,
-          text: "Object Meditations/7/7.9.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/7/7.9.ogg",
-          model: "/3d/Stone2023.glb",
-          pause: 10,
-        },
-        {
-          id: 9,
-          type: 2,
-          text: "Object Meditations/7/7.10.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/7/7.10.ogg",
-          model: "/3d/Stone2023.glb",
-          pause: 10,
-        },
-        {
-          id: 10,
-          type: 2,
-          text: "Object Meditations/7/7.11.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/7/7.11.ogg",
-          model: "/3d/Stone2023.glb",
-          pause: 10,
-        },
-        {
-          id: 11,
-          type: 2,
-          text: "Object Meditations/7/7.12.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/7/7.12.ogg",
-          model: "/3d/Stone2023.glb",
-          pause: 10,
-        },
-        {
-          id: 12,
-          type: 2,
-          text: "Object Meditations/7/7.13.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/7/7.13.ogg",
-          model: "/3d/Stone2023.glb",
-          pause: 10,
-        },
-        {
-          id: 13,
-          type: 3,
-          text: "Abschluss 1.1.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.1.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 14,
-          type: 3,
-          text: "Abschluss 1.3.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.3.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 15,
-          type: 3,
-          text: "Abschluss 1.4.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.4.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 16,
-          type: 3,
-          text: "Abschluss 1.5.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.5.ogg",
-          model: "",
-          pause: 10,
-        },
-      ],
-      //-----------------------------------
-      // 8. Imaginationsübung Stock (ca. 7 Minuten)
-      //-----------------------------------
-      [
-        {
-          id: 0,
-          type: 0,
-          text: "Einleitung 1.1.ogg",
-          audio: "/MindfulnessExercises/Intros/Einleitung 1.1.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 1,
-          type: 0,
-          text: "Einleitung 4.1.ogg",
-          audio: "/MindfulnessExercises/Intros/Einleitung 4.1.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 2,
-          type: 0,
-          text: "Einleitung 2.2.ogg",
-          audio: "/MindfulnessExercises/Intros/Einleitung 2.2.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 3,
-          type: 2,
-          text: "Object Meditations/8/8.4.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/8/8.4.ogg",
-          model: "/3d/astMitBlatt.glb",
-          pause: 10,
-        },
-        {
-          id: 4,
-          type: 2,
-          text: "Object Meditations/8/8.5.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/8/8.5.ogg",
-          model: "/3d/astMitBlatt.glb",
-          pause: 10,
-        },
-        {
-          id: 5,
-          type: 2,
-          text: "Object Meditations/8/8.6.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/8/8.6.ogg",
-          model: "/3d/astMitBlatt.glb",
-          pause: 10,
-        },
-        {
-          id: 6,
-          type: 2,
-          text: "Object Meditations/8/8.7.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/8/8.7.ogg",
-          model: "/3d/astMitBlatt.glb",
-          pause: 10,
-        },
-        {
-          id: 7,
-          type: 2,
-          text: "Object Meditations/8/8.8.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/8/8.8.ogg",
-          model: "/3d/astMitBlatt.glb",
-          pause: 10,
-        },
-        {
-          id: 8,
-          type: 2,
-          text: "Object Meditations/8/8.9.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/8/8.9.ogg",
-          model: "/3d/astMitBlatt.glb",
-          pause: 10,
-        },
-        {
-          id: 9,
-          type: 2,
-          text: "Object Meditations/8/8.10.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/8/8.10.ogg",
-          model: "/3d/astMitBlatt.glb",
-          pause: 10,
-        },
-        {
-          id: 10,
-          type: 2,
-          text: "Object Meditations/8/8.11.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/8/8.11.ogg",
-          model: "/3d/astMitBlatt.glb",
-          pause: 10,
-        },
-        {
-          id: 11,
-          type: 2,
-          text: "Object Meditations/8/8.12.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/8/8.12.ogg",
-          model: "/3d/astMitBlatt.glb",
-          pause: 10,
-        },
-        {
-          id: 12,
-          type: 2,
-          text: "Object Meditations/8/8.13.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/8/8.13.ogg",
-          model: "/3d/astMitBlatt.glb",
-          pause: 10,
-        },
-        {
-          id: 13,
-          type: 2,
-          text: "Object Meditations/8/8.14.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/8/8.14.ogg",
-          model: "/3d/astMitBlatt.glb",
-          pause: 10,
-        },
-        {
-          id: 14,
-          type: 2,
-          text: "Object Meditations/8/8.15.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/8/8.15.ogg",
-          model: "/3d/astMitBlatt.glb",
-          pause: 10,
-        },
-        {
-          id: 15,
-          type: 3,
-          text: "Abschluss 1.1.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.1.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 16,
-          type: 3,
-          text: "Abschluss 1.3.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.3.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 17,
-          type: 3,
-          text: "Abschluss 1.4.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.4.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 18,
-          type: 3,
-          text: "Abschluss 1.5.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.5.ogg",
-          model: "",
-          pause: 10,
-        },
-      ],
-      //-----------------------------------
-      // 9. Imaginationsübung Statue (ca. 7 Minuten)
-      //-----------------------------------
-      [
-        {
-          id: 0,
-          type: 0,
-          text: "Einleitung 1.1.ogg",
-          audio: "/MindfulnessExercises/Intros/Einleitung 1.1.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 1,
-          type: 0,
-          text: "Einleitung 4.1.ogg",
-          audio: "/MindfulnessExercises/Intros/Einleitung 4.1.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 2,
-          type: 0,
-          text: "Einleitung 2.2.ogg",
-          audio: "/MindfulnessExercises/Intros/Einleitung 2.2.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 3,
-          type: 2,
-          text: "Object Meditations/9/9.4.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/9/9.4.ogg",
-          model: "/3d/InteractableStatue.glb",
-          pause: 10,
-        },
-        {
-          id: 4,
-          type: 2,
-          text: "Object Meditations/9/9.5.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/9/9.5.ogg",
-          model: "/3d/InteractableStatue.glb",
-          pause: 10,
-        },
-        {
-          id: 5,
-          type: 2,
-          text: "Object Meditations/9/9.6.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/9/9.6.ogg",
-          model: "/3d/InteractableStatue.glb",
-          pause: 10,
-        },
-        {
-          id: 6,
-          type: 2,
-          text: "Object Meditations/9/9.7.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/9/9.7.ogg",
-          model: "/3d/InteractableStatue.glb",
-          pause: 10,
-        },
-        {
-          id: 7,
-          type: 2,
-          text: "Object Meditations/9/9.8.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/9/9.8.ogg",
-          model: "/3d/InteractableStatue.glb",
-          pause: 10,
-        },
-        {
-          id: 8,
-          type: 2,
-          text: "Object Meditations/9/9.9.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/9/9.9.ogg",
-          model: "/3d/InteractableStatue.glb",
-          pause: 10,
-        },
-        {
-          id: 9,
-          type: 2,
-          text: "Object Meditations/9/9.10.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/9/9.10.ogg",
-          model: "/3d/InteractableStatue.glb",
-          pause: 10,
-        },
-        {
-          id: 10,
-          type: 2,
-          text: "Object Meditations/9/9.11.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/9/9.11.ogg",
-          model: "/3d/InteractableStatue.glb",
-          pause: 10,
-        },
-        {
-          id: 11,
-          type: 2,
-          text: "Object Meditations/9/9.12.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/9/9.12.ogg",
-          model: "/3d/InteractableStatue.glb",
-          pause: 10,
-        },
-        {
-          id: 12,
-          type: 2,
-          text: "Object Meditations/9/9.13.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/9/9.13.ogg",
-          model: "/3d/InteractableStatue.glb",
-          pause: 10,
-        },
-        {
-          id: 13,
-          type: 2,
-          text: "Object Meditations/9/9.14.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/9/9.14.ogg",
-          model: "/3d/InteractableStatue.glb",
-          pause: 10,
-        },
-        {
-          id: 14,
-          type: 2,
-          text: "Object Meditations/9/9.15.ogg",
-          audio: "/MindfulnessExercises/Meditations/Object Meditations/9/9.15.ogg",
-          model: "/3d/InteractableStatue.glb",
-          pause: 10,
-        },
-        {
-          id: 15,
-          type: 3,
-          text: "Abschluss 1.1.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.1.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 16,
-          type: 3,
-          text: "Abschluss 1.3.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.3.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 17,
-          type: 3,
-          text: "Abschluss 1.4.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.4.ogg",
-          model: "",
-          pause: 10,
-        },
-        {
-          id: 18,
-          type: 3,
-          text: "Abschluss 1.5.ogg",
-          audio: "/MindfulnessExercises/Outtros/Abschluss 1.5.ogg",
-          model: "",
-          pause: 10,
-        },
-      ],
-    ],
+    config_index: 0,
+    task_data: data.getMeditationDatasets(),
   }),
-  props: ["setProgress", "user_config", "onBack", "onNext"],
+  props: ["setProgress", "onBack", "updateView", "onNext", "data"],
   components: { MeditationPlayer },
-  mounted: function () {
-    //alert(this.user_config.session_typeAlternate);
+  mounted: async function () {
+    //console.log("USER CONFIG FOR WEB/VR:\n"+this.user_config)
+
+    let parsedData = await getNextAvailableProcedures()
+    parsedData = parsedData.data[0]
+
+    //console.log("SESSIONSTEPMEDI.mounted DATA \n" + JSON.stringify(parsedData))
+
+    //console.log("contentPackageResourceBundle: " + parsedData.units[parsedData.units.length-1].contentPackageResourceBundle)
+    //console.log("packageParameters: " + parsedData.units[parsedData.units.length-1].packageParameters)
+
+
+
+    /*  Environment
+     *  EnvironmentSeeWhatYouDontSee
+     *  EnvironmentShort
+     *  Magnify
+     *  Phone
+     *  Imagination
+     *  AttentionTraining
+     *  BodyScan
+     *  Freestyle
+     */
+    var useMethod = 0 
+    parsedData.units[parsedData.units.length-1].packageParameters.forEach(element => {
+      switch (element.key.value) {
+        case "Magnify":
+          useMethod = 0
+          break;
+        case "Phone":
+          useMethod = 3
+          break;
+        case "Imagination":
+          useMethod = 6
+          break;
+        
+        case "BodyScan":
+          useMethod = 9
+          break;
+        
+        default:
+          break;
+      }
+    });
+
+    
+    var useObject = 0
+    if (useMethod != 9) { // NO OBJECTS ON BODY SCAN
+
+      /*  None
+      *  Stone
+      *  Stick
+      *  Statue
+      */
+      parsedData.units[parsedData.units.length-1].packageParameters.forEach(element => {
+        switch (element.key.value) {
+          //case "None": // MOSTLY BODY SCAN
+          //  useObject = 0
+          //  break;
+          case "Stone":
+            useObject = 0
+            break;
+          case "Stick":
+            useObject = 1
+            break;
+          case "Statue":
+            useObject = 2
+            break;
+        
+          default:
+            break;
+        }
+
+      });
+    }
+
+    this.config_index = (useMethod + useObject)
+
+    console.log("-- > CONFIG-index: " + this.config_index)
+
   },
-  methods: {},
+  methods: {
+    async sendResults() {
+
+/*
+      const sampledata = {"state": "COMPLETED"};
+
+      var availableProcedures = await getNextAvailableProcedures() 
+      console.log("AVAILABLE PROC:\n"+JSON.stringify(availableProcedures))
+
+      var procedure = availableProcedures.data[0]
+      await api.patchProcedures(getUser(), procedure.id, sampledata)
+
+      //this.routeBack("/dashboard1");
+*/
+
+
+      var unitID = 0;
+      var procedureOd = 0;
+
+      // fetch running procedure 
+      const result2 = await api.getRunningProcedures(this.user);
+      if (result2.data) {
+        unitID = result2.data.units[result2.data.units.length-1].id
+        procedureOd = result2.data.id
+      }
+
+      // patch procedure complete
+      const sampledata = {"state": "COMPLETED"};
+      await api.patchActivityUnitAlternate(getUser(), procedureOd, unitID, sampledata)
+
+
+
+
+
+
+
+
+      
+      var item = await getNextAvailableProcedures();
+
+      if (item.data[0].nextActivityUnit) {
+        
+        this.$router.push({
+          name: /*item.course_type == 3 ? "Dashboard3a" :*/ "Dashboard2a",
+          //params: { data: JSON.stringify(item.data[0]) },
+        });
+
+        this.updateView()
+
+      } else {
+        this.routeBack('/Dashboard1')
+      }
+
+
+    },
+    routeBack: function (value) {
+      this.$router.push(value);
+    },
+
+  },
 };
 </script>
 

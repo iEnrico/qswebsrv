@@ -10,10 +10,6 @@
 </template>
 
 <script>
-//import auth from "@/scripts/auth/auth";
-//import api from "@/scripts/api/api";
-//import { mergeProps } from "vue";
-
 export default {
   name: "NavBarMenu",
   data: () => ({}),

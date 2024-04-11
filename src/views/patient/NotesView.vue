@@ -1,5 +1,6 @@
 <template>
-  <v-card class="mx-6 mt-6 rounded-lg" variant="elevated">
+  <NotesViewHowTo v-if="!notes_info_seen" :action="action"/>
+  <v-card  v-if="notes_info_seen" class="mx-6 mt-6 rounded-lg" variant="elevated">
     <v-row class="ma-4" style="align-items: center; justify-items: center">
       <v-card-title class="ma-0 pa-0 mr-2">Tagebuch</v-card-title>
       <v-btn
@@ -8,7 +9,7 @@
         size="medium"
         icon="mdi-information-outline"
         color="#28B9AF"
-        to="/dashboard3pre"
+        @click="showIntro()"
       ></v-btn>
       <v-spacer></v-spacer>
       <v-card class="rounded-lg" variant="text" min-width="400">
@@ -20,21 +21,17 @@
             variant="solo"
             label="Eintrag suchen..."
             append-inner-icon="mdi-magnify"
+            clearable
             single-line
             hide-details
-            @click:append-inner="onSearch"
           ></v-text-field>
         </v-card-text>
       </v-card>
+      <!--
       <v-btn  variant="elevated" style="background-color: #28B9AF;" @click="route('/dashboard3a')" class="mt-0 mr-0">
         <span class="text-white">+ Neuer Eintrag</span>
       </v-btn>
-      <!-- 
-        
-        to="/dashboard3a" 
-        
-        block variant="elevated" color="#28B9AF"
-        -->
+      -->
     </v-row>
     <v-divider
       class="mb-0 border-opacity-100"
@@ -46,30 +43,36 @@
 </template>
 
 <script>
+import NotesViewHowTo from "@/components/NotesViewHowTo.vue";
 import NotesHistory from "@/components/notesHistory.vue";
 export default {
   name: "NotesView",
   data: () => ({
+    notes_info_seen: false,
     searchText: "",
-    loaded: false,
-    loading: false,
   }),
   props: {},
   components: {
     NotesHistory,
+    NotesViewHowTo
   },
-  mounted: function () {},
+  mounted: function () {
+    this.notes_info_seen = this.hasSeenIntro()
+  },
   methods: {
     route: function (route) {
       this.$router.push(route);
     },
-    onSearch() {
-      this.loading = true;
-      setTimeout(() => {
-        this.loading = false;
-        this.loaded = true;
-      }, 2000);
+    hasSeenIntro() {
+      return window.sessionStorage.getItem('notes_history_seen') != null;
     },
+    action() {
+      window.sessionStorage.setItem("notes_history_seen", true);
+      this.notes_info_seen = true;
+    },
+    showIntro() {
+      this.notes_info_seen = false;
+    }
   },
 };
 </script>

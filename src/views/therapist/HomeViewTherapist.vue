@@ -15,7 +15,7 @@
           <v-card-title>Therapist Nachrichten</v-card-title>
         </v-card>
       </v-col>
-      <v-col :cols="12" style="height: 80% overflow: hidden;">
+      <v-col :cols="12" style="height: 80%; overflow: hidden;">
         <CalendarView />
       </v-col>
     </v-row>

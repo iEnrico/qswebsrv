@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!hasSeenVideo()">
+  <div v-if="!edu_video_seen">
       <v-row
       class="pa-0 ma-0"
       style="background-color: transparent; justify-content: center; align-items: center"
@@ -15,26 +15,33 @@
           </v-btn>
       </v-row>
   </div>
-  <v-row v-if="hasSeenVideo()" class="pa-0 ma-0 fill-height" align-content="center" justify="center">
+  <v-row v-if="edu_video_seen" class="pa-0 ma-0 fill-height" align-content="center" justify="center">
     <!-- LEFT BIG -->
     <v-col :cols="8" class="pa-0 ma-0 fill-height">
       <v-card class="mx-4 mt-0 rounded-lg" variant="elevated">
         <v-img
-          :src="data.image ? data.image : require('@/assets/placeholder.png')"
-          height="320px"
+          :src="getSessionImage()" 
+          height="25em"
           cover
         ></v-img>
-        <v-row class="pa-4 ma-0 mb-4" align-content="start" justify="start">
-          <v-icon class="pa-2" color="grey" :icon="getCourseIcon(data.course_type)"></v-icon>
+        <v-row class="pa-4 ma-0 mb-0" align-content="start" justify="start">
+          <v-icon class="pa-2" color="grey" :icon="getCourseIcon()"></v-icon>
           <v-card-text class="pa-0 mt-0 mb-0 ml-2 mr-0">
             <span class="text-grey">
-              {{getCourseInfo(data.course_type)}}
+              {{ getCourseInfo() }}
             </span>
           </v-card-text>
           <!--<v-icon class="pa-8" color="grey" :icon="getCourseIcon(data.course_type)"></v-icon>-->
         </v-row>
         <v-card-title> Beschreibung </v-card-title>
-        <v-card-text class="pa-0 mt-0 mb-4 ml-4 mr-4">{{ data.description }}</v-card-text>
+        <v-card-text class="pa-0 mt-0 mb-8 ml-4 mr-4">
+          <span v-html="getDescriptionByLanguage()"></span>
+        </v-card-text>
+        <!--
+
+          //{{ data.description }}
+
+
         <v-row class="pa-0 ma-0">
           <v-col :cols="6" class="pl-4 pa-0 ma-0 fill-height">
             Voraussetzung
@@ -50,7 +57,7 @@
                   <v-icon icon="mdi-circle-small"></v-icon>
                 </v-list-item>
                 <v-list-item class="ma-0" style="min-height: 32px; padding: 0px 0px">
-                  <v-list-item-subtitle v-text="item.text"></v-list-item-subtitle>
+                  <v-list-item-subtitle v-text="item"></v-list-item-subtitle>
                 </v-list-item>
               </v-row>
             </v-list-item>
@@ -60,7 +67,7 @@
             Enthaltene Einheiten
             <v-list style="overflow-y: auto">
             <v-list-item
-              v-for="(item, i) in data.requirements"
+              v-for="(item, i) in subTasks"
               :key="i"
               class="pa-0 ma-0"
               style="min-height: 32px; padding: 0px 0px"
@@ -70,191 +77,306 @@
                   <v-icon icon="mdi-circle-small"></v-icon>
                 </v-list-item>
                 <v-list-item class="ma-0" style="min-height: 32px; padding: 0px 0px">
-                  <v-list-item-subtitle v-text="item.text"></v-list-item-subtitle>
+                  <v-list-item-subtitle >{{ item.type }}, {{ item.available }}, {{ item.name }}, {{ item.unitOrder }}</v-list-item-subtitle>
                 </v-list-item>
               </v-row>
             </v-list-item>
           </v-list>
           </v-col>
         </v-row>
-        <v-row class="pa-0 mx-4 mt-4 mb-4" align-content="center">
-          <v-btn  variant="elevated" color="#28B9AF" @click="onNext()"
-            ><span class="text-white">
-              {{ "Zur Konfiguration" }}
-            </span></v-btn
-          >
+        <v-row v-if="nextTask" class="pa-0 mx-4 mt-4 mb-4" align-content="center">
+          Next Task: {{nextTask.type}} , {{ nextTask.name }}
         </v-row>
+        -->
+        
+        <!-- -->
+        <div v-if="getUnitConfigInfo().length > 1">
+          <v-row v-for="(item, i) in getUnitConfigInfo()" :key="i" class="pa-0 mx-4 mt-1 mb-1" align-content="center">
+            <span :class="i>0?'text-xs':''">{{ item }}</span>
+          </v-row>
+        </div>
+        
+        
+        <v-row class="pa-0 mx-4 mt-4 mb-4" align-content="center">
+          <v-spacer></v-spacer>
+          <center>
+            <v-progress-circular
+              class="mx-8 my-8"
+              v-if="loading"
+              indeterminate
+              color="#28B9AF"
+            />
+          </center>
+          <v-btn v-if="!loading && nextTask" variant="elevated" color="#28B9AF" @click="onNextStep()">
+            <span class="text-white">
+              {{ 
+                nextTask.type == 'QUESTIONNAIRE' || nextTask.type == 'AUDIO_DIARY'
+                  ? "Aufgabe starten" 
+                  : getUnitState() == "RUNNING" ? "Aufgabe starten" : "Zur Konfiguration"
+              }}
+            </span>
+          </v-btn>
+        </v-row>
+        
       </v-card>
     </v-col>
-    <!-- RIGHT SMALL 
-    <v-col :cols="4" class="pa-0 ma-0 fill-height">
-      <v-card class="mx-4 mt-0 rounded-lg" variant="elevated">
-        <v-row class="pa-0 ma-0">
-          <v-col :cols="6" class="pb-0"> Typ </v-col>
-          <v-col :cols="6" class="pb-0"> Dauer </v-col>
-        </v-row>
-        <v-row class="pa-0 ma-0">
-          <v-col class="mt-0 pt-0" :cols="6">
-            <font color="#888888" size="2"> {{getCourseTypeTitle(data.course_type)}} </font>
-          </v-col>
-          <v-col class="mt-0 pt-0" :cols="6">
-            <font color="#888888" size="2"> ca. {{data.duration}} </font>
-          </v-col>
-        </v-row>
-        <v-row class="pa-0 ma-0">
-          <v-col :cols="6" class="pb-0"> Voraussetzungen </v-col>
-        </v-row>
-        <v-row class="pa-0 ma-0">
-          <v-list style="overflow-y: auto">
-            <v-list-item
-              v-for="(item, i) in data.requirements"
-              :key="i"
-              class="pa-0 ma-0"
-              style="min-height: 32px; padding: 0px 0px"
-            >
-              <v-row no-gutters align="center" justify="start" class="ml-4">
-                <v-list-item class="ma-0" style="min-height: 32px; padding: 0px 0px">
-                  <v-icon icon="mdi-circle-small"></v-icon>
-                </v-list-item>
-                <v-list-item class="ma-0" style="min-height: 32px; padding: 0px 0px">
-                  <v-list-item-subtitle v-text="item.text"></v-list-item-subtitle>
-                </v-list-item>
-              </v-row>
-            </v-list-item>
-          </v-list>
-        </v-row>
-        <v-row class="pa-0 ma-0">
-          <v-col :cols="6" class="pb-0"> Enthaltene Einheiten </v-col>
-        </v-row>
-        <v-row class="pa-0 ma-0">
-          <v-list style="overflow-y: auto">
-            <v-list-item
-              v-for="(item, i) in data.completed"
-              :key="i"
-              class="pa-0 ma-0"
-              style="min-height: 32px; padding: 0px 0px"
-            >
-              <v-row no-gutters align="start" justify="start" class="ml-4">
-                <v-list-item class="ma-0" style="min-height: 32px; padding: 0px 0px">
-                  <v-icon icon="mdi-circle-small"></v-icon>
-                </v-list-item>
-                <v-list-item class="ma-0" style="min-height: 32px; padding: 0px 0px">
-                  <v-list-item-subtitle v-text="item.type"></v-list-item-subtitle>
-                </v-list-item>
-              </v-row>
-            </v-list-item>
-          </v-list>
-        </v-row>
-        <v-row class="pa-0 mx-4 mt-4 mb-4" align-content="center">
-          <v-btn block variant="elevated" color="#28B9AF" @click="onNext()"
-            ><span class="text-white">
-              {{ "Jetzt Durchführen" }}
-            </span></v-btn
-          >
-        </v-row>
-      </v-card>
-
-      <v-card class="mx-4 mt-4 rounded-lg" variant="elevated">
-        <v-row class="pa-0 ma-0">
-          <v-col :cols="6"> Durchgeführte Kurse </v-col>
-        </v-row>
-        <v-row class="pa-0 ma-0">
-          <v-progress-linear
-            :model-value="50"
-            :max="100"
-            height="5"
-            color="#28B9AF"
-            class="ml-3 mr-3"
-          ></v-progress-linear>
-        </v-row>
-        <v-row class="pa-0 ma-0">
-          <v-card-text class="pa-0 mt-0 mb-4 ml-4 mr-4 text-right" style="color: gray">
-            2 von 4 Kursen
-          </v-card-text>
-        </v-row>
-        <v-row class="pa-0 ma-0">
-          <v-list style="overflow-y: auto">
-            <v-list-item
-              v-for="(item, i) in data.completed"
-              :key="i"
-              class="pa-0 ma-0 pb-4"
-              style="min-height: 32px; padding: 0px 0px"
-            >
-              <v-row class="pa-0 ma-0 ml-4">
-                <font color="#888888" size="2"> 01.01.1960 </font>
-              </v-row>
-              <v-row class="pa-0 ma-0 ml-4"> Objektmeditation Stein </v-row>
-              <v-row class="pa-0 ma-0">
-                <v-btn density="compact" variant="text" color="#28B9AF" @click="onNext()">
-                  {{ "details" }}
-                </v-btn>
-                <v-btn density="compact" variant="text" color="#28B9AF" @click="onNext()">
-                  {{ "wiederholen" }}
-                </v-btn>
-              </v-row>
-            </v-list-item>
-          </v-list>
-        </v-row>
-      </v-card>
-    </v-col>
-    -->
   </v-row>
 </template>
 
 <script>
-import common from "@/scripts/common/common";
+
+import api from "@/scripts/api/api";
+import { 
+  /*getNextTaskActivity, 
+  continueProcedure, 
+  getNextActivity,*/ 
+  //isAllUnitsComplete, 
+  isAllUnitsCompleteSync,
+  getCourseIcon, 
+  getCourseInfo, 
+  getFHIRId,
+  getUser
+} from "@/scripts/procedureEngine";
+
+import { /*getDescriptionText,*/ getDescriptionByLanguage, getTextByLanguage } from '@/scripts/common/utils'
 
 export default {
-  name: "SessionsStep1",
+  name: "SessionsStepInfo",
   inheritAttrs: false,
-  data: () => ({}),
-  props: ["data", "onBack", "onNext"],
+  /*
+  computed: {
+    
+  },
+  watch: {
+    data: async function () {
+      console.log(" - - - - - content changed!!!!")
+      this.nextTask = await this.getContentPackage()
+    },
+  },
+  */
+  data: () => ({
+    loading: false,
+    edu_video_seen: false,
+    //subTasks: [],
+    nextTask: null,
+  }),
+  props: ["data", "updateView", "onBack", "onNext"],
+  /**/
+  watch: {
+    $route(to, from) {
+      console.log("update ---- >  from " + from.name + " to: " + to.name);
+      //console.log("Data changed: " + JSON.stringify(this.data));
+      this.init()
+    },
+  },
   components: { },
-  mounted: function () {
-    //alert("infothis: " + this.data.course_type + " / " + this.hasSeenVideo());
+  mounted: async function () {
+    
+    //console.log("COURSE INFO VIEW CREATED WITH: " + JSON.parse(this.data).id)
+
+    if (!this.access_token) {
+      this.user = JSON.parse(sessionStorage.getItem("user"));
+    }
+
+    this.edu_video_seen = this.hasSeenVideo()
+
+    await this.init()
+
   },
   methods: {
-    getCourseInfo: function (index) {
-      switch (index) {
-        case common.course_type_init:
-          return "Inital";
-        case common.course_type_web:
-          return "Web";
-        case common.course_type_vr:
-          return "VR";
-        case common.course_type_question:
-        case common.course_type_diary:
-          return "Fragebogen";
-        case common.course_type_video:
-          return "Video";
+    getSessionImage() {
+      switch (this.nextTask?.type) {
+        case "WEBSITE":
+        case "VR_DEVICE":
+          switch (this.getContentPackageName()) {
+            case "vr_roleplay_praise":
+              return require('@/assets/thumb_cafe.jpg');
+            case "vr_roleplay_work_colleague":
+              return require('@/assets/thumb_container.jpg');
+            case "vr_roleplay_work_boss":
+              return require('@/assets/thumb_boss.jpg');
+
+            default:
+              return require('@/assets/thumb_meditation.jpg');
+          }
+        case "QUESTIONNAIRE":
+          return require('@/assets/thumb_questionnaire.jpg');
+        case "AUDIO_DIARY":
+          return require('@/assets/thumb_questionnaire.jpg');
+      
+        default:
+          return require('@/assets/placeholder.png');
       }
-      return;
     },
-    getCourseIcon: function (index) {
-      switch (index) {
-        case common.course_type_init:
-          return "mdi-book-settings-outline";
-        case common.course_type_web:
-          return "mdi-web";
-        case common.course_type_vr:
-          return "mdi-safety-goggles";
-        case common.course_type_question:
-        case common.course_type_diary:
-          return "mdi-file-sign";
-        case common.course_type_video:
-          return "mdi-file-video-outline";
+    getTextByLanguage() {
+      return getTextByLanguage(this.nextTask?.translations, this.$i18n)
+    },
+    getDescriptionByLanguage() {
+      return getDescriptionByLanguage(this.nextTask?.translations, this.$i18n)
+    },
+    getUnitState: function () {
+
+      var unit = (isAllUnitsCompleteSync(this.data) && this.data.nextActivityUnit)
+        ? this.data.nextActivityUnit
+        : this.data.activity 
+          ? this.data.activity.units[0]
+          : this.data.units[this.data.units.length-1]
+
+      return unit.state
+
+    },
+    getUnitConfigInfo: function () {
+      
+      var result = ["Ihre Konfiguration:"]
+      
+      var unit = (isAllUnitsCompleteSync(this.data) && this.data.nextActivityUnit)
+        ? this.data.nextActivityUnit
+        : this.data.activity 
+          ? this.data.activity.units[0]
+          : this.data.units[this.data.units.length-1]
+      
+      if (unit) {
+
+        var res1 = unit.contentPackageResourceBundle
+        if (res1) {
+          result.push(getTextByLanguage(res1.translations, this.$i18n))
+        }
+        
+        var res2 = unit.packageParameters
+        if(res2) {
+          res2.forEach(element => {
+            result.push(getTextByLanguage(element.key.translations, this.$i18n))
+          });
+        }
       }
-      return;
+
+      return result
+
+    },
+    init: async function () {
+      this.loading = true;
+      
+      this.nextTask = await this.getContentPackage()
+
+      //console.log( "CONTENT PACKAGE: " + JSON.stringify(this.nextTask) )
+
+      this.loading = false;
+    },
+    getContentPackageName:  function () {
+      var contentPackage = ( isAllUnitsCompleteSync(this.data) && this.data.nextActivityUnit)
+        ? this.data.nextActivityUnit.contentPackage
+        : this.data.activity 
+          ? this.data.activity.units[0].contentPackage
+          : this.data.units[this.data.units.length-1].activityUnit.contentPackage
+      
+      console.log("get content package for: " + contentPackage.name)
+
+      return contentPackage.name
+    },
+    getContentPackage: async function () {
+      return await api.getContentPackageByName(this.user.id, this.getContentPackageName())
+    },
+    async onNextStep() {
+
+      console.log("start procedure and/or unit")
+
+      if (this.nextTask.type == 'WEBSITE' || this.nextTask.type == 'VR_DEVICE') {
+
+        console.log("ITS WEB/VR, create config laters...")
+
+      }
+      else {
+
+        if (isAllUnitsCompleteSync(this.data) && this.data.nextActivityUnit) {
+          console.log("-- next activity") 
+
+          let payload = {
+            "activityUnitId": this.data.nextActivityUnit.id, //2,
+            "contentPackageResourceBundleId": this.nextTask.resourceBundles[0].id, //10,
+            "packageParametersIds": [
+
+            ],
+            "resourceParametersIds": [
+
+            ],
+            "state": "RUNNING"
+          }
+
+          // https://backend.relivr-integration.nuromedia.com/user/active-procedure/active-unit/
+
+          const result = await api.postUnit(
+                getUser(), 
+                payload
+            )
+
+          console.log("RESULT:\n" + result)
+
+          //this.updateView(result)
+
+        } else {
+          if (this.data.activity) {
+            
+            console.log("-- first activity")
+
+            let payload = 
+            {
+              "patient": getFHIRId(), //"18828c88956-c8c7255d-e807-43d0-8d6a-f3a5d8e9cd95",
+              "carePlanUuid": this.data.carePlan.uuid, //"f633c28e-4588-4c20-bd65-ae6d3642be8f",
+              "carePlanUnitId": this.data.id, //5,
+              "fhirProcedure": "0",
+              "units": [
+                {
+                  "activityUnitId": this.data.activity.units[0].id, //4,
+                  "contentPackageResourceBundleId": this.nextTask.resourceBundles[0].id, //8,
+                  "packageParametersIds": [
+                    
+                  ],
+                  "resourceParametersIds": [
+                    
+                  ],
+                  "state": "RUNNING"
+                }
+              ]
+            }
+
+            console.log("PAYLOAD:\n" + payload)
+
+            const result = await api.postProcedures(
+                getUser(), 
+                payload
+            )
+
+            console.log("RESULT:\n" + result)
+
+            //this.updateView(result)
+
+          } else {
+            console.log("-- runnning activity") 
+          
+          }
+        }
+
+      }
+
+      this.onNext()
+    },
+    getCourseInfo() {
+      //console.log("info: " + getCourseInfo(this.nextTask?.type))
+      return this.$i18n.t( ''+getCourseInfo(this.nextTask?.type) );
+    },
+    getCourseIcon() {
+      return getCourseIcon(this.nextTask?.type)
     },
     hasSeenVideo() {
-        return window.sessionStorage.getItem('edu_video_seen') != null;
+      return window.sessionStorage.getItem('edu_video_seen') != null;
     },
     action() {
-        window.sessionStorage.setItem("edu_video_seen", true);
-        this.onNext();
+      window.sessionStorage.setItem("edu_video_seen", true);
+      this.edu_video_seen = true;
     }
   },
 };
+
 </script>
 
 <style></style>

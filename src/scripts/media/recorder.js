@@ -1,5 +1,5 @@
 import Encoder from './encoder'
-import { convertTimeMMSS } from './utils'
+import { convertTimeMMSS } from '@/scripts/common/utils'
 
 export default class {
   constructor (options = {}) {

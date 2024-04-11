@@ -1,23 +1,23 @@
 <template>
+  <InfoDlg ref="user_created" />
   <PickerDialogNewUser :action="createUser"/>
-  <v-container style="min-width: 100%; min-height: 100%" class="mx-0 my-0">
+  <v-container style="min-width: 100%; min-height: 95%" class="mx-0 my-0">
     <v-row no-gutters>
+      
       <v-col cols="12" sm="6">
-        <v-list
-          class="mt-0 pt-0 pa-4"
-          style="height: 550px; overflow-y: auto; background-color: #F6F6F6"
-        >
-          <center style="height: 100%" v-if="!patients">
-            <v-card-subtitle> Sie haben noch keine Patienten hinterlegt. </v-card-subtitle>
+        <v-card class="rounded-lg mx-4" variant="elevated">
+          <center style="height: 100%" v-if="!loadingPatients && patients.length == 0">
+            <v-card-subtitle class="mt-4"> Sie haben noch keine Patienten hinterlegt. </v-card-subtitle>
           </center>
           <center v-if="patients">
-            <v-card-subtitle style="font-size: large;"> Patienten ({{ patients.length }}/{{ nrPatients }})</v-card-subtitle>
+            <v-card-subtitle class="mt-4" style="font-size: large;"> Patienten ({{ patients.length }}/{{ nrPatients }})</v-card-subtitle>
           </center>
-          <v-card class="rounded-lg" variant="text" min-width="400">
+          <v-card v-if="patients" class="rounded-lg" variant="text" >
             <v-card-text>
               <v-text-field
                 v-model="searchTextPatient"
-                :loading="loading"
+                class="ml-4 mr-4"
+                :loading="loadingPatients"
                 density="compact"
                 variant="solo"
                 label="Patient suchen..."
@@ -25,39 +25,52 @@
                 single-line
                 hide-details
                 clearable
-                @click:append-inner="onSearch"
               ></v-text-field>
+              <!-- @click:append-inner="onSearch" -->
             </v-card-text>
           </v-card>
-          <ListItemUser
-            :role="'PATIENT'"
-            :item="patient"
-            :index="i"
-            v-for="(patient, i) in patientsFiltered"
-            :key="i"
-          />
-          <!--
-            doSort(patients, sortmode)
-            -->
-        </v-list>
+          <center>
+            <v-progress-circular
+              class="mx-8 my-8"
+              v-if="loadingPatients"
+              indeterminate
+              color="#28B9AF"
+            />
+          </center>
+          <center style="height: 100%" v-if="!loadingPatients && patientsFiltered.length == 0">
+            <v-card-title> Keine Patienten für "{{ searchTextPatient }}" gefunden. </v-card-title>
+          </center>
+          <v-list
+            v-if="patients"
+            class="mt-0 pt-0 pa-4"
+            style="height: 38em; overflow-y: auto; "
+          >
+            <ListItemUser
+              :role="'PATIENT'"
+              :item="patient"
+              :index="i"
+              v-for="(patient, i) in patientsFiltered"
+              :key="i"
+            />
+          </v-list>
+        </v-card>
       </v-col>
+      
       <v-divider vertical :thickness="1" class="border-opacity-100" color="#f22"></v-divider>
       <v-col cols="12" sm="6">
-        <v-list
-          class="mt-0 pt-0 pa-4"
-          style="height: 550px; overflow-y: auto; background-color: #F6F6F6"
-        >
-          <center style="height: 100%" v-if="!therapists">
-            <v-card-subtitle> Sie haben noch keine Therapeuten hinterlegt. </v-card-subtitle>
+        <v-card class="rounded-lg mx-4" variant="elevated" >
+          <center style="height: 100%" v-if="!loadingTherapists && therapists.length == 0">
+            <v-card-subtitle class="mt-4"> Sie haben noch keine Therapeuten hinterlegt. </v-card-subtitle>
           </center>
           <center v-if="therapists">
-            <v-card-subtitle style="font-size: large;"> Therapeuten ({{ therapists.length }}/{{ nrTherapists }})</v-card-subtitle>
+            <v-card-subtitle class="mt-4" style="font-size: large;"> Therapeuten ({{ therapists.length }}/{{ nrTherapists }})</v-card-subtitle>
           </center>
-          <v-card class="rounded-lg" variant="text" min-width="400">
+          <v-card v-if="therapists" class="rounded-lg" variant="text" min-width="400">
             <v-card-text>
               <v-text-field
                 v-model="searchTextTherapist"
-                :loading="loading"
+                class="ml-4 mr-4"
+                :loading="loadingTherapists"
                 density="compact"
                 variant="solo"
                 label="Therapeut suchen..."
@@ -65,144 +78,129 @@
                 single-line
                 hide-details
                 clearable
-                @click:append-inner="onSearch"
               ></v-text-field>
+              <!-- @click:append-inner="onSearch" -->
             </v-card-text>
           </v-card>
-          <ListItemUser
-            :role="'THERAPIST'"
-            :item="therapist"
-            :index="i"
-            v-for="(therapist, i) in therapistsFiltered"
-            :key="i"
-          />
-          <!--
-            doSort(therapists, sortmode)
-            -->
-        </v-list>
+          <center>
+            <v-progress-circular
+              class="mx-8 my-8"
+              v-if="loadingTherapists"
+              indeterminate
+              color="#28B9AF"
+            />
+          </center>
+          <center style="height: 100%" v-if="!loadingTherapists && therapistsFiltered.length == 0">
+            <v-card-title> Keine Therapeuten für "{{ searchTextTherapist }}" gefunden. </v-card-title>
+          </center>
+          <v-list
+            v-if="therapists"
+            class="mt-0 pt-0 pa-4"
+            style="height: 38em; overflow-y: auto; "
+          >
+            <ListItemUser
+              :role="'THERAPIST'"
+              :item="therapist"
+              :index="i"
+              v-for="(therapist, i) in therapistsFiltered"
+              :key="i"
+            />
+          </v-list>
+        </v-card>
       </v-col>
     </v-row>
   </v-container>
-  <!-- <v-overlay v-model="overlay"></v-overlay> -->
 </template>
 
 <script>
-//import NewsTicker from "@/components/newsTicker.vue";
-//import CoursesView from "@/components/coursesOverview.vue";
-//import NewsView from "@/components/newsListPatient.vue";
-//import { useNotificationStore } from "../stores/notificationStore.ts";
-import PickerDialogNewUser from "@/components/pickerDialogNewUser.vue";
-import ListItemUser from "@/components/listItemUser.vue";
+import PickerDialogNewUser from "@/components/dialogs/pickerDialogNewUser.vue";
+import ListItemUser from "@/components/listItems/listItemUser.vue";
+import InfoDlg from "@/components/dialogs/dialogInformation.vue";
 
 import api from "@/scripts/api/api";
 
 export default {
   name: "HomeViewAdmin",
-  /*setup() {
-    const store = useNotificationStore();
-    return {
-      store,
-    };
-  },*/
   data: () => ({
     user: "",
-    //overlay: false,
-    //sortmode: 0,
     searchTextPatient: "",
     searchTextTherapist: "",
-    loaded: false,
-    loading: false,
-    patients: null, // temp, please remove by store
+    //loaded: false,
+    loadingPatients: false,
+    loadingTherapists: false,
+    patients: [], // temp, please remove by store
     patientsFiltered: [], // temp, please remove by store
     nrPatients: 0,
-    therapists: null, // temp, please remove by store
+    therapists: [], // temp, please remove by store
     therapistsFiltered: [], // temp, please remove by store
     nrTherapists: 0,
   }),
-  components: { PickerDialogNewUser, ListItemUser /*NewsTicker, CoursesView, NewsView*/ },
-  mounted: function () {
-    //console.log(" >> Test output 'commonstore': " + this.store.totalNotifications);
+  components: { 
+    PickerDialogNewUser, 
+    ListItemUser,
+    InfoDlg, 
+    /*NewsTicker, CoursesView, NewsView*/ },
+  mounted :async function () {
     if (!this.access_token) {
-      api.getUserData();
       this.user = JSON.parse(sessionStorage.getItem("user"));
     }
-
-    this.getTherapists();
-    this.getPatients();
+     this.getTherapists();
+     this.getPatients();
   },
   watch: {
     searchTextPatient: function () {
-      console.log(this.searchTextPatient)
       if (this.searchTextPatient == null) {
         this.patientsFiltered = this.patients
       } else {
         this.patientsFiltered = this.patients.filter(
-          (patient) => patient.keycloakUsers[0].username.search(this.searchTextPatient) === 0
+          (patient) => (patient.keycloakUsers[0].username.toUpperCase().search(this.searchTextPatient.toUpperCase()) === 0 || patient.keycloakUsers[0].username.toUpperCase().indexOf(this.searchTextPatient.toUpperCase()) >= 0)
         );
       }
-      console.log(this.patientsFiltered)
+      console.log(this.patientsFiltered.length)
     },
     searchTextTherapist: function () {
-      console.log(this.searchTextTherapist)
       if (this.searchTextTherapist == null) {
         this.therapistsFiltered = this.therapists
       } else {
         this.therapistsFiltered = this.therapists.filter(
-          (therapist) => therapist.keycloakUsers[0].username.search(this.searchTextTherapist) === 0
+          (therapist) => (therapist.keycloakUsers[0].username.toUpperCase().search(this.searchTextTherapist.toUpperCase()) === 0 || therapist.keycloakUsers[0].username.toUpperCase().indexOf(this.searchTextTherapist.toUpperCase()) >= 0)
         );
       }
-      console.log(this.therapistsFiltered)
     },
   },
   methods: {
     getTherapists: async function () {
+      this.loadingTherapists = true;
       this.therapists = await api.getTherapists(this.user.id);
       this.therapists.forEach((element) => {
         this.nrTherapists += element.keycloakUsers.length
       })
       this.therapistsFiltered = this.therapists
-      console.log("therapists: " + this.therapists)
+      this.loadingTherapists = false;
     },
     getPatients: async function () {
+      this.loadingPatients = true;
       this.patients = await api.getPatients(this.user.id);
       this.patients.forEach((element) => {
         this.nrPatients += element.keycloakUsers.length
       })
       this.patientsFiltered = this.patients
-      console.log("patients: " + this.patients)
+      this.loadingPatients = false;
     },
-    createUser: function (data) {
-      
-      alert("create user:\n" + data);
-      //alert("create user:\n"+this.alias+"\n"+this.firstname+"\n"+this.lastname+"\n"+this.password+"\n"+this.password_repeat+"\n"+this.role);
-        
-      console.log(data);
-
-      api.postCreateNewUser(this.user.id, data);
+    createUser: async function (data) {
+      const result = await api.postCreateNewUser(this.user.id, data);
+      await this.$refs.user_created.open(
+        "Hinweis",
+        result
+      )
     },
+    /*
     onSearch() {
       this.loading = true;
       setTimeout(() => {
         this.loading = false;
         this.loaded = true;
       }, 2000);
-    },
-    /*
-    doSort(array, sortmode) {
-      if (array == null) return;
-      switch (sortmode) {
-        case 0:
-          return array.sort((a, b) => a.id.localeCompare(b.id));
-        case 1:
-          return array.sort((a, b) => b.id.localeCompare(a.id));
-        case 2:
-          return array.sort((a, b) => (a.createdTimestamp < b.createdTimestamp ? -1 : a.createdTimestamp > b.createdTimestamp ? 1 : 0));
-        case 3:
-          return array.sort((a, b) => (a.createdTimestamp < b.createdTimestamp ? 1 : a.createdTimestamp > b.createdTimestamp ? -1 : 0));
-
-        default:
-          return array;
-      }
     },*/
   },
 };

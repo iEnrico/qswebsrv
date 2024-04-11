@@ -31,6 +31,7 @@ import 'v-calendar/dist/style.css';
 
 // pinia (store)
 import { createPinia } from 'pinia'
+import piniaPluginPersistedState from "pinia-plugin-persistedstate"
 
 // audio visual
 import { AVPlugin } from 'vue-audio-visual'
@@ -41,6 +42,12 @@ import { Papa } from 'papaparse'
 // vue3+threeJS 3d loader
 import vue3dLoader from "vue-3d-loader";
 
+
+
+
+
+
+
 const messages = {
   Deutsch: localeDE,
   English: localeEN,
@@ -49,17 +56,29 @@ const messages = {
 // create application with all librarys
 const app = createApp(App)
 
+// treat all tags starting with 'ion-' as custom elements
+/*
+app.config.compilerOptions.isCustomElement = (tag) => {
+  return tag.startsWith('center') // (return true)
+}
+*/
+
 router.generateRoutes(app)
-app.use(createI18n({ 
-  locale: 'Deutsch', // set locale
-  fallbackLocale: 'English', // set fallback locale
-  messages, // set translations
+app.use(createI18n({
+  //legacy: false,
+  locale: 'Deutsch',            // set locale
+  fallbackLocale: 'English',    // set fallback locale
+  messages,                     // set translations
 }))
 app.use(createVuetify({
   components,
   directives,
 }))
-app.use(createPinia());
+
+const pinia = createPinia();
+pinia.use(piniaPluginPersistedState)
+app.use(pinia);
+
 app.use(VCalendar, {})
 
 app.use(AVPlugin)

@@ -151,12 +151,37 @@
         </v-col>
 
         <v-col dens align="start" justify="start">
-          PATCH PROCEDURES
+          PATCH PROCEDURES RUNNING
 
-          <v-btn variant="outlined" class="ma-0" @click="patchProcedure()">
+          <v-btn variant="outlined" class="ma-0" @click="patchProcedureRunning()">
             {{ "/procedures/{id}" }}
           </v-btn>
         </v-col>
+        
+        <v-col dens align="start" justify="start">
+          PATCH PROCEDURES ABORT
+
+          <v-btn variant="outlined" class="ma-0" @click="patchProcedureAbort()">
+            {{ "/procedures/{id}" }}
+          </v-btn>
+        </v-col>
+        
+        <v-col dens align="start" justify="start">
+          PATCH Unit RUNNING
+
+          <v-btn variant="outlined" class="ma-0" @click="patchUnitRunning()">
+            {{ "/procedures/{id}" }}
+          </v-btn>
+        </v-col>
+
+        <v-col dens align="start" justify="start">
+          PATCH Unit ABORT
+
+          <v-btn variant="outlined" class="ma-0" @click="patchUnitAbort()">
+            {{ "/procedures/{id}" }}
+          </v-btn>
+        </v-col>
+
         
       </v-col>
     </v-container>
@@ -175,7 +200,7 @@ export default {
   components: {},
   mounted: function () {
     if (!this.access_token) {
-      api.getUserData();
+      //api.getUserData();
       this.user = JSON.parse(sessionStorage.getItem("user"));
     }
   },
@@ -400,7 +425,7 @@ export default {
 
       api.postProcedures(this.user.id, sampledata);
     },
-    postProcedureResult() {
+    postProcedureResult: async function() {
       console.log("posting data to backend with following params: {debug}");
       
       const id = 1
@@ -413,13 +438,28 @@ export default {
         "fhirTherapist": "string"
       });
 
-      api.postProcedureResult(this.user.id, id, unitId, sampledata);
+      await api.postProcedureResult(this.user.id, id, unitId, sampledata);
     },
-    patchProcedure() {
+    patchUnitAbort() {
       const sampledata = {"state": "ABORTED"};
 
-      api.patchProcedures(this.user.id, 2, sampledata)
-    }
+      api.patchUnit(this.user.id, sampledata)
+    },
+    patchUnitRunning() {
+      const sampledata = {"state": "RUNNING"};
+
+      api.patchUnit(this.user.id, sampledata)
+    },
+    patchProcedureAbort() {
+      const sampledata = {"state": "ABORTED"};
+
+      api.patchProcedures(this.user.id, 117, sampledata)
+    },
+    patchProcedureRunning() {
+      const sampledata = {"state": "RUNNING"};
+
+      api.patchProcedures(this.user.id, 65, sampledata)
+    },
   },
 };
 </script>

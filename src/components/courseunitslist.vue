@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import ListItemCourseUnit from "@/components/listItemCourseUnit.vue";
+import ListItemCourseUnit from "@/components/listItems/listItemCourseUnit.vue";
 import { useTherapistCourseStore } from "@/stores/therapistCourseStore";
 import { Courses } from "@/types/course";
 import { VueDraggableNext } from "vue-draggable-next";
@@ -63,10 +63,10 @@ export default {
   props: ["searchText"],
   watch: {
     searchText: function () {
-      console.log(this.searchText);
+      //console.log(this.searchText);
       this.items = new Courses(
         this.courseStore.getCourseOptions.filter(
-          (course) => course.text.search(this.searchText) === 0
+          (course) => course.text.toUpperCase().search(this.searchText.toUpperCase()) === 0
         )
       ).models;
     },

@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import ListItemCoursesNoAction from "@/components/listItemCoursesNoAction.vue";
+import ListItemCoursesNoAction from "@/components/listItems/listItemCoursesNoAction.vue";
 import { useSessionStore } from "@/stores/sessionStore";
 import { Sessions } from "@/types/session";
 export default {
@@ -31,10 +31,10 @@ export default {
   props: ["searchText", "sortmode"],
   watch: {
     searchText: function () {
-      console.log(this.searchText);
+      //console.log(this.searchText);
       this.items = new Sessions(
         this.courseStore.getSessions.filter(
-          (course) => course.title.indexOf(this.searchText) != -1
+          (course) => course.title.toUpperCase().indexOf(this.searchText.toUpperCase()) != -1
         )
       ).models;
     },

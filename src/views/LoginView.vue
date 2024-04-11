@@ -1,6 +1,7 @@
 <template>
   <v-app>
-    <div class="splash">
+    <!-- v-if="!this.user" -->
+    <div class="splash" >
       <v-img
         class="ma-16 bg-white"
         width="30em"
@@ -34,20 +35,26 @@
     </div>
     <v-spacer></v-spacer>
     <v-footer style="background-color: #e0f2f1; flex: 0 0 0" height="48px">
-      <v-row justify="center" no-gutters>
+      <v-row justify="center" style="width: 33%;" no-gutters>
+      </v-row>
+      <v-row justify="center" style="width: 33%;" no-gutters>
         {{ "made with " }}<v-icon color="red" small>{{ "mdi-heart-outline" }}</v-icon>
+      </v-row>
+      <v-row justify="end" style="width: 33%;" no-gutters>
+        <v-btn variant="text" @click="showPrivacy">Datenschutz</v-btn>
       </v-row>
     </v-footer>
   </v-app>
   
-  <PickerDialogDashboardSelection v-if="this.user" :show="access_token!=null" />
+  <PickerDialogDashboardSelection v-if="this.user" :show="this.user" />
  
 </template>
 
 <script>
 import api from "@/scripts/api/api.js";
 import auth from "@/scripts/auth/auth";
-import PickerDialogDashboardSelection from "@/components/pickerDialogDashboardSelection.vue";
+
+import PickerDialogDashboardSelection from "@/components/dialogs/pickerDialogDashboardSelection.vue";
 
 export default {
   name: "LoginView",
@@ -60,45 +67,29 @@ export default {
   },
   components: { PickerDialogDashboardSelection },
   mounted: async function () {
+    window.sessionStorage.setItem("navdrawer_last_index", 0);
     if (!this.access_token) {
-      auth.generateToken();
-
-      // debug
+      await auth.generateToken();
       var args = new URLSearchParams(window.location.search);
-      var code = args.get("code");
-      window.sessionStorage.setItem("keycloak_code", code);
+      window.sessionStorage.setItem("keycloak_code", args.get("code"));
     } else {
-
       await api.getUserData();
       this.user = JSON.parse(sessionStorage.getItem("user"));
-
     }
   },
   methods: {
     login: function () {
       auth.login();
     },
-    getUsername() {
-      const user = JSON.parse(sessionStorage.getItem("user"));
-      return user.fullName;
-    },
     copyTextToClipboard(value) {
-      console.log(value);
       navigator.clipboard.writeText(value);
     },
-    /*
-    routeDashboard: function () {
-      if (this.admin_role) {
-        this.$router.push("/dashboardadmin1");
-      }
-      else if (this.therapist_role) {
-        this.$router.push("/dashboardTherapist3");
-      }
-      else {
-        this.$router.push("/dashboard1" );
-      }
-    },
-    */
+    showPrivacy() {
+      this.$router.push({
+        name: "Privacy",
+        //params: { data: JSON.stringify(item) },
+      });
+    }
   },
 };
 </script>

@@ -24,20 +24,9 @@
   <v-card max-width="320" color="#FFFFFF" class="rounded-lg" flat tile>
 
     <v-row justify="center" align="center" no-gutters>
-      <!--
-      <v-card-subtitle v-if="this.state == 0 || this.state == 1" class="ph-0 ma-1">
-        Zum Start der Aufnahme klicken
-      </v-card-subtitle>
-      -->
       <v-card-subtitle v-if="this.state == 2" class="ph-0 ma-1">
         {{ formatTimeMMSS(getProgress()) }} {{ " / 01:00" }}
       </v-card-subtitle>
-      <!--
-      <div class="container" v-if="this.state == 2">
-        <div class="recording-circle"></div>
-        <div class="recording-text">Recording</div>
-      </div>
-      -->
     </v-row>
 
     <v-row v-if="!(this.state == 1 && audiofiles[index])" no-gutters align="center" justify="center">
@@ -62,17 +51,13 @@
         :width="this.state == 1 && audiofiles[index] ? 32 : 64"
         @click="toggleRec()"
       >
-      <!--
-        border: 1px solid currentColor;
-        border-radius:50%;
-        -->        
         <v-icon size="32pt" color="#FFF" v-if="this.state == 0">mdi-microphone-off</v-icon>
         <v-icon size="32pt" color="#FFF" v-if="this.state == 1 && audiofiles[index]">mdi-refresh</v-icon>
         <v-icon size="32pt" color="#FFF" v-if="this.state == 1 && !audiofiles[index]">mdi-microphone</v-icon>
         <v-icon size="32pt" color="#FFF" v-if="this.state == 2">mdi-stop</v-icon>
       </v-btn>
     </v-row>
-
+    <!--<v-btn @click="downloadAudio()">DL</v-btn>-->
     <v-row justify="center" align="center" no-gutters>
       <v-card-subtitle v-if="this.state == 0 || (this.state == 1 && !audiofiles[index])" class="ph-0 ma-1">
         Zum Start der Aufnahme klicken
@@ -80,118 +65,18 @@
       <v-card-subtitle v-if="this.state == 2" class="ph-0 ma-1">
         Aufnahme läuft...
       </v-card-subtitle>
-      <!--
-      <div class="container" v-if="this.state == 2">
-        <div class="recording-circle"></div>
-        <div class="recording-text">Recording</div>
-      </div>
-      -->
     </v-row>
-
-    <!-- if audio recording exists 
-    <v-container class="pa-0 ma-0" fluid v-if="audiofiles[index]">
-      <v-row no-gutters align="center" justify="center">
-        <v-col :cols="12">
-          <v-card-subtitle align="center" class="ph-0 ma-1" v-if="0 == 1"
-            >Ihre Aufnahme</v-card-subtitle
-          >
-          <v-progress-linear
-            class="mt-1"
-            color="#28B9AF"
-            :model-value="currentTime / (audioduration[index] / 100)"
-            :height="15"
-            label="{{ currentTime }} of {{ audioduration[index] }}"
-            striped
-          >
-            <template v-slot:default="{ value }">
-              <small
-                >{{ formatTimeMMSS(currentTime) }} /
-                {{ formatTimeMMSS(audioduration[index]) }} ({{
-                  Math.ceil(value)
-                }}%)</small
-              >
-            </template>
-          </v-progress-linear>
-          <v-btn width="100" variant="text" class="mt-0" @click="playRec">
-            {{ this.audiofiles[this.index].paused ? "Play" : "Stop" }}
-          </v-btn>
-          <v-btn width="100" variant="text" class="mt-0" @click="downloadAudio">
-            DL
-          </v-btn>
-        </v-col>
-      </v-row>
-    </v-container>
--->
-
   </v-card>
   <v-card max-width="350" color="#fff" class="rounded-lg" flat tile>
     <v-row v-if="this.audiofiles[this.index]" no-gutters align="center" justify="center">
-      <!--  
-      {{this.audiofiles[this.index].src}}
-      -->
-
-      <!--   -->
       <ListItemPlayer :elevated="true" :item="this.audiofiles[this.index].src" :index="this.index" :action="toggleRec" />
-   
-      <!-- 
-      
-      <v-card
-          v-if="this.audiofiles[this.index]"
-          variant="plain"
-          class="pa-0 ma-0"
-          style="height: 100px; display: flex; flex-direction: column"
-        >
-          <v-row align="center" justify="center" class="pb-2">
-            <div class="parent mr-4">
-              <svg class="progress-ring" width="40" height="40">
-                <circle
-                  class="progress-ring__circle"
-                  stroke="#28B9AF"
-                  stroke-width="4"
-                  fill="transparent"
-                  r="17"
-                  cx="20"
-                  cy="20"
-                />
-              </svg>
-
-              <div class="child child-1">
-                <div :id="'icon' + index" class="icon-container"></div>
-              </div>
-            </div>
-
-            <audio
-              :id="'audio' + index"
-              :src="getAudio(this.audiofiles[this.index])"
-              controls
-              hidden="true"
-            ></audio>
-            <div :id="'vis' + index" class="visualizer-container"></div>
-          </v-row>
-        </v-card> -->
-
     </v-row> 
-
-
-<!--
-pause-circle-outline
-      test
-
-    <v-row no-gutters align="center" justify="center">
-      <v-icon size="32pt" color="#FFF" v-if="this.state == 1">mdi-play-circle-outline</v-icon>
-      <v-spacer></v-spacer>
-      <div :id="'vis' + index" class="visualizer-container"></div>
-      <v-spacer></v-spacer>
-      <v-icon size="20pt" color="#000" v-if="this.state == 1">mdi-reload</v-icon>
-    </v-row>
--->
-
   </v-card>
 </template>
 
 <script>
 import Encoder from "../scripts/media/encoder";
-import ListItemPlayer from "@/components/listItemPlayer.vue";
+import ListItemPlayer from "@/components/listItems/listItemPlayer.vue";
 
 export default {
   name: "VoiceRecorder",
@@ -240,36 +125,17 @@ export default {
     //this.emitInterface();
 
     this.initMediaRec();
-
-    /*
-    this.initPlayerVisual();
-    this.initPlayerAnalyser();
-    */
   },
   methods: {
     /**
      * Emitting an interface with callable methods from outside
      */
-
     updateItem(update) {
       // Avoid directly modifying this.item by creating a cloned object
       this.$emit("item-updated", update);
     },
-    /*
-    emitInterface() {
-      this.$emit("interface", {
-        test: () => this.test(),
-      });
-    },
-    test() {
-      alert("klicked!");
-    },
-    */
     getAudio(item) {
       console.log(item)
-      //var note = new Note(item);
-      //var entries = new NoteEntry(note.entries[this.index]);
-      //var myModule = item.audioPath;
       console.log(item.src.search("blob:"));
       if (item.src.search("blob:") == 0) {
         return item;
@@ -303,21 +169,38 @@ export default {
       console.log("init recording");
       this.getMemeTypes();
 
+
+
+      console.log("attached devices");
+      let defaultAudioDevice = ""
+      navigator.mediaDevices.enumerateDevices()
+      .then((devices) => {
+        defaultAudioDevice = devices.find(o => (o.deviceId == 'default'));
+        console.log(JSON.stringify(devices));
+      })
+      .catch((err) => {
+        console.log("error in media player: " + err);
+      });
+
+
       if (navigator.mediaDevices.getUserMedia) {
         console.log("getUserMedia supported.");
         navigator.mediaDevices
           .getUserMedia(
             // constraints - only audio needed for this app
             {
-              audio: {
+              deviceId: defaultAudioDevice,
+              audio: true,
+              /*{
                 sampleRate: 48000,
                 channelCount: 2,
                 volume: 1.0,
                 echoCancellation: false,
                 noiseSuppression: false,
                 autoGainControl: false,
-              },
+              },*/
               video: false,
+
             }
           )
           .then((stream) => {
@@ -332,7 +215,7 @@ export default {
       if (this.use_encoder == "opus") {
         const options = {
           audioBitsPerSecond: 128000, //256000,
-          mimeType: "video/webm",
+          mimeType: "audio/ogg",
           //videoBitsPerSecond: 2500000,
           //mimeType: "video/mp4",
         };
@@ -340,7 +223,7 @@ export default {
         this.myStream = this.recorder.stream;
         this.analyseStream(this.myStream);
       } else if (this.use_encoder == "mp3") {
-        this.mp3encoder = new Encoder(2, 44100, 128);
+        this.mp3encoder = new Encoder(2, 44100, 128000);
         this.myStream = stream;
       }
 
@@ -400,7 +283,7 @@ export default {
 
           console.log(URL.createObjectURL(audioBlob));
           vm.audiofiles[vm.index] = new Audio(URL.createObjectURL(audioBlob));
-          vm.updateItem(vm.audiofiles);
+          vm.updateItem(URL.createObjectURL(audioBlob));
           vm.audiofiles[vm.index].addEventListener("durationchange", () => {
             if (
               typeof vm.audiofiles[vm.index] !== "undefined" &&

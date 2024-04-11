@@ -1,4 +1,4 @@
-.scrollbar {
+  .scrollbar {
     width: 0px;
   }
   .scrollbar-track {
@@ -8,10 +8,18 @@
     border-radius: 0;
     width: 100%;
   }
+  
+  
   .custom-calendar.vc-container .vc-header {
+    /*
     background-color: #f1f5f8;
     padding: 10px 0;
+    */
+    min-height: 48px;
+    margin-top: 0px;
   }
+
+
   .custom-calendar.vc-container .vc-weeks {
     padding: 0;
   }
@@ -24,14 +32,15 @@
   .custom-calendar.vc-container .vc-day {
     padding: 0 5px 3px 5px;
     text-align: left;
-    min-height: 90px;
-    min-width: 90px;
+    min-height: 104px;
+    max-height: 104px;
     overflow: auto;
     background-color: white;
   }
   .custom-calendar.vc-container .vc-day.weekday-1,
   .custom-calendar.vc-container .vc-day.weekday-7 {
     background-color: #eff8ff;
+    border-bottom: 1px solid #b8c2cc;
   }
   .custom-calendar.vc-container .vc-day:not(.on-bottom) {
     border-bottom: 1px solid #b8c2cc;
@@ -41,6 +50,7 @@
   }
   .custom-calendar.vc-container .vc-day:not(.on-right) {
     border-right: 1px solid #b8c2cc;
+    border-bottom: 1px solid #b8c2cc;
   }
   .custom-calendar.vc-container .vc-day-dots {
     margin-bottom: 5px;

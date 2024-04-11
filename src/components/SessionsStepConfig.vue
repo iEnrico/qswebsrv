@@ -1,89 +1,111 @@
 <template>
+  <InfoDlg ref="validation" />
   <v-row class="pa-0 ma-0 fill-height" align-content="center" justify="center">
-    <!-- LEFT BIG -->
     <v-col :cols="8" class="pa-0 ma-0 fill-height">
       <v-card class="mx-4 mt-0 rounded-lg" variant="elevated">
         <v-card-title>Umgebungskonfiguration</v-card-title>
         <v-row class="ml-4 mr-4 mt-0 mb-2">
           <v-container class="pa-0 ma-0" align="center" justify="center">
             <v-row no-gutters>
-              <v-col v-for="(item, index) in session_configs" :key="index" :cols="6">
+              <v-col v-for="(item, index) in sessionEnvironments" :key="index" :cols="6">
                 <v-card
                   class="rounded-lg"
                   max-width="90%"
                   :style="
-                    selectedSessionEnv != index
+                    selectedSessionEnv != item
                       ? 'border: none;'
                       : 'border: 2px solid #28B9AF;'
                   "
                   :color="
-                    selectedSessionEnv != index ? '#FFFFFF' : '#EDF7F5' //' F4D2CA  #28B9AF'
+                    selectedSessionEnv != item 
+                      ? '#FFFFFF' 
+                      : '#EDF7F5' 
                   "
-                  @click.stop="onChangeEnv(index)"
+                  @click.stop="onChangeEnv(item)"
                   outlined
                   tile
                 >
-                  <v-img :src="item.image" height="12em" cover></v-img>
+                  <v-img :src="item.img" height="12em" cover></v-img>
 
                   <v-card-title><span :style=" selectedSessionEnv != index ? 'color: #000' : 'color: #28B9AF'">{{
-                    getSessionEnvTitle(item.session_environment)
+                    item.value
                   }}</span></v-card-title>
                 </v-card>
               </v-col>
             </v-row>
           </v-container>
         </v-row>
-        <!--
-        <v-row class="pa-0 ma-0">
-          <v-col :cols="6"> Übungstyp </v-col>
-          <v-col :cols="6"> Schwierigkeit </v-col>
-        </v-row>
-        <v-row class="pa-0 ma-0">
-          <v-col class="mt-0 pt-0" :cols="6">
-            <font color="#888888" size="2"> Objektmeditation </font>
-          </v-col>
-          <v-col class="mt-0 pt-0" :cols="6">
-            <v-rating
-              :active-color="getSessionDifficultyColor(user_config.session_difficulty)"
-              :color="getSessionDifficultyColor(user_config.session_difficulty)"
-              length="3"
-              size="small"
-              density="compact"
-              :model-value="2"
-            ></v-rating>
-          </v-col>
-        </v-row>
-        <v-row class="pa-0 ma-0">
-          <v-col :cols="12"> Beschreibung </v-col>
-        </v-row>
-        <v-row class="pa-0 ma-0">
-          <v-col :cols="12"> {{ $t(this.getCourseDescription(0)) }} </v-col>
-        </v-row>-->
-        <!-- 
-
- :items="options_SessionTypeAlternate"
-
-        -->
-        <v-row class="pa-0 mx-4 mt-4 mb-2" align-content="start">
-          <v-combobox
+        <v-row v-if="typeOfMeditation.length >0" class="pa-0 mx-4 mt-4 mb-2" align-content="start">
+          <v-select
             class="ml-8 mr-8 font-color=#423412"
             label="Meditationstyp"
-            :items="typeOfMeditation"
             v-model="selectedTypeOfMeditation"
+            :items="preTypeOfMeditation ? [preTypeOfMeditation] : typeOfMeditation"
+            :selectable="preTypeOfMeditation ? false : true"
+            :disabled="preTypeOfMeditation ? true : false"
+            item-title="value"
+            item-value="id"
             return-object
-          ></v-combobox>
+          ></v-select>
         </v-row>
-        <v-row class="pa-0 mx-4 mt-4 mb-2" align-content="start">
-          <v-combobox
+        <v-row v-if="objectType.length >0" class="pa-0 mx-4 mt-4 mb-2" align-content="start">
+          <v-select
             class="ml-8 mr-8 font-color=#423412"
             label="Objekttyp"
-            :items="objectType"
             v-model="selectedObjectType"
+            :items="preObjectType ? [preObjectType] : objectType"
+            :selectable="preObjectType ? false : true"
+            :disabled="preObjectType ? true : false"
+            item-title="value"
+            item-value="id"
             return-object
-          ></v-combobox>
+          ></v-select>
         </v-row>
+        <v-row v-if="roleType.length >0" class="pa-0 mx-4 mt-4 mb-2" align-content="start">
+          <v-select
+            class="ml-8 mr-8 font-color=#423412"
+            label="Rolle"
+            v-model="selectedRoleType"
+            :items="preRoleType ? [preRoleType] : roleType"
+            :selectable="preRoleType ? false : true"
+            :disabled="preRoleType ? true : false"
+            item-title="value"
+            item-value="id"
+            return-object
+          ></v-select>
+        </v-row>
+
+        <v-row v-if="avatarType.length >0" class="pa-0 mx-4 mt-4 mb-2" align-content="start">
+          <v-select
+            class="ml-8 mr-8 font-color=#423412"
+            label="Avatar"
+            v-model="selectedAvatarType"
+            :items="preAvatarType ? [preAvatarType] : avatarType"
+            :selectable="preAvatarType ? false : true"
+            :disabled="preAvatarType ? true : false"
+            item-title="value"
+            item-value="id"
+            return-object
+          ></v-select>
+        </v-row>
+
+        <v-row v-if="textType.length >0" class="pa-0 mx-4 mt-4 mb-2" align-content="start">
+          <v-select
+            class="ml-8 mr-8 font-color=#423412"
+            label="Texte"
+            v-model="selectedTextType"
+            :items="preTextType ? [preTextType] : textType"
+            :selectable="preTextType ? false : true"
+            :disabled="preTextType ? true : false"
+            item-title="value"
+            item-value="id"
+            return-object
+          ></v-select>
+        </v-row>
+
         <v-row class="pa-0 mx-4 mt-2 mb-4" align-content="center">
-          <v-btn variant="elevated" color="#28B9AF" @click="onNextDebug()"
+          <v-spacer></v-spacer>
+          <v-btn variant="elevated" color="#28B9AF" @click="onNextStep()"
             ><span class="text-white">
               {{ "Start" }}
             </span></v-btn
@@ -91,360 +113,353 @@
         </v-row>
       </v-card>
     </v-col>
-    <!-- RIGHT SMALL 
-    <v-col :cols="4" class="pa-0 ma-0 fill-height">
-      <v-card class="mx-4 mt-0 rounded-lg" variant="elevated">
-        <v-row class="pa-0 mx-4 mt-4 mb-2" align-content="start">
-          <v-combobox
-            class="ml-8 mr-8 font-color=#423412"
-            label="Übungstyp"
-            :items="options_SessionTypeAlternate"
-            v-model="selectedType"
-            return-object
-          ></v-combobox>
-        </v-row>
-        <v-row class="pa-0 mx-4 mt-2 mb-4" align-content="center">
-          <v-btn block variant="elevated" color="#28B9AF" @click="onNext()"
-            ><span class="text-white">
-              {{ "Start" }}
-            </span></v-btn
-          >
-        </v-row>
-      </v-card>
-    </v-col>-->
   </v-row>
 </template>
 
 <script>
 
-import common from "@/scripts/common/common";
+//import common from "@/scripts/common/common";
 import api from "@/scripts/api/api";
+import { getTextByLanguage } from "@/scripts/common/utils";
+import InfoDlg from "@/components/dialogs/dialogInformation.vue";
+import { 
+  /*
+  createConfig, 
+  
+  createProcedure, 
+  startProcedure,
+  */
+  isAllUnitsComplete, 
+  isAllUnitsCompleteSync, 
+  getFHIRId,
+  getUser
+} from "@/scripts/procedureEngine";
 
 export default {
   name: "SessionsStepConfig",
   data: () => ({
-    options_SessionEnv: [
-      { id: 0, label: "Morgens" },
-      { id: 1, label: "Abends" },
-    ],
-    selectedSessionEnv: null,
-    options_SessionTypeAlternate: [
-      "Lupenübung Stein (ca. 9 Minuten)",
-      "Lupenübung Stock (ca. 9 Minuten)",
-      "Lupenübung Statue (ca. 9 Minuten)",
-      "Telefonübung Stein (ca. 6 Minuten)",
-      "Telefonübung Stock (ca. 6 Minuten)",
-      "Telefonübung Statue (ca. 7 Minuten)",
-      "Imaginationsübung Stein (ca. 7 Minuten)",
-      "Imaginationsübung Stock (ca. 7 Minuten)",
-      "Imaginationsübung Statue (ca. 7 Minuten)",
-    ],
-    typeOfMeditation: [],
-    selectedTypeOfMeditation: null,
-    objectType:[],
-    selectedObjectType: null,
-    cpParam:[],
-    /*
-    options_SessionDifficulty: [
-      { id: 0, label: "Leicht" },
-      { id: 1, label: "Ausgeglichen" },
-      { id: 2, label: "Herausfordernd" },
-    ],
-    */
-    // current config
-    /*
-    user_config: {
-      session_environment: common.session_environment_early,
-      //session_type: common.session_type_meditation,
-      session_typeAlternate: common.session_type_meditation,
-      session_description:
-        "Aivamus neque ante, viverra non luctus nec, molestie in mauris. Fusce et volutpat diam, ut suscipit nulla. Fusce venenatis odio pellentesque lacinia tincidunt. Maecenas eu neque id leo vulputate faucibus ut vitae dolor. Vestibulum enim erat, condimentum eu quam vel, volutpat ultrices nisi. Maecenas placerat, sem a efficitur tempus, massa dui fringilla dui, vestibulum sollicitudin orci ligula nec leo. Etiam rhoncus fringilla aliquet. Nulla sollicitudin dignissim sem vel ultricies. Maecenas augue lorem, euismod eget mauris id, sagittis consectetur urna. Fusce quis congue arcu.",
-      session_difficulty: common.session_difficulty_easy,
-    },*/
-    // possible configs
-    session_configs: [
-      {
-        session_environment: common.session_environment_early,
-        image: require("@/assets/ph1.png"), 
-      },
-      {
-        session_environment: common.session_environment_late,
-        image: require("@/assets/ph2.png"), 
-      },
-    ],
-    unitsId: 0,
-    carePlanUnitsId: 0,
-    carePlanUUId: 0,
-    unitResourceId: 0,
+
+    cpParam:[], // sum of all parameters
+    cpResources:[], // sum of all resources
+
+    sessionEnvironments: [],
+    selectedSessionEnv: 0,
+
+    typeOfMeditation: [], // sorted parameter by type
+    selectedTypeOfMeditation: null, // selected type parameter
+    preTypeOfMeditation: null, // predefined type of meditation
+
+    objectType:[], // sorted parameter by object
+    selectedObjectType: null, // selected object parameter
+    preObjectType: null, // predefined object
+
+    roleType:[], // sorted parameter by role
+    selectedRoleType: null, // selected role parameter
+    preRoleType: null, // predefined role
+
+    avatarType:[], // sorted parameter by avatar
+    selectedAvatarType: null, // selected avatar parameter
+    preAvatarType: null, // predefined avatar
+
+    textType:[], // sorted parameter by texts
+    selectedTextType: null, // selected texts parameter
+    preTextType: null, // predefined text
+
   }),
-  /*
-  watch: {
-    selectedType(value , oldValue) {
-      this.onChangeType(value);
-    },
-  },
-  */
   props: [
     "data",
-    //"user_config",
-    //"setUserConfigType",
-    //"setUserConfigEnv",
     "onBack",
     "onNext",
   ],
-  components: {},
-  mounted: function () {
-    //this.selectedType = this.options_SessionTypeAlternate[0];
+  components: {InfoDlg},
+  mounted: async function () {
     
-    this.selectedSessionEnv = 0
-    /*
-    this.selectedTypeOfMeditation = ""
-    this.selectedObjectType = ""
-    */
+    //this.selectedSessionEnv = 0
 
     if (!this.access_token) {
-      api.getUserData();
       this.user = JSON.parse(sessionStorage.getItem("user"));
     }
 
-    this.availableActivitys("vr-meditation");
-    //console.log(JSON.stringify(this.user_config));
+    await this.init()
   },
   methods: {
-    /*
-    test() {
-      alert(this.user_config.session_type);
-    },*/
-    availableActivitys: async function (activityName) {
-      console.log("request backend data with following params: " + this.user.id);
-      const response = await api.getAvailableActivitys(this.user.id);
-      if (response) {
+    init: async function () {
+      //console.log("init config with:\n" + this.data)
 
-        response.data.forEach(async (element) => {
+      var parsedData = this.data
 
-          //console.log(element.name)
+      console.log(parsedData)
 
-          if (element.name == activityName) {
+      if ( (await isAllUnitsComplete(parsedData) && parsedData.nextActivityUnit) || parsedData.activity) {
+        console.log("---> NO CONFIG YET")
 
-            let ownFHIRRessourceId = this.user.fhirResourceId;
 
-            this.unitsId = element.units[0].contentPackage.id;
-            this.carePlanUnitsId = element.carePlanUnits[0].id;
-            this.carePlanUUId = element.carePlanUnits[0].carePlan.uuid;
-            this.unitResourceId = element.units[0].contentPackage.resources[0].id;
-            //let unitResultTemplateId = element.units[0].contentPackage.resultTemplates[0].id; //units[0].contentPackage.resources[0].id;
+        var hasPredefined = parsedData.activity 
+          ? parsedData.activity.units[0].parameters.length > 0
+          : parsedData.nextActivityUnit.parameters.length > 0
+        console.log("has predefined Parameter: " + hasPredefined)
 
-            /*
-            const result = await api.postProcedures(this.user, procedure_data)
-              //alert("result of post procedure: " + JSON.stringify(result))
+        var predefinedParams = parsedData.activity 
+          ? parsedData.activity.units[0].parameters
+          : parsedData.nextActivityUnit.parameters
 
-            this.procedureId = result.data.id;
-            this.procedureUnitId = result.data.units[0].id;
-            */
+        // get content package
+        let contentPackage = await this.getContentPackage()
+
+        // get parameters and resources
+        this.cpParam = contentPackage.parameters
+        this.cpResources = contentPackage.resourceBundles
+
+        // PARAMETERS
            
-            let cpType = element.units[0].contentPackage.type
-            this.cpParam = element.units[0].contentPackage.parameters
-            let cpRes = element.units[0].contentPackage.resources
-
-            let carePlan = element.carePlanUnits[0].carePlan
-
-            alert(
-              "found vr activity"+
-              "\nown fhir: "+ownFHIRRessourceId+
-              "\nid: "+element.id+
-              "\nname: "+element.name+
-              "\ncpType: "+cpType+
-              "\ncpParam: "+JSON.stringify(this.cpParam)+
-              "\ncpRes: "+JSON.stringify(cpRes)+
-              "\ncarePlan: "+JSON.stringify(carePlan)
-            );
-
-            this.cpParam.filter((param) => param.name == "typeOfMeditation").forEach((item) => {
-              //this.data.push(item.keycloakUsers[0].username)
-              this.typeOfMeditation.push(item.value) //(this.getFhirID(item));//item.fhirTherapist. //keycloakUsers[0].username)
-              //console.log(item)
-            });
-            //console.log("meditation types: " + JSON.stringify(this.typeOfMeditation))
-
-            this.cpParam.filter((param) => param.name == "objectType").forEach((item) => {
-              //this.data.push(item.keycloakUsers[0].username)
-              this.objectType.push(item.value) //(this.getFhirID(item));//item.fhirTherapist. //keycloakUsers[0].username)
-              //console.log(item)
-            });
-            //console.log("object types: " + JSON.stringify(this.objectType))
-
-          }
-
-          /*
-          element.units.forEach((unit) => {
-            unitsInfo = "id: " + unit.id + ", name: " + unit.contentPackage.name + ", " 
+/*
+        var mapping = [
+          { key: "typeOfMeditation", array: this.typeOfMeditation},
+          { key: "objectType", array: this.objectType},
+          { key: "role", array: this.roleType},
+          { key: "avatar", array: this.avatarType},
+          { key: "text", array: this.textType},
+        ]
+        mapping.forEach(item => {
+          this.cpParam.filter((param) => param.name == item.key).forEach((item) => {
+            item.array.push(
+              { 'id': item.id, 'value': getTextByLanguage(item.translations, this.$i18n)}
+            )
           });
+        });
+*/
 
-          element.carePlanUnits.forEach((unit) => {
-            carePlanUnitsInfo = "id: " + unit.id + ", planid: " + unit.carePlan.id + ", planuuid: " + unit.carePlan.uuid + ", " 
-          });
+        this.cpParam.filter((param) => param.name == "typeOfMeditation").forEach((item) => {
+          this.typeOfMeditation.push(
+            { 'id': item.id, 'value': getTextByLanguage(item.translations, this.$i18n), 'name': item.value}
+          )
+        });
 
-          alert(
-            "Activity:\n" + "id: " + element.id + ", avail. " + element.available + ", name: " + element.name + "\n\n" +
-            "units: " + element.units.length + "\n" + unitsInfo + "\n\n" +
-            "carePlanUnits: " + element.carePlanUnits.length + "\n" + carePlanUnitsInfo + "\n" 
-          );
-          */
+        var predefinedType = predefinedParams.find(param => param.name === 'typeOfMeditation');
+        if (predefinedType) {
+          console.log("predefined typeOfMeditation found!")
+          console.log(this.typeOfMeditation)
+          console.log("found: " + this.typeOfMeditation.find(param => param.name === predefinedType.value))
+          this.preTypeOfMeditation = this.typeOfMeditation.find(param => param.name === predefinedType.value);
+          console.log("found: " + this.preTypeOfMeditation.value)
+          this.selectedTypeOfMeditation = this.preTypeOfMeditation
+        }
+
+        
+        this.cpParam.filter((param) => param.name == "objectType").forEach((item) => {
+          this.objectType.push(
+            { 'id': item.id, 'value': getTextByLanguage(item.translations, this.$i18n), 'name': item.value}
+          ) 
         });
         
-        const result2 = await api.getRunningProcedures(this.user);
-        //alert("result of getRunningProcedures: " + JSON.stringify(result2))
-        if (result2.data) {
-          this.procedureId = result2.data.id;
-          this.procedureUnitId = result2.data.units[0].id;
-          alert("found running procedure: " + this.procedureId + ", " + this.procedureUnitId)
-
-          /*
-          this.unitsId = result2.data.units[0].contentPackage.id;
-          this.carePlanUnitsId = result2.data.carePlanUnits[0].id;
-          this.carePlanUUId = result2.data.carePlanUnits[0].carePlan.uuid;
-          this.unitResourceId = result2.data.units[0].contentPackage.resources[0].id;
-          */
-
-          this.cpParam = result2.data.units[0].activityUnit.contentPackage.parameters
-            
-          this.cpParam.filter((param) => param.name == "typeOfMeditation").forEach((item) => {
-            //this.data.push(item.keycloakUsers[0].username)
-            this.typeOfMeditation.push(item.value) //(this.getFhirID(item));//item.fhirTherapist. //keycloakUsers[0].username)
-            //console.log(item)
-          });
-          //console.log("meditation types: " + JSON.stringify(this.typeOfMeditation))
-
-          this.cpParam.filter((param) => param.name == "objectType").forEach((item) => {
-            //this.data.push(item.keycloakUsers[0].username)
-            this.objectType.push(item.value) //(this.getFhirID(item));//item.fhirTherapist. //keycloakUsers[0].username)
-            //console.log(item)
-          });
-
-          //this.selectedSessionEnv = result2.data.units[0].contentPackageResource.id;
-          this.onNext();
+        var predefinedObject = predefinedParams.find(param => param.name === 'objectType');
+        if (predefinedObject) {
+          console.log("predefined objectType found!")
+          console.log(this.objectType)
+          console.log("found: " + this.objectType.find(param => param.name === predefinedObject.value))
+          this.preObjectType = this.objectType.find(param => param.name === predefinedObject.value);
+          console.log("found: " + this.preObjectType.value)
+          this.selectedObjectType = this.preObjectType
         }
 
+        
+        this.cpParam.filter((param) => param.name == "role").forEach((item) => {
+          this.roleType.push(
+            { 'id': item.id, 'value': getTextByLanguage(item.translations, this.$i18n), 'name': item.value}
+          ) 
+        });
+
+        var predefinedRole = predefinedParams.find(param => param.name === 'role');
+        if (predefinedRole) {
+          console.log("predefined role found!")
+          console.log(this.roleType)
+          console.log("found: " + this.roleType.find(param => param.name === predefinedRole.value))
+          this.preRoleType = this.roleType.find(param => param.name === predefinedRole.value);
+          console.log("found: " + this.preRoleType.value)
+          this.selectedRoleType = this.preRoleType
+        }
+
+        
+        this.cpParam.filter((param) => param.name == "avatar").forEach((item) => {
+          this.avatarType.push(
+            { 'id': item.id, 'value': getTextByLanguage(item.translations, this.$i18n), 'name': item.value}
+          ) 
+        });
+
+        var predefinedAvatar = predefinedParams.find(param => param.name === 'avatar');
+        if (predefinedAvatar) {
+          console.log("predefined avatar found!")
+          console.log(this.avatarType)
+          console.log("found: " + this.avatarType.find(param => param.name === predefinedAvatar.value))
+          this.preAvatarType = this.avatarType.find(param => param.name === predefinedAvatar.value);
+          console.log("found: " + this.preAvatarType.value)
+          this.selectedAvatarType = this.preAvatarType
+        }
+
+        
+        /*
+        this.cpParam.filter((param) => param.name == "text").forEach((item) => {
+          this.textType.push(
+            { 'id': item.id, 'value': getTextByLanguage(item.translations, this.$i18n), 'name': item.value}
+          ) 
+        });
+        
+        var predefinedText = predefinedParams.find(param => param.name === 'text');
+        if (predefinedText) {
+          console.log("predefined text found!")
+          console.log(this.textType)
+          console.log("found: " + this.textType.find(param => param.name === predefinedText.value))
+          this.preTextType = this.textType.find(param => param.name === predefinedText.value);
+          console.log("found: " + this.preTextType.value)
+          this.selectedTextType = this.preTextType
+        }
+        */
+
+        // RESSOURCES
+        
+        this.cpResources.forEach(item => {
+          this.sessionEnvironments.push(
+            { 'id': item.id, 'value': getTextByLanguage(item.translations, this.$i18n), 'img': this.getImageForEnvironment(item)}
+          ) 
+        });
+
+        //TODO: setting default first element. should we?
+        if (this.sessionEnvironments.length > 0) {
+          this.selectedSessionEnv = this.sessionEnvironments[0]
+        }
+
+      } 
+      else {
+        console.log("---> CONFIG ALREADY SET...")
+        await this.onNextStep();
+      }
+
+    },
+    getContentPackage: async function () {
+
+      var contentPackage = ( isAllUnitsCompleteSync(this.data) && this.data.nextActivityUnit )
+        ? this.data.nextActivityUnit.contentPackage
+        : this.data.activity 
+          ? this.data.activity.units[this.data.activity.units.length-1].contentPackage
+          : this.data.units[this.data.units.length-1].activityUnit.contentPackage
+      
+      return await api.getContentPackageByName(this.user.id, contentPackage.name)
+      
+    },
+    getImageForEnvironment(item) {
+      switch (item.name) {
+        case "day_scene":
+          return require("@/assets/ph1.png")
+        case "night_scene":
+          return require("@/assets/ph2.png")
+      
+        default:
+          break;
       }
     },
-    sendConfig: async function (env, type, object) {
+    onChangeEnv(item) {
+      this.selectedSessionEnv = item
+      //console.log("resource bundle: \nitem: " + item + "\nenvironment: " + this.selectedSessionEnv.id)
+    },
+    onNextStep: async function (){
+
+      //TODO: check for type of unit (roleplay, meditation etc) and verify required fields are filled
+      if (!this.selectedSessionEnv && this.sessionEnvironments.length > 0 || 
+          !this.selectedTypeOfMeditation && this.typeOfMeditation.length > 0 ||  
+          !this.selectedObjectType && this.objectType.length > 0 || 
+          !this.selectedRoleType && this.roleType.length > 0 || 
+          !this.selectedAvatarType && this.avatarType.length > 0 /*|| 
+          !this.selectedTextType && this.textType.length > 0 */
+          ) {
+        //alert("please set config!")
+        this.showInfo()
+      }
+      else {
+
+        /*
+        console.log(  
+          "Config to set: \n" 
+          + this.selectedSessionEnv       ? "Environment: " + this.selectedSessionEnv.id        + ", " : ""
+          + this.selectedTypeOfMeditation ? "Type: "        + this.selectedTypeOfMeditation.id  + ", " : ""
+          + this.selectedObjectType       ? "Object: "      + this.selectedObjectType.id        + ", " : ""
+          + this.selectedRoleType         ? "Role: "        + this.selectedRoleType.id          + ", " : ""
+          + this.selectedAvatarType       ? "Avatar: "      + this.selectedAvatarType.id        + ", " : ""
+          + this.selectedTextType         ? "Text: "        + this.selectedTextType.id          + ", " : ""
+        )*/
+
+        //let contentPackage = await this.getContentPackage()
+        
+        var packageParams = []
+        this.selectedTypeOfMeditation ? packageParams.push(this.selectedTypeOfMeditation.id) : console.log("no type of meditation to add")
+        this.selectedObjectType ? packageParams.push(this.selectedObjectType.id) : console.log("no object to add")
+        this.selectedRoleType ? packageParams.push(this.selectedRoleType.id) : console.log("no role to add")
+        this.selectedAvatarType ? packageParams.push(this.selectedAvatarType.id) : console.log("no avatar to add")
+        //this.selectedTextType ? packageParams.push(this.selectedTextType.id) : console.log("no text variant to add")
+
+        if (isAllUnitsCompleteSync(this.data) && this.data.nextActivityUnit) {
+            console.log("-- next activity") 
+
+              let procedure_data = {     
+                "activityUnitId": this.data.nextActivityUnit.id,
+                "contentPackageResourceId": this.selectedSessionEnv.id, 
+                "packageParametersIds": packageParams,
+                "resourceParametersIds": [
+                  //env
+                ],
+                "state": "RUNNING"
+              }
+
+              let result = await api.postActiveUnit(getUser(), procedure_data)
       
-      console.log(env + type + object)
-      
-      let typeId = 0;
-      this.cpParam.filter((param) => param.value == type).forEach((item) => {
-        typeId = item.id
-      });
+              console.log("RESULT:\n" + result)
 
-      let objectId = 0;
-      this.cpParam.filter((param) => param.value == object).forEach((item) => {
-        objectId = item.id
-      });
+        } else {
+          if (this.data.activity) {
+            console.log("-- first activity")
 
-      let ownFHIRRessourceId = this.user.fhirResourceId;
+            let payload = 
+            {
+              "patient": getFHIRId(), 
+              "carePlanUuid": this.data.carePlan.uuid, 
+              "carePlanUnitId": this.data.id, 
+              "fhirProcedure": "0",
+              "units": [
+                {
+                  "activityUnitId": this.data.activity.units[0].id, 
+                  "contentPackageResourceBundleId": this.selectedSessionEnv.id, 
+                  "packageParametersIds": packageParams,
+                  "resourceParametersIds": [
+                    //env
+                  ],
+                  "state": "RUNNING"
+                }
+              ]
+            }
 
-      let procedure_data = {
-        "patient": ownFHIRRessourceId,
-        "carePlanUuid": this.carePlanUUId,
-        "carePlanUnitId": this.carePlanUnitsId,
-        "fhirProcedure": "0",
-        "units": [
-          {
-            "activityUnitId": this.unitsId,
-            "contentPackageResourceId": this.unitResourceId,
-            "packageParametersIds": [typeId, objectId],
-            "resourceParametersIds": []
+            const result = await api.postProcedures(
+                getUser(), 
+                payload
+            )
+
+            console.log("RESULT:\n" + result)
+
+          } else {
+            console.log("-- runnning activity") 
           }
-        ]
-      }
-
-      alert("sendConfig: " + JSON.stringify(procedure_data));
-
-      const result = await api.postProcedures(this.user, procedure_data)
-      alert("result of post procedure: " + JSON.stringify(result))
-
-      //this.procedureId = result.data.id;
-      //this.procedureUnitId = result.data.units[0].id;
-
-      /*
-      */
-
-      /*
-      let results = [
-        {
-          "name" : "typeOfMeditation",
-          "value" : "Magnify",
-          "id" : 4
-        },
-        {
-          "name" : "objectType",
-          "value" : "Stone",
-          "id" : 11
         }
-      ]
-
-      const result = await api.postProcedureResultBatch(this.user, this.procedureId, this.procedureUnitId, questionaire_results);
-      alert("result of post procedure results: " + JSON.stringify(result.data))
-      */
-    },
-    getSessionTypeTitle(index) {
-      return this.options_SessionTypeAlternate[index].label;
-    },
-    getSessionEnvTitle(index) {
-      return this.options_SessionEnv[index].label;
-    },
-    getSessionDifficulty(index) {
-      return this.options_SessionDifficulty[index].label;
-    },
-    getSessionDifficultyColor(index) {
-      switch (index) {
-        case 0:
-          return "green";
-        case 1:
-          return "orange";
-        case 2:
-          return "red";
+        this.onNext();
       }
+      
     },
-    /*
-    onChangeType(value) {
-      //this.setUserConfigType(this.options_SessionTypeAlternate.indexOf(value));
-      //alert("type: " + this.user_config.session_typeAlternate);
-    },
-    */
-    onChangeEnv(value) {
-      this.selectedSessionEnv = value
-      //this.setUserConfigEnv(value);
-      //alert("type: " + this.user_config.session_typeAlternate);
-    },
-    getCourseDescription(type) {
-      //switch (type) {
-      //case 0:
-      console.log(type);
-      return "session_object_meditation_info_text";
-      //case 1:
-      //  return "orange";
-      //case 2:
-      //  return "red";
-      //}
-    },
-    onNextDebug() {
-      alert(
-        "start session:\n"+
-        this.selectedSessionEnv+"\n"+
-        this.selectedTypeOfMeditation+"\n"+
-        this.selectedObjectType
-      );
+    showInfo: async function() {
 
-      /*
-      this.cpParam.filter((param) => param.name == "objectType").forEach((item) => {
-        //this.data.push(item.keycloakUsers[0].username)
-        this.objectType.push(item.value) //(this.getFhirID(item));//item.fhirTherapist. //keycloakUsers[0].username)
-        //console.log(item)
-      });
-      */
+      var options = { color: '#28B9AF', width: 400, zIndex: 200, noconfirm: false }
 
-      this.sendConfig(this.selectedSessionEnv, this.selectedTypeOfMeditation, this.selectedObjectType )
+      await this.$refs.validation.open(
+          "Information",
+          "Bitte wählen sie eine gültige Konfiguration aus."
+          , options
+      )
     }
   },
 };

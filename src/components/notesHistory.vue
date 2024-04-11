@@ -1,64 +1,4 @@
 <template>
-  <v-table v-if="0 == 1" fixed-header show-select height="300px">
-    <thead>
-      <tr>
-        <th class="text-left">TITEL</th>
-        <th class="text-left">DATUM</th>
-        <th class="text-right">AKTIONEN</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="item in items" :key="item.text" style="cursor: pointer" @click="routeDetails(item)">
-        <td>{{ item.text }}</td>
-        <td>{{ parseDate(item.date) }}</td>
-        <td class="text-right">
-          <v-menu location="bottom" open-on-hover="false" :close-on-content-click="false">
-            <template v-slot:activator="{ props: menu }">
-              <!--
-              <v-tooltip location="bottom" text="Benutzer">
-              <template v-slot:activator="{ props: tooltip }">
-
-              icon
-              -->
-              <v-btn v-bind="mergeProps(menu, tooltip)" variant="text" class="mx-2">
-                <v-icon>mdi-dots-vertical</v-icon>
-              </v-btn>
-              <!--</template>
-              </v-tooltip>-->
-            </template>
-            <v-card min-width="auto" class="rounded-lg">
-              <v-list-item>
-                <v-btn variant="flat" @click="archiveUser(item)"> Archivieren </v-btn>
-              </v-list-item>
-
-<!--
-
-              <v-divider :thickness="1" class="my-2 border-opacity-100" color="#f22"></v-divider>
-              <v-list>
-                <v-list-item>
-                  <v-btn variant="flat" @click="logout()"> logout </v-btn>
-                </v-list-item>
-                <v-list-item>
-                  <v-btn variant="flat" @click="refreshToken()"> refresh token </v-btn>
-                </v-list-item>
-                <v-list-item>
-                  <v-combobox
-                    label="Sprache"
-                    :items="$i18n.availableLocales"
-                    v-model="$i18n.locale"
-                  ></v-combobox>
-                </v-list-item>
-              </v-list>
--->
-            </v-card>
-          </v-menu>
-        </td>
-      </tr>
-    </tbody>
-  </v-table>
-  <v-pagination v-if="0 == 1" :length="3" rounded="circle" class="mb-2"></v-pagination>
-  
-  <!-- @click="routeDetails(item)" -->
   <v-data-table
     v-model:page="page"
     :headers="headers"
@@ -72,18 +12,21 @@
     <template v-slot:bottom>
       <div class="text-center pt-2">
         <v-pagination
-          v-model="page"
-          :length="pageCount"
+            v-model="page"
+            :length="pageCount"
         ></v-pagination>
       </div>
     </template>
+    <template #[`item.title`]="{ item }">
+      {{item.raw.title}}
+    </template>
     <template #[`item.date`]="{ item }">
-      {{parseDate(item.selectable.date)}}
+      {{parseDate(item.raw.date)}}
     </template>
     <template #[`item.actions`]="{  }">
-      <v-menu location="bottom" open-on-hover="false" :close-on-content-click="false">
+      <v-menu location="bottom" :close-on-content-click="false">
         <template v-slot:activator="{ props: menu }">
-          <v-btn v-bind="mergeProps(menu, tooltip)" variant="text" class="mx-2">
+          <v-btn v-bind="mergeProps(menu/*, tooltip*/)" variant="text" class="mx-2">
             <v-icon>mdi-dots-vertical</v-icon>
           </v-btn>
         </template>
@@ -98,85 +41,81 @@
 </template>
 
 <script>
-//import ListItemPlayer from "@/components/listItemPlayer.vue";
-//import ListItemNotes from "@/components/listItemNotes.vue";
-//import ListItemNotesHeader from "@/components/listItemNotesHeader.vue";
-//import data from "../scripts/data/data.js";
-//import { parseDate } from "@/scripts/media/utils";
-import { useNotesStore } from "@/stores/notesStore";
-import { Notes } from "@/types/note";
-import { mergeProps } from "vue"; 
+import { getTextByLanguage, parseDate } from "@/scripts/common/utils";
+//import { useNotesStore } from "@/stores/notesStore";
+import { mergeProps, ref } from "vue";
 import { VDataTable } from 'vuetify/labs/VDataTable'
+//import { useCurrentSessionStore } from "@/stores/currentSessionStore";
+import api from "@/scripts/api/api";
+import { getUser } from "@/scripts/procedureEngine";
+
+import { useCurrentSessionStore } from "@/stores/currentSessionStore";
 
 export default {
   name: "NotesHistory",
+  components: { VDataTable },
   setup() {
-    const notesStore = useNotesStore();
 
-    console.log(new Notes(notesStore.getNotes).models);
-    const items = new Notes(notesStore.getNotes).models;
+    //const notesStore = useNotesStore();
+    //const sessionStore = useCurrentSessionStore();
+    const sessionStore = useCurrentSessionStore();
 
-    return {
-      notesStore, items
-    };
-  },
-  data: () => ({
-    page: 1,
-    itemsPerPage: 6,
-    //items: [], //data.getNotesHistory(),
-    headers: [
+    const items = ref([]);
+    const page = ref(1);
+    const itemsPerPage = ref(6);
+    const headers = ref([
       {
         align: 'start',
-        key: 'text',
-        sortable: false,
-        title: 'TITEL',
+        key: 'title',
+        sortable: true,
+        title: 'TITLE',
       },
       { title: 'DATUM', key: 'date' },
-      { align: 'end',
-        title: 'AKTIONEN', key: 'actions' },
-    ],
-  }),
-  props: [ "searchText" ],
-  watch: {
-    searchText: function () {
-      console.log(this.searchText);
-      this.items = new Notes(
-        this.notesStore.getNotes.filter(
-          (note) => note.text.indexOf(this.searchText) != -1
-        )
-      ).models;
-    },
+      { align: 'end', title: 'AKTIONEN', sortable: false, key: 'actions' },
+    ]);
+
+    return {
+      items,
+      page,
+      itemsPerPage,
+      headers,
+      sessionStore,
+    };
   },
-  components: { VDataTable
-    /*ListItemPlayer, ListItemNotes, ListItemNotesHeader */
-  },
-  mounted: function () {
-    
+  mounted: async function () {
+    const data = await api.getVoiceRecords(getUser());
+    data.forEach(element => {
+      this.items.push({
+            title: this.getTextByLanguage(element.carePlanUnit.activity.translations, this.$i18n ),
+            date: element.stopMoment,
+            id: element.carePlanUnit.id,
+            item: element
+          })
+    });
   },
   methods: {
+    getTextByLanguage: function (item, i18n) {
+      return getTextByLanguage(item, i18n)
+    },
     routeDetails(ev, value) {
-      //alert(JSON.stringify(value.item.selectable))
+      //console.log("item",value.item.raw.id)
+
+      console.log("STORE: " + JSON.stringify(value))
+
+      this.sessionStore.setItem(value.item.raw)
+
       this.$router.push({
         name: "Dashboard3b",
-        params: { data: JSON.stringify(value.item.selectable) },
+        //params: { id: value.item.raw.id },
       });
     },
     parseDate(timecode) {
-      return new Date(timecode).toLocaleDateString("de-DE", {
-        // you can use undefined as first argument
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        //second: "2-digit",
-      });
+      return parseDate(timecode)
     },
     archiveUser() {
       alert("not yet implemented!")
     },
     mergeProps,
-    //#4FAF9C
   },
   computed: {
     pageCount () {

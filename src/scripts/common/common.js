@@ -7,8 +7,6 @@ export default {
     course_type_diary: 3,
     course_type_question: 4,
     course_type_video: 5,
-    course_type_demographic: 6,
-    course_type_ffaf: 7,
     // session type
     session_type_meditation: 0,
     session_type_unknown1: 1,
@@ -38,6 +36,7 @@ export default {
     session_state_running: 1,
     session_state_overdue: 2,
     session_state_done: 3,
+    session_state_aborted: 4,
     // notification types (item overdue, general information ...)
     notification_type_1: 2,
     notification_type_2: 1,

@@ -1,103 +1,8 @@
 <template>
-  <v-table 
-    v-if="0 == 1"
-    fixed-header 
-    show-select height="300px">
-    <thead>
-      <tr>
-        <!-- <th class="text-left">[]</th> -->
-        <th class="text-left">ID</th>
-        <th class="text-left">REGISTRIERT SEIT</th>
-        <th class="text-left">REGISTRIERUNG</th>
-        <th class="text-left">FOLLOW UP</th>
-        <th class="text-left">FINAL</th>
-        <th class="text-right">AKTIONEN</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="(item, index) in items" :key="item.text" style="cursor: pointer" @click="routeDetails(item)">
-        <!-- <td>{{ "[]" }}</td> -->
-        <td>{{ item.text }}</td>
-        <td>{{ parseDate(item.date) }}</td>
-        <td>
-          <v-tooltip location="bottom" :text="'Item ' + (index+1)">
-            <template v-slot:activator="{ props }">
-              <v-icon v-bind="props" color="#4FAF9C">{{ "mdi-book-settings-outline" }}</v-icon> 
-            </template>
-          </v-tooltip>
-          <v-tooltip location="bottom" :text="'Item ' + (index+1)">
-            <template v-slot:activator="{ props }">
-              <v-icon v-bind="props" color="#F47F76">{{ "mdi-file-document-edit" }}</v-icon> 
-            </template>
-          </v-tooltip>
-          <v-tooltip location="bottom" :text="'Item ' + (index+1)">
-            <template v-slot:activator="{ props }">
-              <v-icon v-bind="props" color="#FAC194">{{ "mdi-file-video-outline" }}</v-icon> 
-            </template>
-          </v-tooltip>
-        </td>
-        <td>
-          <v-tooltip location="bottom" :text="'Item ' + (index+1)">
-            <template v-slot:activator="{ props }">
-              <v-icon v-bind="props" color="#DDD">{{ "mdi-file-sign" }}</v-icon> 
-            </template>
-          </v-tooltip>
-          <v-tooltip location="bottom" :text="'Item ' + (index+1)">
-            <template v-slot:activator="{ props }">
-              <v-icon v-bind="props" color="#DDD">{{ "mdi-web" }}</v-icon> 
-            </template>
-          </v-tooltip>
-          <v-tooltip location="bottom" :text="'Item ' + (index+1)">
-            <template v-slot:activator="{ props }">
-              <v-icon v-bind="props" color="#DDD">{{ "mdi-safety-goggles" }}</v-icon> 
-            </template>
-          </v-tooltip>
-          <v-tooltip location="bottom" :text="'Item ' + (index+1)">
-            <template v-slot:activator="{ props }">
-              <v-icon v-bind="props" color="#DDD">{{ "mdi-file-video-outline" }}</v-icon> 
-            </template>
-          </v-tooltip>
-          <v-tooltip location="bottom" :text="'Item ' + (index+1)">
-            <template v-slot:activator="{ props }">
-              <v-icon v-bind="props" color="#DDD">{{ "mdi-file-document-edit" }}</v-icon> 
-            </template>
-          </v-tooltip>
-        </td>
-        <td>
-          <v-tooltip location="bottom" :text="'Item ' + (index+1)">
-            <template v-slot:activator="{ props }">
-              <v-icon v-bind="props" color="#DDD">{{ "mdi-web" }}</v-icon> 
-            </template>
-          </v-tooltip>
-          <v-tooltip location="bottom" :text="'Item ' + (index+1)">
-            <template v-slot:activator="{ props }">
-              <v-icon v-bind="props" color="#DDD">{{ "mdi-safety-goggles" }}</v-icon> 
-            </template>
-          </v-tooltip>
-        </td>
-        <td class="text-right">
-          <v-menu location="bottom" open-on-hover="false" :close-on-content-click="false">
-            <template v-slot:activator="{ props: menu }">
-              <v-btn v-bind="mergeProps(menu, tooltip)" variant="text" class="mx-2">
-                <v-icon>mdi-dots-vertical</v-icon>
-              </v-btn>
-            </template>
-            <v-card min-width="auto" class="rounded-lg">
-              <v-list-item>
-                <v-btn variant="flat" @click="archiveUser(item)"> Archivieren </v-btn>
-              </v-list-item>
-            </v-card>
-          </v-menu>
-        </td>
-      </tr>
-    </tbody>
-  </v-table>
-  <v-pagination v-if="0 == 1" :length="3" rounded="circle" class="mb-2"></v-pagination>
-
   <v-data-table
     v-model:page="page"
     :headers="headers"
-    :items="items"
+    :items="itemsFiltered"
     :items-per-page="itemsPerPage"
     hide-default-footer
     hover
@@ -106,75 +11,123 @@
   >
     <template v-slot:bottom>
       <div class="text-center pt-2">
+        <center>
+          <v-progress-circular
+            class="mx-8 my-8"
+            v-if="loading && itemsFiltered.length == 0"
+            indeterminate
+            color="#28B9AF"
+          />
+        </center>
+        <center style="height: 100%" v-if="!loading && itemsFiltered.length == 0">
+          <v-card-title> Keine Patienten für "{{ searchText }}" gefunden. </v-card-title>
+        </center>
         <v-pagination
+          v-if="itemsFiltered.length > 0"
           v-model="page"
           :length="pageCount"
         ></v-pagination>
       </div>
     </template>
+    <template #[`item.name`]="{ item }">
+      <div class="my-1">
+        {{ (item.raw.item.fhirPatient.firstName || item.raw.item.fhirPatient.lastName) ? item.raw.name : item.raw.item.keycloakUsers[0].username }}
+      </div>
+      <div>
+         <span class="text-xs"> {{ parseDate(item.raw.date) }} </span> 
+      </div>  
+    </template>
+    
+    <!--
     <template #[`item.date`]="{ item }">
-      {{parseDate(item.selectable.date)}}
+      {{parseDate(item.raw.date)}}
     </template>
-    <template #[`item.reg`]="{  }">
-      <v-tooltip location="bottom" :text="'Item ' + (index+1)">
-        <template v-slot:activator="{ props }">
-          <v-icon v-bind="props" color="#4FAF9C">{{ "mdi-book-settings-outline" }}</v-icon> 
-        </template>
-      </v-tooltip>
-      <v-tooltip location="bottom" :text="'Item ' + (index+1)">
-        <template v-slot:activator="{ props }">
-          <v-icon v-bind="props" color="#F47F76">{{ "mdi-file-document-edit" }}</v-icon> 
-        </template>
-      </v-tooltip>
-      <v-tooltip location="bottom" :text="'Item ' + (index+1)">
-        <template v-slot:activator="{ props }">
-          <v-icon v-bind="props" color="#FAC194">{{ "mdi-file-video-outline" }}</v-icon> 
-        </template>
-      </v-tooltip>
+    -->
+    
+    <template #[`item.first`]="{ item }">
+      <div class="my-1">
+        <v-tooltip v-for="(element, index) in item.raw.calendarEntries[0]" :key="index" location="bottom" :text="getTextByLanguage(element.activity.translations, this.$i18n) + ' (' + getStateInfo(element.state) + ')'">
+          <template v-slot:activator="{ props }">
+            <v-icon size="20" class="mx-1 my-1" v-bind="props" :color="getStateColor(element.state)">{{ getCourseIcon(element.activity.primaryType) }}</v-icon> 
+          </template>
+          <p class="text-xl">{{getTextByLanguage(element.activity.translations, this.$i18n)}}</p>
+          <p class="text-xs">{{element.startDate + ' - ' + element.stopDate}}</p>
+          <p>{{getStateInfo(element.state)}}</p>
+        </v-tooltip>
+        <span v-if="item.raw.calendarEntries[0].length == 0" class="text-xs">Keine Aktivitäten</span>
+      </div>
     </template>
-    <template #[`item.follow`]="{  }">
-      <v-tooltip location="bottom" :text="'Item ' + (index+1)">
-        <template v-slot:activator="{ props }">
-          <v-icon v-bind="props" color="#DDD">{{ "mdi-file-sign" }}</v-icon> 
-        </template>
-      </v-tooltip>
-      <v-tooltip location="bottom" :text="'Item ' + (index+1)">
-        <template v-slot:activator="{ props }">
-          <v-icon v-bind="props" color="#DDD">{{ "mdi-web" }}</v-icon> 
-        </template>
-      </v-tooltip>
-      <v-tooltip location="bottom" :text="'Item ' + (index+1)">
-        <template v-slot:activator="{ props }">
-          <v-icon v-bind="props" color="#DDD">{{ "mdi-safety-goggles" }}</v-icon> 
-        </template>
-      </v-tooltip>
-      <v-tooltip location="bottom" :text="'Item ' + (index+1)">
-        <template v-slot:activator="{ props }">
-          <v-icon v-bind="props" color="#DDD">{{ "mdi-file-video-outline" }}</v-icon> 
-        </template>
-      </v-tooltip>
-      <v-tooltip location="bottom" :text="'Item ' + (index+1)">
-        <template v-slot:activator="{ props }">
-          <v-icon v-bind="props" color="#DDD">{{ "mdi-file-document-edit" }}</v-icon> 
-        </template>
-      </v-tooltip>
+    <template #[`item.second`]="{ item }">
+      <div class="my-1">
+        <v-tooltip v-for="(element, index) in item.raw.calendarEntries[1]" :key="index" location="bottom" :text="getTextByLanguage(element.activity.translations, this.$i18n) + ' (' + getStateInfo(element.state) + ')'">
+          <template v-slot:activator="{ props }">
+            <v-icon size="20" class="mx-1 my-1" v-bind="props" :color="getStateColor(element.state)">{{ getCourseIcon(element.activity.primaryType) }}</v-icon> 
+          </template>
+          <p class="text-xl">{{getTextByLanguage(element.activity.translations, this.$i18n)}}</p>
+          <p class="text-xs">{{element.startDate + ' - ' + element.stopDate}}</p>
+          <p>{{getStateInfo(element.state)}}</p>
+        </v-tooltip>
+        <span v-if="item.raw.calendarEntries[1].length == 0" class="text-xs">Keine Aktivitäten</span>
+      </div>
     </template>
-    <template #[`item.final`]="{  }">
-      <v-tooltip location="bottom" :text="'Item ' + (index+1)">
-        <template v-slot:activator="{ props }">
-          <v-icon v-bind="props" color="#DDD">{{ "mdi-web" }}</v-icon> 
-        </template>
-      </v-tooltip>
-      <v-tooltip location="bottom" :text="'Item ' + (index+1)">
-        <template v-slot:activator="{ props }">
-          <v-icon v-bind="props" color="#DDD">{{ "mdi-safety-goggles" }}</v-icon> 
-        </template>
-      </v-tooltip>
+    <template #[`item.third`]="{ item }">
+      <div class="my-1">
+        <v-tooltip v-for="(element, index) in item.raw.calendarEntries[2]" :key="index" location="bottom" :text="getTextByLanguage(element.activity.translations, this.$i18n) + ' (' + getStateInfo(element.state) + ')'">
+          <template v-slot:activator="{ props }">
+            <v-icon size="20" class="mx-1 my-1" v-bind="props" :color="getStateColor(element.state)">{{ getCourseIcon(element.activity.primaryType) }}</v-icon> 
+          </template>
+          <p class="text-xl">{{getTextByLanguage(element.activity.translations, this.$i18n)}}</p>
+          <p class="text-xs">{{element.startDate + ' - ' + element.stopDate}}</p>
+          <p>{{getStateInfo(element.state)}}</p>
+        </v-tooltip>
+        <span v-if="item.raw.calendarEntries[2].length == 0" class="text-xs">Keine Aktivitäten</span>
+      </div>
     </template>
-    <template #[`item.actions`]="{  }">
-      <v-menu location="bottom" open-on-hover="false" :close-on-content-click="false">
+    <template #[`item.fourth`]="{ item }">
+      <div class="my-1">
+        <v-tooltip v-for="(element, index) in item.raw.calendarEntries[3]" :key="index" location="bottom" :text="getTextByLanguage(element.activity.translations, this.$i18n) + ' (' + getStateInfo(element.state) + ')'">
+          <template v-slot:activator="{ props }">
+            <v-icon size="20" class="mx-1 my-1" v-bind="props" :color="getStateColor(element.state)">{{ getCourseIcon(element.activity.primaryType) }}</v-icon> 
+          </template>
+          <p class="text-xl">{{getTextByLanguage(element.activity.translations, this.$i18n)}}</p>
+          <p class="text-xs">{{element.startDate + ' - ' + element.stopDate}}</p>
+          <p>{{getStateInfo(element.state)}}</p>
+        </v-tooltip>
+        <span v-if="item.raw.calendarEntries[3].length == 0" class="text-xs">Keine Aktivitäten</span>
+      </div>
+    </template>
+    <template #[`item.fifth`]="{ item }">
+      <div class="my-1">
+        <v-tooltip v-for="(element, index) in item.raw.calendarEntries[4]" :key="index" location="bottom" :text="getTextByLanguage(element.activity.translations, this.$i18n) + ' (' + getStateInfo(element.state) + ')'">
+          <template v-slot:activator="{ props }">
+            <v-icon size="20" class="mx-1 my-1" v-bind="props" :color="getStateColor(element.state)">{{ getCourseIcon(element.activity.primaryType) }}</v-icon> 
+          </template>
+          <p class="text-xl">{{getTextByLanguage(element.activity.translations, this.$i18n)}}</p>
+          <p class="text-xs">{{element.startDate + ' - ' + element.stopDate}}</p>
+          <p>{{getStateInfo(element.state)}}</p>
+        </v-tooltip>
+        <span v-if="item.raw.calendarEntries[4].length == 0" class="text-xs">Keine Aktivitäten</span>
+      </div>
+    </template>
+    <template #[`item.other`]="{ item }">
+      <div class="my-1">
+        <v-tooltip v-for="(element, index) in item.raw.calendarEntries[5]" :key="index" location="bottom" :text="getTextByLanguage(element.activity.translations, this.$i18n) + ' (' + getStateInfo(element.state) + ')'">
+          <template v-slot:activator="{ props }">
+            <v-icon size="20" class="mx-1 my-1" v-bind="props" :color="getStateColor(element.state)">{{ getCourseIcon(element.activity.primaryType) }}</v-icon> 
+          </template>
+          <p class="text-xl">{{getTextByLanguage(element.activity.translations, this.$i18n)}}</p>
+          <p class="text-xs">{{element.startDate + ' - ' + element.stopDate}}</p>
+          <p>{{getStateInfo(element.state)}}</p>
+        </v-tooltip>
+        <span v-if="item.raw.calendarEntries[5].length == 0" class="text-xs">Keine Aktivitäten</span>
+      </div>
+    </template>
+
+    <!--
+    <template #[`item.actions`]="{ item }">
+      <v-menu location="bottom" :close-on-content-click="false">
         <template v-slot:activator="{ props: menu }">
-          <v-btn v-bind="mergeProps(menu, tooltip)" variant="text" class="mx-2">
+          <v-btn v-bind="mergeProps(menu/*, tooltip*/)" variant="text" class="mx-2">
             <v-icon>mdi-dots-vertical</v-icon>
           </v-btn>
         </template>
@@ -185,110 +138,200 @@
         </v-card>
       </v-menu>
     </template>
+    -->
   </v-data-table>
 </template>
 
 <script>
-//import ListItemPlayer from "@/components/listItemPlayer.vue";
-//import ListItemPatients from "@/components/listItemPatients.vue";
-//import data from "../scripts/data/data.js";
-import { usePatientsStore } from "@/stores/patientStore";
-import { Patients } from "@/types/patient";
 import { mergeProps } from "vue"; 
 import { VDataTable } from 'vuetify/labs/VDataTable'
+import api from "@/scripts/api/api";
+//import common from "@/scripts/common/common";
+//import { getTextByLanguage } from "@/scripts/common/utils";
+
+import { 
+  //getDescriptionText,
+  getTextByLanguage, 
+  parseDate } from "@/scripts/common/utils";
+import { 
+  //getCourseType, 
+  getCourseIcon,
+  getIconForType } from "@/scripts/procedureEngine";
+
+import { useCurrentPatientStore } from "@/stores/currentPatientStore";
 
 export default {
   name: "PatientList",
   setup() {
-    const patientsStore = usePatientsStore();
-    
-    console.log(new Patients(patientsStore.getPatients).models);
-    const items = new Patients(patientsStore.getPatients).models;
-    
+    const patientStore = useCurrentPatientStore();
     return {
-      patientsStore, items
+      patientStore,
     };
+  },
+  watch: {
+    searchText: function () {
+      if (this.searchText == null) {
+        this.itemsFiltered = this.items
+      } else {
+        this.itemsFiltered = this.items.filter(
+          (item) => (item.name.toUpperCase().search(this.searchText.toUpperCase()) === 0 || item.name.toUpperCase().indexOf(this.searchText.toUpperCase()) >= 0)
+        );
+      }
+    },
   },
   data: () => ({
     page: 1,
-    itemsPerPage: 6,
+    itemsPerPage: 8,
     headers: [
       {
-        align: 'start',
-        key: 'text',
-        sortable: false,
         title: 'ID',
+        key: 'name',
+        align: 'start',
+        sortable: true,
+        //width: '20%'
       },
-      { title: 'REGISTRIERT SEIT', key: 'date' },
-      { title: 'REGISTRIERUNG', key: 'reg' },
-      { title: 'FOLLOW UP', key: 'follow' },
-      { title: 'FINAL', key: 'final' },
-      { align: 'end',
-        title: 'AKTIONEN', key: 'actions' },
+      //{ title: 'REGISTRIERT SEIT', key: 'date' },
+      { title: 'ERSTE WOCHE', sortable: false, key: 'first', width: '12.5%' },
+      { title: 'ZWEITE WOCHE', sortable: false, key: 'second', width: '12.5%' },
+      { title: 'DRITTE WOCHE', sortable: false, key: 'third', width: '12.5%' },
+      { title: 'VIERTE WOCHE', sortable: false, key: 'fourth', width: '12.5%' },
+      { title: 'FÜNFTE WOCHE', sortable: false, key: 'fifth', width: '12.5%' },
+      { title: 'SONSTIGE', sortable: false, key: 'other', width: '12.5%' },
+      //{ align: 'end', title: '', sortable: false, key: 'actions' },
     ],
+    //availableOrRunning: [],
+    items: [],
+    itemsFiltered: [],
+    
+    loading: false,
   }),
   props: ["searchText", "sortmode"],
-  watch: {
-    searchText: function () {
-      console.log(this.searchText);
-      this.items = new Patients(
-        this.patientsStore.getPatients.filter(
-          (patient) => patient.text.indexOf(this.searchText) != -1
-        )
-      ).models;
-    },
-  },
   components: { VDataTable },
-  mounted: function () { },
+  mounted: async function () {
+    this.loading = true;
+
+    if (!this.access_token) {
+      this.user = JSON.parse(sessionStorage.getItem("user"));
+    }
+
+    await this.parsePatientsForDatatable(await this.getPatients())
+    
+    this.loading = false;
+
+  },
   methods: {
-    parseDate(timecode) {
-      return new Date(timecode).toLocaleDateString("de-DE", {
-        // you can use undefined as first argument
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        //second: "2-digit",
+    createCalendarEntries: async function (element) {
+
+      var grouped_items = []
+
+      grouped_items[0] = element.calendarEntries.filter(
+        (item) => item.carePlanWeek == 1
+      )
+      grouped_items[1] = element.calendarEntries.filter(
+        (item) => item.carePlanWeek == 2
+      )
+      grouped_items[2] = element.calendarEntries.filter(
+        (item) => item.carePlanWeek == 3
+      )
+      grouped_items[3] = element.calendarEntries.filter(
+        (item) => item.carePlanWeek == 4
+      )
+      grouped_items[4] = element.calendarEntries.filter(
+        (item) => item.carePlanWeek == 5
+      )
+      grouped_items[5] = element.calendarEntries.filter(
+        (item) => item.carePlanWeek == null
+      )
+
+      return grouped_items;
+    },
+    getPatients: async function () {
+      return await api.getPatients(this.user.id);
+    },
+    parsePatientsForDatatable: async function (patients) {
+      patients.forEach(async element => {
+        var calendarEntries = await this.createCalendarEntries(element)
+
+        console.log(element.fhirPatient.id + " - " + calendarEntries)
+
+        this.items.push(
+          { 
+            "id": element.keycloakUsers[0].id,
+            "name": element.fhirPatient.firstName + " " + element.fhirPatient.lastName, 
+            "date": element.keycloakUsers[0].createdAt,
+            "item": element,
+            "calendarEntries": calendarEntries
+          })
+
+          console.log(calendarEntries)
+
       });
+      this.itemsFiltered = this.items
+    },
+    getCourseIcon(type) {
+      return getCourseIcon(type)
+    },
+    getTextByLanguage: function (item, i18n) {
+      return getTextByLanguage(item, i18n)
+    },
+    getIconForType(type) {
+      return getIconForType(type)
+    },
+    parseDate(timecode) {
+      return parseDate(timecode)
     },
     routeDetails(ev, value) {
+      
+      var data = {
+          id: this.index,
+          edit: false,
+          item: value.item.raw,
+      }
+
+      this.patientStore.setItem(data)
+
       this.$router.push({
         name: "DashboardTherapist3b",
-        params: {
-          data: JSON.stringify({
-            id: this.index,
-            edit: false,
-            item: value.item.selectable,
-          }),
-        },
       });
     },
-    /*
-    doSort(array, sortmode) {
-      if (array == null) return;
-      switch (sortmode) {
-        case 0:
-          return array.sort((a, b) => a.text.localeCompare(b.text));
-        case 1:
-          return array.sort((a, b) => b.text.localeCompare(a.text));
-        case 2:
-          return array.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
-        case 3:
-          return array.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
-
-        default:
-          return array;
-      }
-    },*/
     archiveUser() {
       alert("not yet implemented!")
+    },
+    getStateColor(state) {
+      switch (state) {
+        case "MISSED":
+          return '#910c00'
+        case "ACTIVE":
+          return '#004b85'
+        case "COMPLETED":
+          return '#1a8500'
+        case "SCHEDULED":
+          return '#333'
+      
+        default:
+          break;
+      }
+    },
+    getStateInfo(state) {
+      switch (state) {
+        case "MISSED":
+          return 'Nicht abgeschlossen'
+        case "ACTIVE":
+          return 'Aktiv'
+        case "COMPLETED":
+          return 'Abgeschlossen'
+        case "SCHEDULED":
+          return 'Geplant'
+      
+        default:
+          break;
+      }
     },
     mergeProps,
   },
   computed: {
     pageCount () {
-      return Math.ceil(this.items.length / this.itemsPerPage)
+      return Math.ceil(this.itemsFiltered.length / this.itemsPerPage)
     },
   },
 };
@@ -298,5 +341,4 @@ export default {
 tr:hover {
   background-color: #4FAF9C40 !important;
 }
-
 </style>

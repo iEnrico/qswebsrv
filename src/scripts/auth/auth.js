@@ -18,11 +18,11 @@ var auth = {
 
     generateToken: async function () {
         if (window.location.search) {
-
+            
             var args = new URLSearchParams(window.location.search);
             var code = args.get("code");
             console.log("returned keycloak code: " + code)
-
+                
             if (code) {
                 try {
 
@@ -77,7 +77,7 @@ var auth = {
             });
 
             if (response.status == 200) {
-                console.log("Refresh token saved response:",response);
+                console.log(response);
                 saveData(response);
 
                 // stay on login and show token
@@ -121,15 +121,20 @@ var auth = {
             });
     },
     logout: function (/*token*/) {
+        this.refreshToken()
         Promise.resolve()
             .then(function () {
                 redirectKeycloak(logoutEndpoint, new URLSearchParams({
                     client_id: clientId,
                     //id_token_hint: token,
-                    post_logout_redirect_uri: "http://localhost:8080"//window.location.href.split('?')[0],
+                    post_logout_redirect_uri: window.location.origin,
                 }));
                 clearData();
+            })
+            .catch((err) => {
+                console.log("logout error: " + err);
             });
+        
     }
 
 }
@@ -202,26 +207,22 @@ export function isValidToken () {
         return false;
     }
 }
-
-
+    
 export function remainingSessionTime () {
     const token = getLocalToken();
-    console.log('token:',token);
     if (token) {
         try {
             const decodedToken = decode(token);
-            console.log('decodedToken:',decodedToken);
-            const date = Math.round(new Date().getTime() / 1000);
-            console.log('date:',date);
+            const date = new Date().getTime() / 1000;
             const remainingSessionMinutes = Number(((decodedToken.exp - date) / 60).toFixed(0));
-            console.log('remaining session minutes: ', remainingSessionMinutes);
+            //console.log('remaining session minutes: ', remainingSessionMinutes);
             return remainingSessionMinutes > 0;
         } catch (error) {
             console.log('Remaining session time -> invalid token format', error);
         }
-    }
+    }   
 }
-
+    
 export function getLocalToken () {
     return sessionStorage.getItem("access_token");
 }

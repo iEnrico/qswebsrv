@@ -22,12 +22,23 @@
     </v-container>
   </v-card>
   
+  <v-btn variant="outlined" class="ma-0" @click="playDuoAudioSource()"> two audio files test </v-btn>
+  <v-btn variant="outlined" class="ma-0" @click="getStream()"> GET stream </v-btn>
+  <v-btn variant="outlined" class="ma-0" @click="postStream()"> POST stream </v-btn>
+  <v-btn variant="outlined" class="ma-0" @click="deleteStream()"> DELETE stream </v-btn>
+  
 </template>
 
 <script>
 
 import { BarChart, LineChart } from 'vue-chart-3';
 import { Chart, registerables } from "chart.js";
+//import { getLocalToken, } from '@/scripts/auth/auth.js';
+
+import api from "@/scripts/api/api";
+
+//import { /*NativeEventSource,*/ EventSourcePolyfill } from 'event-source-polyfill';
+//import { fetchEventSource } from '@microsoft/fetch-event-source';
 
 Chart.register(...registerables);
 
@@ -110,7 +121,10 @@ export default {
   data: () => ({}),
   props: {},
   components: { BarChart, LineChart },
-  mounted: function () {},
+  mounted: function () {
+    this.connectEventStream()
+    //console.log(getLocalToken)
+  },
   methods: {
     api: function () {
       this.route("/debug1");
@@ -121,9 +135,82 @@ export default {
     test1: function () {
       this.route("/debug3");
     },
+    playDuoAudioSource() {
+
+      var snd1  = new Audio();
+      var src1  = document.createElement("source");
+      src1.type = "audio/mpeg";
+      src1.src  = require("@/assets/audio1.ogg");
+      snd1.appendChild(src1);
+
+      var snd2  = new Audio();
+      var src2  = document.createElement("source");
+      src2.type = "audio/mpeg";
+      src2.src  = require("@/assets/audio2.ogg");
+      snd2.appendChild(src2);
+
+      snd1.play(); 
+      snd2.play();
+    },
     route: function (route) {
       this.$router.push(route);
     },
+    connectEventStream: function () {
+      
+      /*let user = ""
+      if (!this.access_token) {
+        //api.getUserData();
+        user = JSON.parse(sessionStorage.getItem("user"));
+      }*/
+      //alert(user)
+
+      //var eventSourceInitDict = {https: {rejectUnauthorized: false}};
+      //getLocalToken();
+      
+      /*
+      var events = fetchEventSource('https://backend.relivr-integration.nuromedia.com/user/active-procedure/stream/', {
+          onmessage(ev) {
+              console.log(ev.data);
+          }
+      });
+      */
+      
+      
+      /*
+      const events = new global.EventSource( 
+        'https://backend.relivr-integration.nuromedia.com/user/active-procedure/stream/', 
+        { 
+          withCredentials: true,
+          headers: {'Authorization': 'Bearer ' + getLocalToken()}
+        } 
+      ); 
+      */
+
+      // 'http://localhost:3000/events');
+      
+      // alert(events.withCredentials)
+      
+      /*
+      events.onopen = (event) => {
+        if (event.status != 200) {
+          throw new Error(`error status ${event}`);
+        }
+      }
+      */
+
+    },
+    postStream() {
+      var result = api.postStrean()
+      alert(JSON.stringify(result))
+    },
+    getStream() {
+      var result = api.getStrean()
+      alert(JSON.stringify(result))
+    },
+    deleteStream() {
+      var result = api.deleteStream()
+      alert(JSON.stringify(result))
+    }
   },
 };
 </script>

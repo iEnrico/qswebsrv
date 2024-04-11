@@ -1,55 +1,93 @@
 
-{
+    {
 
-    "login_info_loggedin": "You are successfully logged in with Token ",
-    "login_info_loggedout": "You are not logged in!",
-    "login_button_signin": "Login via KeyCloak",
-    "login_button_signout": "Logout",
-    "login_button_account": "Account",
+        "login_info_loggedin": "You are successfully logged in with Token ",
+        "login_info_loggedout": "You are not logged in!",
+        "login_button_signin": "Login via KeyCloak",
+        "login_button_signout": "Logout",
+        "login_button_account": "Account",
+        "login_button_privacy": "Data Privacy",
+        
+        "sidebar_start": "Overview",
+        "sidebar_session": "Journal",
+        "sidebar_notes": "Calendar",
+        "sidebar_questionnaires": "Questionnaires",
+        "sidebar_therapist_start": "Overview",
+        "sidebar_therapist_session": "Patienten",
+        "sidebar_therapist_notes": "Courses",
+        "sidebar_therapist_control": "Control",
+        "sidebar_therapist_replay": "Replays",
+        "sidebar_act_courses": "Courses",
 
-    "sidebar_start": "Overview",
-    "sidebar_session": "Journal",
-    "sidebar_notes": "Calendar",
-    "sidebar_questionnaires": "Questionnaires",
-    "sidebar_therapist_start": "Übersicht",
-    "sidebar_therapist_session": "Patienten",
-    "sidebar_therapist_notes": "Kurse",
-    "sidebar_act_courses": "Courses",
+        "navigation_vrlogin": "VR-Login",
+        "navigation_user": "User",
+
+        "title_view_login": "LoginView",
+        "title_view_dashboard": "DashBoard",
+        "title_view_home": "HomeView",
+        "title_view_notes": "NotesView",
+        "title_view_sessions": "SessionsView",
+
+        "notes_history_title": "Your current reports",
+
+        "title_dashboard_notes": "Notes",
+        "notes_empty_space": "Noch keine Notizen vorhanden",
+        
+        "title_dashboard_news": "News",
+        "dashboard_news_showall": "Show all news",
+
+        "title_dashboard_active_courses": "Active Courses",
+        "title_dashboard_week_overview_courses": "Weekly Course Overview",
+
+        "title_dashboard_activities": "Questionnaire Activities",
+        "title_dashboard_activity_courses": "Programme Courses",
+        "description_dashboard_activity_courses": "All activities to the other topics",
 
 
-    "navigation_vrlogin": "VR-Login",
-    "navigation_user": "User",
+        "description_dashboard_activities": "All activities to the questionnaires",
+        "placeholder_view3": "ReliVR Web-Platform EN",
 
-    "title_view_login": "LoginView",
-    "title_view_dashboard": "DashBoard",
-    "title_view_home": "HomeView",
-    "title_view_notes": "NotesView",
-    "title_view_sessions": "SessionsView",
+        "session_object_meditation_info_text": "The aim of object meditation is to focus on an object and in this way generate mindfulness and awareness of the here and now. The meditation exercises are guided and take place in a virtual environment. You can choose between three different exercises: the 'magnifying glass exercise', the 'telephone exercise' or the 'imagination exercise'. These each last approx. 6 - 9 minutes. For all three meditation exercises, you can also choose whether the object should be a stone, a stick or a statue. What do a stone, a stick and a statue have in common? - Not just the initial letters! One of these objects can help you to improve your mindfulness and your awareness of the here and now. From three options, choose the object meditation exercise in which one of these objects is to be perceived very consciously. Get involved and see how, in just 6-9 minutes, inanimate objects allow you to participate more in life.",
+        "session_surrounding_meditation_info_text": "In environmental meditation, the focus is placed on the perceived environment. This should be experienced consciously and in detail, thereby increasing mindfulness. There are three exercises to choose from. The first exercise, 'Colors and shapes', lasts around 11 minutes and focuses on the entire environment in great detail. The second exercise 'Object focus: I see what you don't see' takes around 8 minutes and the third exercise 'Short environmental meditation' is the shortest at around 5 minutes. Do you still remember the color of the last door you walked through? Perhaps you will with the help of this exercise. The aim of environmental meditation is to promote detailed awareness of your surroundings. Consciously experiencing your surroundings should also create more awareness of the here and now. This takes place in an exercise of your choice. Here you explore a virtual reality and, at best, gain insights for your own reality.",
+        "session_attention_training_info_text": "The aim of attention training is to increase mindfulness by concentrating your attention on listening. Tones, noises and sounds in the virtual environment should be consciously perceived.",
+        "session_free_meditation_info_text": "Finally decide for yourself! Free meditation offers you the space to design your meditation yourself. You are free to choose the topic. You have a gong to support you. Its sound reminds you to be present in the here and now again. You are also free to choose the duration of the meditation exercise and the time interval until the next gong sound.",
+        "session_body_scan_info_text": "How aware are you of your body? Try consciously feeling into your left little toe! The body scan is a 10-minute mindfulness exercise that focuses on conscious awareness of the body. In this guided exercise, you will get to know your body in a completely new way.",
 
-    "notes_history_title": "Your current reports",
+        "session_completed_info": "You have successfully completed this exercise. Thank you for your participation. You will now be returned to the start screen. There you can perform another exercise if you wish, depending on availability.",
 
-    "title_dashboard_news": "News",
-    "title_dashboard_courses": "Courses",
-    "title_dashboard_activities": "Questionnaire Activities",
-    "title_dashboard_activity_courses": "Programme Courses",
-    "description_dashboard_activity_courses": "All activities to the other topics",
+        "overlay_title": "Cancel session?",
+        "overlay_info": "You can save your previous entries and continue the activity at a later time.",
+        "overlay_btn_cancel": "Zurück zur Session",
+        "overlay_btn_ok": "Jetzt Abbrechen",
+        "overlay_btn_close": "Cancel",
+        "overlay_save_exit": "Speichern und Abschliessen",
 
+        "diary_new_recording_entry": "New Entry",
+        "diary_new_recording_entry_info": "Please answer the following question(s) in as much detail as possible.",
+        "diary_recording_missing_microphone_title": "No microphone authorization!",
+        "diary_recording_missing_microphone_msg": "You must enable access to your microphone for this function.",
 
-    "description_dashboard_activities": "All activities to the questionnaires",
-    "placeholder_view3": "ReliVR Web-Platform EN",
+        "questionaire_btn_back": "« Back",
+        "questionaire_btn_next": "Next »",
+        "questionaire_btn_skip": "Skip »",
+        "questionaire_btn_finished": "Done",
 
-    "session_object_meditation_info_text": "Ziel der Objektmeditation ist es, seinen Fokus auf einen Gegenstand zu leiten und auf diese Weise Achtsamkeit sowie Bewusstsein für das Hier und Jetzt zu generieren. Die Meditationsübungen werden angeleitet und finden in einer virtuellen Umgebung statt. Sie können hierbei zwischen drei unterschiedlichen Übungen wählen: der 'Lupenübung', der 'Telefonübung' oder der 'Imagination'. Diese dauern jeweils ca. 6 - 9 Minuten. Bei allen drei Meditationsübungen können Sie zudem auswählen, ob der Gegenstand ein Stein, ein Stock oder eine Statue sein soll. Was haben ein Stein, ein Stock und eine Statue gemeinsam? - Nicht nur die Anfangsbuchstaben! Eines dieser Gegenstände kann Ihnen dabei helfen Ihre Achtsamkeit und Ihr Bewusstsein für das Hier und jetzt zu verbessern. Aus drei Optionen wählen Sie die Objektmeditationsübung, in der eines dieser Gegenstände sehr bewusst wahrgenommen werden soll. Lassen Sie sich darauf ein und sehen Sie, wie in nur 6-9 Minuten leblose Gegenstände, Sie mehr am Leben teilhaben lassen.",
-    "session_surrounding_meditation_info_text": "Bei der Umgebungsmeditation wird der Fokus auf die wahrgenommene Umgebung gelegt. Diese soll bewusste und detailliert erlebt werden und auf diese Weise Achtsamkeit erhöhen. Hier lässt sich zwischen drei Übungen wählen. Die erste Übung 'Farben und Formen' dauert ca. 11 Minuten und bezieht sich sehr ausführlich auf die komplette Umgebung. Die zweite Übung 'Objektfokus: Ich sehe was, was du nicht siehst.' dauert ca. 8 Minuten und die dritte Übung 'Kurze Umgebungsmeditation' ist mit ca. 5 Minuten die kürzeste. Erinnern Sie sich noch an die Farbe der letzten Tür, durch die Sie gegangen sind? Mithilfe dieser Übung vielleicht schon eher. Die detaillierte Wahrnehmung der Umgebung soll durch die Umgebungsmeditation gefördert werden. Das bewusste Erleben der Umgebung soll auch mehr Bewusstsein für das Hier und Jetzt schaffen. Dies geschieht in einer von Ihnen wählbaren Übung. Sie explorieren hier eine virtuelle Realität und nehmen daraus bestenfalls Erkenntnisse für Ihre eigene Realität mit.",
-    "session_attention_training_info_text": "Beim Aufmerksamkeitstraining soll die Achtsamkeit gesteigert werden, in dem Sie Ihre Aufmerksamkeit auf das Hören konzentrieren. Töne, Geräusche und Klänge der virtuellen Umgebung sollen bewusst wahrgenommen werden.",
-    "session_free_meditation_info_text": "Endlich mal selbst entscheiden! Die freie Meditation bietet Ihnen Raum, Ihre Meditation selbst zu gestalten. Sie dürfen das Thema frei wählen. Als Unterstützung haben Sie einen Gong. Er erinntert mit seinem Klang daran, wieder präsent im Hier und Jetzt zu sein. Die Dauer der Meditationsübung und das Zeitintervall bis zum nächsten Gongklang sind ebenfalls frei von Ihnen wählbar.",
-    "session_body_scan_info_text": "Wie bewusst ist Ihnen Ihr Körper? Spüren Sie auch mal bewusst in Ihren linken kleinen Zeh hinein! Der Body-Scan ist eine ca. 10 Minütige Achtsamkeitsübung, bei der es um die bewusste Wahrnehmung des Körpers geht. In dieser angeleiteten Übung lernen Sie Ihren Körper nochmal ganz neu kennen.",
+        "state_notstarted": "not started",
+        "state_paused": "running and paused",
+        "state_done": "done",
+        "state_overdue": "overdue",
+        "state_abort": "aborted",
 
-    "overlay_btn_close": "Cancel",
+        "course_info_init": "Inital",
+        "course_info_web": "Web",
+        "course_info_vr": "VR",
+        "course_info_questionnaire": "Questionnaire",
+        "course_info_diary": "Diary",
+        "course_info_video": "Video",
+        "Frage": "Question",
+        "Ihr Tagebucheintrag vom": "Your diary entry from",
 
-    "diary_recording_missing_microphone_title": "Fehlende Mikrofonberechtigung!",
-    "diary_recording_missing_microphone_msg": "Sie müssen für diese Funktion den Zugriff auf ihr Mikrofon freigeben.",
+        "Debug": "Debug"
 
-    "Debug": "Debug"
-
-}
+    }
 

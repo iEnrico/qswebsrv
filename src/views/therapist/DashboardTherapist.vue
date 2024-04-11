@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <SideBar v-if="hideNavigation == false" :login_role="1" />
+    <SideBar v-if="hideNavigation == false" :login_role="1" :index="currentIndex"/>
     <NavBar v-if="hideNavigation == false" :buttons="buttons" />
     <v-main>
       <div class="content">
@@ -15,7 +15,6 @@ import NavBar from "@/components/navBar.vue";
 import SideBar from "@/components/sideBar.vue";
 import { useCommonStore } from "@/stores/commonStore";
 import { useSessionStore } from "@/stores/sessionStore";
-import { useNotificationStore } from "@/stores/notificationStore";
 import { useNotesStore } from "@/stores/notesStore";
 
 export default {
@@ -23,12 +22,10 @@ export default {
   setup() {
     const commonStore = useCommonStore();
     const sessionStore = useSessionStore();
-    const notificationStore = useNotificationStore();
     const notesStore = useNotesStore();
     return {
       sessionStore,
       commonStore,
-      notificationStore,
       notesStore,
     };
   },
@@ -42,6 +39,7 @@ export default {
       },
     ],
     menu: [],
+    currentIndex: 0,
     hideNavigation: false,
   }),
   components: {
@@ -51,47 +49,25 @@ export default {
   mounted: async function () {
     
     this.hideNavigation = sessionStorage.getItem('hideNavigation') != null;
-    console.log("hideNavigation: " + this.showOverlay);
-
-    this.commonStore.addUser({ id: this.commonStore.totalUser, name: "Raphael" });
-
-    console.log(
-      ">> Test output 'commonstore': " +
-        this.commonStore.totalUser +
-        ", " +
-        JSON.stringify(this.commonStore.users)
-    );
+    //console.log("hideNavigation: " + this.showOverlay);
 
     /*
     var csv = await utils.jsonToCSV(JSON.stringify(require("@/locales/de.json")));
     var json = await utils.csvToJSON(csv);
-    console.log("["+json+"]");*/
+    console.log("["+json+"]");
+    */
   },
   watch: {
     $route(to /*, from*/) {
       sessionStorage.removeItem("hideNavigation");
       this.hideNavigation = false;
-      console.log("route target: " + to.name);
+      //console.log("route target: " + to.name);
       switch (to.name) {
         case "DashboardTherapist3c":
           sessionStorage.setItem('hideNavigation', 'yes');
+          this.currentIndex = 1;
           this.hideNavigation = true;
           break;
-          /*
-        case "Dashboard3a":
-          sessionStorage.setItem('hideNavigation', 'yes');
-          this.hideNavigation = true;
-          break;
-        case "Dashboard3b":
-          sessionStorage.setItem('hideNavigation', 'yes');
-          this.hideNavigation = true;
-          break;
-          */
-          /*
-        default:
-          this.showOverlay = true;
-          break;
-          */
       }
     },
   },

@@ -1,5 +1,28 @@
 <template>
-  <div class="text-center section">
+
+<!--
+  <div class="pa-4 text-center section">
+    <v-calendar
+      class="max-w-full"
+      :masks="masks"
+      :attributes="attributes"
+      disable-page-swipe
+      expanded
+      >
+    </v-calendar>
+  </div>
+-->
+
+  <center>
+    <v-progress-circular
+      class="mx-8 my-8"
+      v-if="loading"
+      indeterminate
+      color="#28B9AF"
+    />
+  </center>
+
+  <div v-if="!loading" class="pa-4 text-center section">
     <v-calendar
       class="custom-calendar max-w-full"
       :masks="masks"
@@ -20,7 +43,8 @@
               @click="onClick(attr)"
             >
               <v-icon v-if="!attr.bar && attr.key != -1" small>{{
-                getIconForType(attr.customData.type)
+                //getIconForType(attr)
+                getCourseIcon(attr.customData.type)
               }}</v-icon>
               {{ attr.customData.title }}
               <v-tooltip
@@ -46,35 +70,165 @@
 </template>
 
 <script>
-import data from "@/scripts/data/data.js";
+
+//import data from "@/scripts/data/data.js";
 import common from "@/scripts/common/common";
+import { 
+  getTextByLanguage, 
+  //parseDate 
+} from "@/scripts/common/utils";
+
+import api from "@/scripts/api/api";
+import { 
+  //getStateColor,
+  /*getNextTaskActivity, 
+  continueProcedure, 
+  getNextActivity,*/ 
+  //isAllUnitsComplete, 
+  //isAllUnitsCompleteSync,
+  getCourseIcon, 
+  //getCourseInfo, 
+  //getFHIRId,
+  getUser
+} from "@/scripts/procedureEngine";
+
 export default {
   name: "CalendarView",
   data() {
     return {
+      loading: false,
       masks: {
         weekdays: "WWW",
       },
-      attributes: data.getCalenderEntries(),
+      attributes: [] //data.getCalenderEntries(),
     };
   },
   components: {},
-  mounted: function () {
+  mounted: async function () {
+    this.loading = true;
+    
+    this.attributes = await this.createCalendarEntries()
     console.log("info: " + JSON.stringify(this.attributes));
+    
+    this.loading = false;
   },
   methods: {
+    createCalendarEntries: async function () {
+
+      //const month = new Date().getMonth();
+      //const year = new Date().getFullYear();
+        
+      var data = await api.getCalenderEntries(getUser())
+
+      // ADDING SORTED ITEMS BY WEEK
+      
+      var grouped_items = []
+
+      data.forEach((element,index) => {
+        grouped_items.push(
+        {
+          key: index,
+          customData: {
+            title: element.activity.id + ": " + getTextByLanguage(element.activity.translations, this.$i18n),
+            tooltip: "Vivamus neque ante, viverra non luctus nec, molestie in mauris.",
+            //class: common.calendar_entry_color_session,
+            type: element.activity.primaryType, //common.calendar_entry_type_session, 
+            //state: common.calendar_item_state_done,
+          },
+          //highlight: this.getTypeColor(element.activity.primaryType), //'blue',
+          dates: [
+            // from 14th till 18th every day
+            [
+              new Date(element.startDate), //year, month, 14), 
+              new Date(element.stopDate) //year, month, 18) 
+            ]
+            ]
+          //dates: new Date(year, month, 2), 
+          
+          // element.startDate 
+          // element.stopDate
+        })
+      })
+
+      grouped_items.push(
+
+        { // THIS IS ONLY USED FOR CURRENT DAY!
+              
+          // An optional key can be used for retrieving this attribute later,
+          // and will most likely be derived from your data object
+          key: -1,
+          // Attribute type definitions
+          highlight: {
+            style: {
+              background: '#f59e0b',
+            },
+          },  // Boolean, String, Object
+          dot: false,        // Boolean, String, Object
+          bar: false,        // Boolean, String, Object
+          //content: 'red',   // Boolean, String, Object
+          popover: { }, // Only objects allowed
+          // Your custom data object for later access, if needed
+          customData: { },
+          // We also need some dates to know where to display the attribute
+          // We use a single date here, but it could also be an array of dates,
+          //  a date range or a complex date pattern.
+          dates: new Date(),
+          // You can optionally provide dates to exclude
+          excludeDates: null,
+          // Think of `order` like `z-index`
+          order: 0
+        }
+
+      )
+
+      return grouped_items
+    },
+    getTypeColor(type) {
+      switch (type) {
+        case "AUDIO_DIARY":
+        case "QUESTIONNAIRE":
+          return 'blue'
+        case "WEBSITE":
+          return 'green'
+        case "VR_DEVICE":
+          return 'red'
+      
+        default:
+          break;
+      }
+    },
+    getCourseIcon(type) {
+      return getCourseIcon(type)
+    },
+    /*
+    getTypeIcon(type) {
+      switch (type) {
+        case "AUDIO_DIARY":
+          return 'mdi-headphones'
+        case "QUESTIONNAIRE":
+          return 'mdi-file-sign'
+        case "WEBSITE":
+          return 'mdi-web'
+        case "VR_DEVICE":
+          return 'mdi-safety-goggles'
+      
+        default:
+          break;
+      }
+    },*/
     getElementStyle(item) {
       const before = false; //this.isBeforeToday(item.dates);
       switch (item.customData.type) {
-        case common.calendar_entry_type_audio:
+        case "AUDIO_DIARY":
+        case "QUESTIONNAIRE":
           return before >= 0
             ? common.calendar_entry_color_audio
             : common.calendar_entry_color_audio2;
-        case common.calendar_entry_type_session:
+        case "WEBSITE":
           return before >= 0
             ? common.calendar_entry_color_session
             : common.calendar_entry_color_session2;
-        case common.calendar_entry_type_therapist:
+        case "VR_DEVICE":
           return before >= 0
             ? common.calendar_entry_color_therapist
             : common.calendar_entry_color_therapist2;
@@ -115,78 +269,21 @@ export default {
       );*/
       return thisTime < anotherTime ? -1 : thisTime == anotherTime ? 0 : 1;
     },
-    getIconForType(type) {
-      switch (type) {
-        case common.calendar_entry_type_session:
-          return "mdi-notebook-outline";
-        case common.calendar_entry_type_audio:
-          return "mdi-play-circle-outline";
-        case common.calendar_entry_type_therapist:
-          return "mdi-account-heart-outline";
-        default:
-          return "mdi-close-circle-outline";
-      }
-    },
     onClick(item) {
       switch (item.customData.type) {
-        case common.calendar_entry_type_audio:
-          this.$router.push({
-            name: "Dashboard3b",
-            params: {
-              data: JSON.stringify({
-                text: "Tagebucheintrag 1",
-                date: "09.01.2023 um 14:31 Uhr",
-                icon: "mdi-volume-high",
-                entries: [
-                  {
-                    question:
-                      "Beschreiben Sie ausführlich was Sie in der vergangenden Woche über gemacht haben. Vivamus neque ante, viverra non luctus nec, molestie in mauris.",
-                    audioPath: "audio1.ogg",
-                  },
-                  {
-                    question:
-                      "Vivamus neque ante, viverra non luctus nec, molestie in mauris.  Maecenas eu neque id leo vulputate faucibus ut vitae dolor. ",
-                    audioPath: "audio2.ogg",
-                  },
-                  {
-                    question:
-                      "Vestibulum enim erat, condimentum eu quam vel, volutpat ultrices nisi. Vivamus neque ante, viverra non luctus nec, molestie in mauris.  Maecenas eu neque id leo vulputate faucibus ut vitae dolor.",
-                    audioPath: "audio3.ogg",
-                  },
-                ],
-              }),
-            },
-          });
+        case "AUDIO_DIARY":
+          alert("audio diary procedure selected")
           break;
-        case common.calendar_entry_type_session:
-          this.$router.push({
-            name: "Dashboard2a",
-            params: {
-              data: JSON.stringify({
-                title: "Web-Achtsamkeit",
-                subtitle: "Lorem Ipsum 3",
-                description:
-                  "Vivamus neque ante, viverra non luctus nec, molestie in mauris. Fusce et volutpat diam, ut suscipit nulla. Fusce venenatis odio pellentesque lacinia tincidunt. Maecenas eu neque id leo vulputate faucibus ut vitae dolor. Vestibulum enim erat, condimentum eu quam vel, volutpat ultrices nisi. Maecenas placerat, sem a efficitur tempus, massa dui fringilla dui, vestibulum sollicitudin orci ligula nec leo. Etiam rhoncus fringilla aliquet. Nulla sollicitudin dignissim sem vel ultricies. Maecenas augue lorem, euismod eget mauris id, sagittis consectetur urna. Fusce quis congue arcu.",
-                image: "https://cdn.vuetifyjs.com/images/cards/sunshine.jpg",
-                progress: 2,
-                max_progress: 3,
-                duration: "30 Min.",
-                course_type: common.course_type_web,
-                requirements: [{ text: "Web-Achtsamkeit 1" }, { text: "Fragebogen" }],
-                completed_parts: [
-                  {
-                    text: "12.10.2022 - Objektmeditation (Stein)",
-                    type: "Web-Achtsamkeit 1",
-                  },
-                  { text: "04.10.2022 - Objektmeditation (Stock)", type: "Fragebogen" },
-                ],
-              }),
-            },
-          });
+        case "QUESTIONNAIRE":
+          alert("questionnaire procedure selected")
           break;
-        case common.calendar_entry_type_therapist:
-          console.log("not implemented yet!");
+        case "WEBSITE":
+          alert("web procedure selected")
           break;
+        case "VR_DEVICE":
+          alert("vr procedure selected")
+          break;
+
         default:
           console.log("not implemented yet!");
           break;

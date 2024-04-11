@@ -1,10 +1,4 @@
 <template>
-  <!--
-    <v-card-title>Tagebuch</v-card-title>
-    
-    <v-container fluid align="center">
-    </v-container>
-    -->
   <center>
     <v-card class="pa-8 mx-4 mt-16 rounded-lg" variant="elevated" width="50%" align-content="start" justify="center">
         <v-col :cols="12" align="start" justify="start">
@@ -24,8 +18,8 @@
             </v-card-text>
           </v-row>
           <v-row dens align="center" justify="center">
-            <v-btn variant="elevated" style="background-color: #28B9AF;" @click="route('/dashboard3')"><span class="text-white">Ok</span>
-              <!--<v-btn variant="outlined" class="mt-8" @click="route('/dashboard3')">-->
+            <v-btn variant="elevated" style="background-color: #28B9AF;" @click="route('/dashboard3')">
+              <span class="text-white">Ok</span>
             </v-btn>
           </v-row>
         </v-col>
