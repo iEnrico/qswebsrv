@@ -5,7 +5,6 @@
     :style="'border: 1px solid '+getStateColor(item)"
     max-width="220"
     min-width="220"
-    @click="clickable ? routeCourse(item) : ''"
   >
   <!--
     min-height="150"
@@ -17,6 +16,7 @@
       <v-tooltip location="bottom" :text="getStateMsg(item)">
         <template v-slot:activator="{ props }">
           <v-icon
+            @click="startCourse(item)" 
             style="justify-self: center; align-self: top;"
             class="pa-0 ma-0"
             v-bind="props"
@@ -81,6 +81,7 @@ import {
   /*getDescriptionText,*/
   getTextByLanguage
 } from '@/scripts/common/utils'
+import api from "@/scripts/api/api";
 
 import { useCurrentSessionStore } from "@/stores/currentSessionStore";
 
@@ -216,7 +217,7 @@ export default {
       return getStateColor(item)
     },
     routeCourse: function (item) {
-
+      console.log(item)
       // PATIENT - Audio Diary
       /*
       if (item.activity.name == 'audio_diary') {
@@ -247,6 +248,32 @@ export default {
         });
       }
     },
+   async startCourse(item){
+    console.log(item);
+    const units = item.activity.units.map((unit)=>({
+      "activityUnitId":unit.id,
+			"contentPackageResourceId": 16,
+         "packageParametersIds": [
+            ],
+            "resourceParametersIds": [
+            ],
+          "state": "CREATED"
+
+    }))
+    const  payload = 
+    {
+      "patient": item.carePlan.fhirPatient, 
+      "carePlanUuid": item.carePlan.uuid, 
+      "carePlanUnitId": item.id, 
+      "units": units
+    }
+     const result= await api.postProcedures(item.carePlan.fhirPatient,payload );
+      if(result.code === 200){
+        //TODO:
+      }else{
+        //TODO:
+      }
+    }
   },
 };
 </script>

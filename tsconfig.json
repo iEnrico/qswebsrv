@@ -15,8 +15,11 @@
     "paths": {
       "@/*": ["src/*"]
     },
+    "outDir": "./dist",  // Directorio para los archivos compilados
+    "rootDir": "./src",  // Directorio raíz de los archivos fuente
+
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"],
     "skipLibCheck": true
   },
-  "include": ["src/**/*", "src/**/*.vue", "src/**/*.js"]
+  "include": ["src/**/*", "src/**/*.vue", "src/**/*.js"],
 }

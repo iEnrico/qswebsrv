@@ -45,15 +45,16 @@
             <v-tab value="two">Programmübersicht</v-tab>
             <v-tab value="three">Auswertung</v-tab>
             <v-tab value="four">Ergebnisse</v-tab>
+
           </v-tabs>
 
           <v-card-text>
             <v-window v-model="tab">
 
               <v-window-item value="one">
-                <CoursesView class="mb-2" :mode="1" :customData="this.data.item.item?.carePlanUnits"/>
+                <CoursesView class="mb-2" :mode="1" :customData="this.availableActivities?.data"/>
               </v-window-item>
-
+       
               <v-window-item value="two">
                 <v-card-subtitle v-if="this.grouped_items.length <= 0" class="mt-8" style="text-align: start;"> Kein Wochenplan vorhanden... </v-card-subtitle>
                 <v-list :items="grouped_items" density="compact" disabled>
@@ -134,7 +135,7 @@
                   :key="i"
                 />
               </v-window-item>
-              
+
             </v-window>
             
           </v-card-text>
@@ -154,6 +155,7 @@ import CoursesView from "@/components/coursesOverview.vue";
 import NewsView from "@/components/newsListPatient.vue";
 import { getTextByLanguage, parseDate } from "@/scripts/common/utils";
 import ListItemUserActivitys from "@/components/listItems/listItemUserActivitys.vue";
+
 
 import { 
   BarChart, 
@@ -219,6 +221,7 @@ export default {
     // weekly based grouped items
     grouped_items: [],
     procedures: [],
+    availableActivities:[]
   }),
   props: [
   ],
@@ -227,11 +230,12 @@ export default {
     NewsView, 
     BarChart, 
     //LineChart,
-    ListItemUserActivitys
+    ListItemUserActivitys,
+    
   },
   mounted: async function () {
     this.data = this.patientStore.getItem 
-    
+    console.log(this.patientStore.getItem);
     //console.log("LOG: " + JSON.stringify(this.data.item.item))
 
     await this.loadData()
@@ -245,7 +249,7 @@ export default {
     //await this.parseTESTResults2()
     
     await this.getProcedures()
-
+    await this.getAvailableActivitysToUser()
     await this.createCalendarEntries()
   },
   methods: {
@@ -257,6 +261,9 @@ export default {
     },
     getProcedures: async function () {
       this.procedures = await api.getProceduresForId(this.user, this.data.item.item.fhirPatient.id)
+    },
+    getAvailableActivitysToUser: async function () {
+      this.availableActivities = await api.getAvailableActivitys(this.data.item.item.fhirPatient.id)
     },
     createCalendarEntries: async function () {
       var data = this.data.item.item.calendarEntries 
