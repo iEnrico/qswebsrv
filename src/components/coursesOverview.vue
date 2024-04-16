@@ -21,7 +21,7 @@
         <v-row >
           <!--  class="ma-2 pa-2" :cols="3" :cols="4" :cols="item.flex" -->
           <div v-for="item in availableProcedures.data" :key="item.id"> 
-            <CoursesOverviewItem :item="item" :mode="mode" :clickable="showCard"/>
+            <CoursesOverviewItem :item="item" :mode="mode" :clickable="showCard" :onUnitChange="onUnitChange"/>
           </div>
         </v-row>
       </v-container>
@@ -62,11 +62,12 @@ export default {
     availableProcedures: [],
   }),
   props: [
-    "mode", "customData", "showCard"
+    "mode", "customData", "showCard", "onUnitChange"
   ],
   components: {CoursesOverviewItem},
   mounted: async function () {
     await this.refresh()
+    console.log(this.onUnitChange)
   },
   
   updated: async function () {

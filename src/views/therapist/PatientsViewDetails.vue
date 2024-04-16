@@ -52,7 +52,7 @@
             <v-window v-model="tab">
 
               <v-window-item value="one">
-                <CoursesView class="mb-2" :mode="1" :customData="this.availableActivities?.data"/>
+                <CoursesView class="mb-2" :mode="1" :customData="this.availableActivities?.data"  :onUnitChange="this.refreshDataActivities" />
               </v-window-item>
        
               <v-window-item value="two">
@@ -221,7 +221,9 @@ export default {
     // weekly based grouped items
     grouped_items: [],
     procedures: [],
-    availableActivities:[]
+    availableActivities:[],
+    procedureRunning:null
+
   }),
   props: [
   ],
@@ -235,7 +237,6 @@ export default {
   },
   mounted: async function () {
     this.data = this.patientStore.getItem 
-    console.log(this.patientStore.getItem);
     //console.log("LOG: " + JSON.stringify(this.data.item.item))
 
     await this.loadData()
@@ -249,6 +250,7 @@ export default {
     //await this.parseTESTResults2()
     
     await this.getProcedures()
+    await this.getRunningProcedures()
     await this.getAvailableActivitysToUser()
     await this.createCalendarEntries()
   },
@@ -261,9 +263,23 @@ export default {
     },
     getProcedures: async function () {
       this.procedures = await api.getProceduresForId(this.user, this.data.item.item.fhirPatient.id)
+      if(this.procedures.data.length>0){
+        //GET THE LAST
+        const lastProcedure=this.procedures.data[0];
+        if(lastProcedure.state === "RUNNING" || lastProcedure.state ==="CREATED"){
+          console.log(lastProcedure);
+          this.procedureRunning={...lastProcedure};
+        }
+      }
     },
     getAvailableActivitysToUser: async function () {
       this.availableActivities = await api.getAvailableActivitys(this.data.item.item.fhirPatient.id)
+      if(this.availableActivities.data.length > 0 && this.procedureRunning){
+        const index = this.availableActivities.data.findIndex(activity => activity.id === this.procedureRunning.carePlanUnit.id);
+      if (index !== -1) {
+        this.availableActivities.data[index]={...this.procedureRunning}; 
+      }
+    }
     },
     createCalendarEntries: async function () {
       var data = this.data.item.item.calendarEntries 
@@ -326,6 +342,19 @@ export default {
         this.grouped_items.push( { type: 'divider' } )
       }
       
+    },
+    getRunningProcedures: async function(){
+     //this.procedureRunning= await api.getRunningProcedures(this.data.item.item.fhirPatient.id)
+    },
+    refreshDataActivities: async function(){
+      
+       await this.getProcedures()
+       await this.getRunningProcedures()
+       await this.getAvailableActivitysToUser()
+        this.$nextTick(() => {
+            console.log('El DOM ha sido actualizado');
+            // Código que depende del DOM actualizado
+        });
     },
     /**
      * depression

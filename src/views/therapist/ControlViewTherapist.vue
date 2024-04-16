@@ -122,7 +122,12 @@
           </v-expansion-panels>
 
 -->
-
+    <v-btn
+        @click="simulateVRConnection()"
+        class="pa-2 ma-2 ml-0 mr-2"
+    >
+        <span class="text-xs" style="z-index: 20;"> SIMULAR RUNNING VR</span>
+    </v-btn>
           <v-list
             v-for="(item, index) in labels"
             :key="index"
@@ -280,6 +285,7 @@ import SelectDlg from "@/components/dialogs/dialogSelection.vue";
 //import ConfirmDlg from "@/components/dialogs/dialogConfirmation.vue";
 
 import data from "@/scripts/data/data"
+import api from '@/scripts/api/api';
 
 /*
 
@@ -337,17 +343,31 @@ export default {
 
     active_items: [],
     active_item: "",
+    patientId: '',
+    procedureId: '',
+    unitId: '',
 
     trackingPosition: "",
   }),
   components: { SelectDlg },
   watch: { },
+  created() {
+    // Acceder al parámetro de consulta desde la ruta y almacenarlo en el estado local
+    this.patientId = this.$route.query.patientId;
+    this.unitId = this.$route.query.unitId;
+    this.procedureId = this.$route.query.procedureId;
+
+  },
   //components: { ScenarioTimeline, ScenarioCommands },
   mounted: function () {
+    this.startStream()
     this.loadData()
     this.doTrackingAnimation()
   },
   methods: {
+    async startStream(){
+      api.getStream(this.patientId)
+    },
     loadData() {
       
       this.dataset = data.getRolePlayDataSet()
@@ -390,6 +410,10 @@ export default {
       this.nextEnabled = false
       this.active_item = item
       this.doTimerAnimation()
+    },
+    simulateVRConnection(){
+      api.patchActivityUnitAlternate(this.patientId,this.procedureId,this.unitId,{state:"RUNNING"})
+      console.log("ENTRO")
     },
     doTimerAnimation: function () {
       setTimeout(() => {
