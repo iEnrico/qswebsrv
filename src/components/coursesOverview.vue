@@ -21,7 +21,7 @@
         <v-row >
           <!--  class="ma-2 pa-2" :cols="3" :cols="4" :cols="item.flex" -->
           <div v-for="item in availableProcedures.data" :key="item.id"> 
-            <CoursesOverviewItem :item="item" :mode="mode" :clickable="showCard" :onUnitChange="onUnitChange"/>
+            <CoursesOverviewItem :item="item"  :mode="mode" :clickable="showCard" :onUnitChange="onUnitChange"/>
           </div>
         </v-row>
       </v-container>
@@ -49,14 +49,14 @@ export default {
       sessionStore,
     };
   },
-  /*
+
   watch: {
     customData:  function () {
       console.log("update-data:\n" + JSON.stringify(this.customData));
-       this.refresh()
+       //this.refresh()
     },
   },
-  */
+
   data: () => ({
     loading: false,
     availableProcedures: [],
@@ -67,7 +67,6 @@ export default {
   components: {CoursesOverviewItem},
   mounted: async function () {
     await this.refresh()
-    console.log(this.onUnitChange)
   },
   
   updated: async function () {

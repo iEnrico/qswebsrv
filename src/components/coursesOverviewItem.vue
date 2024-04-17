@@ -308,15 +308,15 @@ export default {
         this.$router.push({
           name: "DashboardTherapist5",
           query: {
-            patientId: item.carePlan.fhirPatient,
-            unitId: item.units[0].id,
-            procedureId: item.id,
+            patientId: result.fhirPatient,
+            unitId: result.units[0].id,
+            procedureId: result.id,
           },
         });
       }
     },
     async onClickIcon(item) {
-      if (item.state && item.state === "RUNNING") {
+      if (item.state && (item.state === "RUNNING" || item.state === "CREATED") ) {
         this.stopActivity(item);
       } else {
         this.startActivity(item);

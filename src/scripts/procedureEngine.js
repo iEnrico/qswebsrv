@@ -77,6 +77,8 @@ export async function createProcedure(procedureName, response) {
     return result
 }
 
+
+
 export function connectEventSource(procedureId, procedureUnitId) {
     
   console.log("connect to event stream: \n" + "https://backend.relivr-integration.nuromedia.com/procedures/" + procedureId + "/units/" + procedureUnitId + "/events/stream/")
@@ -537,6 +539,8 @@ export function getStateMsg (item) {
       return "state_overdue";
     case "ABORTED": //common.session_state_aborted:
       return "state_abort";
+    case "CREATED": //common.session_state_aborted:
+      return "state_abort";
   }
   return;
 }
@@ -554,6 +558,8 @@ export function getStateIcon (item) {
       return "mdi-alert-circle";
     case "ABORTED": //common.session_state_aborted:
       return "mdi-alert-circle";
+    case "CREATED": //common.session_state_running:
+      return "mdi-pause-circle";
   }
   return;
 }

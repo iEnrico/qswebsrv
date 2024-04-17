@@ -347,7 +347,7 @@ export default {
      //this.procedureRunning= await api.getRunningProcedures(this.data.item.item.fhirPatient.id)
     },
     refreshDataActivities: async function(){
-      
+       await this.loadData()
        await this.getProcedures()
        await this.getRunningProcedures()
        await this.getAvailableActivitysToUser()
