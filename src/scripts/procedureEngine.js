@@ -79,7 +79,7 @@ export async function createProcedure(procedureName, response) {
 
 
 
-export function connectEventSource(procedureId, procedureUnitId) {
+export function connectEventSource(procedureId, procedureUnitId, onMessageEvent) {
     
   console.log("connect to event stream: \n" + "https://backend.relivr-integration.nuromedia.com/procedures/" + procedureId + "/units/" + procedureUnitId + "/events/stream/")
 
@@ -97,6 +97,14 @@ export function connectEventSource(procedureId, procedureUnitId) {
   // Listens to LocalDateTime "type" of Events
   events.addEventListener("LocalDateTime", e => {
     console.log("LocalDateTime", e)
+  })
+
+  events.addEventListener("SessionControlEvents", e => {
+    console.log(e);
+    onMessageEvent(JSON.parse(e.data))
+  })
+  events.addEventListener("InputEvents", e => {
+    onMessageEvent(JSON.parse(e.data))
   })
 
   // Listens to SensorEvent "type" of Events

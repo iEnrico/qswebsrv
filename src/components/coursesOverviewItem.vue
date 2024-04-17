@@ -119,7 +119,6 @@ export default {
   components: {},
   mounted: async function () {
     this.init();
-    console.log("ONITEM", this.onUnitChange);
   },
   methods: {
     init: async function () {
@@ -144,7 +143,6 @@ export default {
       return getTextByLanguage(activity.translations, this.$i18n);
     },
     getItemSubtitle(item) {
-      console.log(item);
       var contentPackage =
         isAllUnitsCompleteSync(item) && item.nextActivityUnit
           ? item.nextActivityUnit.contentPackage

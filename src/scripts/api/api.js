@@ -113,6 +113,8 @@ var api = {
             alert("backend unavailable")
         }
     },
+
+    
     //---------------------------------------------
     // USER - GET  /user/available-activities/
     //---------------------------------------------
@@ -1085,6 +1087,8 @@ var api = {
                 }
             );
 
+            
+
             if (response.status == 200 || response.status == 201) {
                 return response
             } else {
@@ -1095,6 +1099,7 @@ var api = {
         }
     },
     patchActivityUnitAlternate: async function (userId, id, unitid, payload) {
+
         try {
             const response = await request(
                 "PATCH",
@@ -1103,8 +1108,6 @@ var api = {
                 new URLSearchParams({
                     fhirPatient: userId,
                     headers: {
-                        //"Content-Type": "application/json",
-                        //"accept": "*/*"
                         'Accept': 'application/json',
                         'Content-Type': 'application/json'
                     }
@@ -1121,6 +1124,8 @@ var api = {
             } else {
                 console.error(response);
             }
+
+
         } catch (error) {
             console.log('Api.getPatients Error: ', error);
         }
@@ -1161,6 +1166,37 @@ var api = {
             const response = await request(
                 "POST",
                 BASE_BACKEND_URL+"/user/active-procedure/active-unit/", //procedures+id+"/",
+                payload,
+                new URLSearchParams({
+                    fhirPatient: userId,
+                    headers: {
+                        //"Content-Type": "application/json",
+                        //"accept": "*/*"
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                }),
+                {
+                    tokenValidationMiddleware: false,
+                    withAuthorization: true,
+                    withTokenAutoRefresh: true,
+                }
+            );
+
+            if (response.status == 200 || response.status == 201) {
+                return response
+            } else {
+                console.error(response);
+            }
+        } catch (error) {
+            console.log('Api.getPatients Error: ', error);
+        }
+    },
+    postEventProcedure: async function (userId, id,unitId, payload) {
+        try {
+            const response = await request(
+                "POST",
+                BASE_BACKEND_URL + procedures + id + "/units/"+unitId+"/events/",
                 payload,
                 new URLSearchParams({
                     fhirPatient: userId,
