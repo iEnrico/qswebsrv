@@ -14,6 +14,7 @@
             flex-direction: column;
           "
         >
+  
           <!--
           <v-card-title>Scenario Timeline</v-card-title>
         -->
@@ -121,8 +122,13 @@
 
 -->
           <v-btn @click="simulateVRConnection()" class="pa-2 ma-2 ml-0 mr-2">
-            <span class="text-xs" style="z-index: 20"> SIMULAR RUNNING VR</span>
+            <span class="text-xs" style="z-index: 20"> SIMULAR RUNNING VR (PRUEBAS)</span>
           </v-btn>
+
+          <v-btn @click="finishSession" class="pa-2 ma-2 ml-0 ms-auto mr-2" width="200" color="info">
+            <span class="text-xs" style="z-index: 20"> Finish</span>
+          </v-btn>
+          <ProcedureMessageStatus :status="status" />
           <v-list
             v-for="(item, index) in labels"
             :key="index"
@@ -173,17 +179,18 @@
                   <v-icon
                     v-on:click="replayItem(subitem)"
                     v-if="itemPlayedOnce(subitem.id)"
+                    style="z-index: 1000;"
                     class="mr-0"
                     size="20px"
-                    color="#666"
+                    color="#666 "
                     >{{ "mdi-repeat-variant" }}</v-icon
                   >
 
                   <v-icon
                     v-on:click="startSession()"
                     v-if="subitem?.entry_point && !this.active_item"
-                    size="20px"
-                    color="#666"
+                    :size="this.status === 'RESPONSE_START' ?  '25px' : '20px' "
+                    :color="this.status === 'RESPONSE_START' ?  '#006400' : '#666' "
                     >{{ "mdi-play-circle-outline" }}</v-icon
                   >
                 </v-row>
@@ -256,7 +263,7 @@ v-if="this.active_item.id == subitem.id"
                         :color="getColorOfOption(option, dataset)"
                         size="x-small"
                         variant="flat"
-                        :disabled="!this.nextEnabled"
+                        :disabled="!this.nextEnabled || this.status ==='RESPONSE_FINISH'"
                         @click="chooseNextElement(option)"
                       >
                         <span class="text-xs" style="z-index: 20">
@@ -270,6 +277,7 @@ v-if="this.active_item.id == subitem.id"
             </v-row>
           </v-list>
         </v-card>
+
       </v-col>
 
       <v-col :cols="12" style="height: auto">
@@ -332,10 +340,11 @@ v-if="this.active_item.id == subitem.id"
 import SelectDlg from "@/components/dialogs/dialogSelection.vue";
 
 //import ConfirmDlg from "@/components/dialogs/dialogConfirmation.vue";
+import ProcedureMessageStatus from "@/components/procedureMessageStatus.vue";
 
 import data from "@/scripts/data/data";
 import api from "@/scripts/api/api";
-import { connectEventSource } from '@/scripts/procedureEngine';
+import {  connectActiveProcedure, connectEventSource } from '@/scripts/procedureEngine';
 
 /*
 
@@ -377,7 +386,7 @@ export default {
   data: () => ({
     labels: ["Intro", "Story", "Outro"],
     dataset: [],
-
+    status:"STATUS_READY",
     intro_items: [],
     story_items: [],
     outro_items: [],
@@ -398,7 +407,7 @@ export default {
 
     trackingPosition: "",
   }),
-  components: { SelectDlg },
+  components: { SelectDlg,ProcedureMessageStatus },
   watch: {},
   created() {
     // Acceder al parámetro de consulta desde la ruta y almacenarlo en el estado local
@@ -414,37 +423,52 @@ export default {
   },
   methods: {
     async startStream() {
+      connectActiveProcedure(this.onMessageProcedure)
       connectEventSource(this.procedureId, this.unitId, this.onMessageEvent)
-      //api.getStream(this.patientId);
-      this.emiteSessionControlEvent("STATUS_READY");
+    },
+    async onMessageProcedure(data){
+      console.log(data)
+      if(data.state==="COMPLETED" || data.state==="ABORTED"){
+        this.$router.push({
+          name: "DashboardTherapist3",
+        });
+      }
     },
     async onMessageEvent(data){
-      console.log(data.type)
       switch (data.type) {
-        case "STATUS_LOADING":
-          console.log("HOLA LOADING....")
-          break;
         case "STATUS_READY":
           this.emiteSessionControlEvent("REQUEST_START")
+          this.status=data.type;
           break;
-
+        case "STATUS_LOADING":
+          this.status=data.type;
+        break;
+        case "REQUEST_START":
+          this.status=data.type;
+        break;
         case "RESPONSE_START":
-          this.startSession();
+          this.status=data.type;
           break;
-        case "STATUS_PLAYING":
-          
-          //this.chooseNextElement(data.inputCommandId)
-          //this.setCoordinates(data)
-          //this.startSession();
+        case "STATUS_COMPLETED":
+          this.status=data.type;
+          this.emiteSessionControlEvent("REQUEST_FINISH")
+        break;
+        case "RESPONSE_FINISH":
+          this.status=data.type;
+          break;
+        case "STATUS_UPLOADING_RESULTS":
+          this.status=data.type;
+          break;
+        case "STATUS_EXIT":
+          this.status=data.type;
+          this.emiteSessionControlEvent("STATUS_EXIT")
           break;
         case "VR":
           this.setCoordinates(data)
-          //this.startSession();
           break;
         default:
           break;
       }
-      
     },
     loadData() {
       this.dataset = data.getRolePlayDataSet();
@@ -478,32 +502,36 @@ export default {
       );
     },
     startSession() {
-      var nextItem = this.dataset.find(
-        (item) => item.id == this.intro_items[0][0].id
-      );
-      //this.active_items.push( nextItem )
-      this.progress = 0;
-      this.nextEnabled = false;
-      this.active_item = nextItem;
-      this.emiteInputEvent("REQUEST_PLAY",nextItem.id)
-      this.doTimerAnimation();
+      if(this.status === "RESPONSE_START"){
+          var nextItem = this.dataset.find(
+            (item) => item.id == this.intro_items[0][0].id
+          );
+          //this.active_items.push( nextItem )
+          this.progress = 0;
+          this.nextEnabled = false;
+          this.active_item = nextItem;
+          this.emiteInputEvent("REQUEST_PLAY",nextItem.id)
+          this.doTimerAnimation();
+      }
+
     },
     replayItem(item) {
+      console.log(item);
       this.progress = 0;
       this.nextEnabled = false;
       this.active_item = item;
+      this.sendCommand(item)
       this.doTimerAnimation();
     },
     async simulateVRConnection() {
-      const resultRequest = await api.patchActivityUnitAlternate(
+      await api.patchActivityUnitAlternate(
         this.patientId,
         this.procedureId,
         this.unitId,
         { state: "RUNNING" }
       );
-      console.log(resultRequest);
     },
-    doTimerAnimation: function () {
+    doTimerAnimation: function (duration=1000) {
       setTimeout(() => {
         console.log(this.progress + " of " + this.max_progress);
         console.log(this.nextEnabled);
@@ -517,7 +545,7 @@ export default {
         } else {
           this.doTimerAnimation();
         }
-      }, 1000);
+      }, duration);
     },
     getNameOfOption(find, where) {
       return where.find((item) => item.id == find)?.text;
@@ -558,23 +586,7 @@ export default {
     chooseNextElement: async function (find) {
       // session finished
       if (find == "finish") {
-        var options = {
-          color: "#28B9AF",
-          width: 400,
-          zIndex: 200,
-          noconfirm: false,
-        };
-
-        var result = await this.$refs.finish.open(
-          "Session beendet",
-          "Bitte wählen sie eine Option",
-          this.action_items,
-          options
-        );
-
-        if (result == true) {
-          alert("restart");
-        }
+        this.finishSession()
       }
       // find next selected element
       else {
@@ -599,7 +611,7 @@ export default {
       setTimeout(() => {
         this.trackingPosition = this.getRandomCoords();
         this.doTrackingAnimation();
-      }, 2000);
+      }, 20000);
     },
     getRandomCoords() {
       var spot = document.getElementById("tracking_spot");
@@ -620,6 +632,24 @@ export default {
     setCoordinates(headSetPosition) {
       console.log(headSetPosition);
     },
+    async finishSession(){
+        var options = {
+          color: "#28B9AF",
+          width: 400,
+          zIndex: 200,
+          noconfirm: false,
+        };
+
+        var result = await this.$refs.finish.open(
+          "Session beendet",
+          "Bitte wählen sie eine Option",
+          this.action_items,
+          options
+        );
+        if (result == true) {
+          this.emiteSessionControlEvent("REQUEST_FINISH")
+        }
+    }
   },
 };
 </script>

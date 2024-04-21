@@ -77,6 +77,29 @@ export async function createProcedure(procedureName, response) {
     return result
 }
 
+export function connectActiveProcedure(onMessageEvent) {
+  var events = new EventSourcePolyfill(
+    "https://backend.relivr-integration.nuromedia.com/user/active-procedure/stream/"
+
+    , {
+      withCredentials: true,
+      headers: {
+        'Authorization': "Bearer " + getLocalToken()
+      }
+    }
+  );
+  events.addEventListener("Procedures", e => {
+    onMessageEvent(JSON.parse(e.data))
+  })
+  events.onopen = (event) => {
+    console.log("SSE OnOpen: " + JSON.stringify(event))
+  }
+
+  events.onerror = (event) => {
+    console.log("SSE OnError: " + JSON.stringify(event))
+  }
+}
+
 
 
 export function connectEventSource(procedureId, procedureUnitId, onMessageEvent) {
