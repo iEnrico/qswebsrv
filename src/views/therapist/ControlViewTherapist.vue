@@ -425,6 +425,7 @@ export default {
     async startStream() {
       connectActiveProcedure(this.onMessageProcedure)
       connectEventSource(this.procedureId, this.unitId, this.onMessageEvent)
+      this.emiteSessionControlEvent("STATUS_READY")
     },
     async onMessageProcedure(data){
       console.log(data)
