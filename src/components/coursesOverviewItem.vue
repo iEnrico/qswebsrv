@@ -1,3 +1,4 @@
+
 <template>
   <v-card
     class="rounded-lg d-flex flex-column ml-2 mt-4 mb-4"
@@ -102,11 +103,13 @@ import api from "@/scripts/api/api";
 import { useCurrentSessionStore } from "@/stores/currentSessionStore";
 
 export default {
+        /* eslint-disable */ 
   name: "CourseOverviewItem",
   setup() {
     const sessionStore = useCurrentSessionStore();
     return {
       sessionStore,
+      user: JSON.parse(sessionStorage.getItem("user"))
     };
   },
   data: () => ({
@@ -235,6 +238,8 @@ export default {
       return getStateColor(item);
     },
     routeCourse: function (item) {
+      debugger;
+      console.log(this.sessionStore);
       console.log(item);
       // PATIENT - Audio Diary
       /*
@@ -247,7 +252,8 @@ export default {
         });
       }
       // PATIENT - Others
-      else*/ if (this.mode == 0) {
+    else*/ 
+    if (this.mode == 0) {
         this.sessionStore.setItem(item);
 
         this.$router.push({
@@ -278,16 +284,13 @@ export default {
       });
       if (result?.status == 200) {
         this.onUnitChange();
-        console.log("STOPPED");
       } else {
         this.onUnitChange();
-        //TODO: SHOW MESSAGE ERROR
       }
     },
-    async startActivity(item) {
-      const units = item.activity.units.map((unit) => ({
+    async startActivity(item) {      const units = item.activity.units.map((unit) => ({
         activityUnitId: unit.id,
-        contentPackageResourceId: 16,
+        contentPackageResourceId: item.activity.name === "vr_roleplay_boss_single" ? 16 : 17,
         packageParametersIds: [],
         resourceParametersIds: [],
         state: "CREATED",
@@ -303,14 +306,22 @@ export default {
         payload
       );
       if (result?.state === "CREATED") {
+        if(this.mode == 0){
         this.$router.push({
-          name: "DashboardTherapist5",
-          query: {
-            patientId: result.fhirPatient,
-            unitId: result.units[0].id,
-            procedureId: result.id,
-          },
-        });
+            name: "Dashboard2a",
+          }); 
+        }else{
+          this.$router.push({
+            name: "DashboardTherapist5",
+            query: {
+              patientId: result.fhirPatient,
+              unitId: result.units[0].id,
+              procedureId: result.id,
+            },
+          });
+  
+        }
+
       }
     },
     async onClickIcon(item) {

@@ -49,22 +49,24 @@ export default {
   },
   methods: {
     getNotificationBGColor: function (status) {
-      if(status === "RESPONSE_START"){
+      if(status === "RESPONSE_START" || status === "STATUS_READY"){
           return "rgba(0, 0, 0, 0)";
       }else{
           return "rgba(250, 193, 148, 0.3)";
       }
     },
     getNotificationTextColor: function (status) {
-      if(status === "RESPONSE_START"){
+      if(status === "RESPONSE_START" ||  status === "STATUS_READY"){
         return "#4FAF9C";
       }
       return "#FAC194" 
     },
     getNotificationMessage: function (status) {
       switch (status) {
+        case "WAITING":
+          return "Please wait that the  patient is connected";
         case "STATUS_READY": 
-          return "Please wait that the patient is connected" 
+          return "Patient is Ready";
         case "STATUS_LOADING": 
           return "Please wait the vr patient is loading the resources";
         case "REQUEST_START": 
@@ -75,12 +77,15 @@ export default {
           return "Session Finished";
         case "STATUS_UPLOADING_RESULTS": 
           return "Uploading results from VR";
+        
       }
       return;
     },
     getStateIcon: function (status) {
       switch (status) {
         case "RESPONSE_START": 
+        return "mdi-check-circle";
+        case "STATUS_READY": 
         return "mdi-check-circle";
         case "STATUS_UPLOADING_RESULTS": 
           return "mdi-cloud-download";
@@ -92,7 +97,7 @@ export default {
       return this.$i18n.t(getStateMsg(item))
     },
     getStateColor: function (status) {
-      if(status === "RESPONSE_START"){
+      if(status === "RESPONSE_START" || status === "STATUS_READY"  ){
         return "#4FAF9C";
       }
       return "#FAC194"      

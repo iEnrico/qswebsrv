@@ -129,6 +129,8 @@
             <span class="text-xs" style="z-index: 20"> Finish</span>
           </v-btn>
           <ProcedureMessageStatus :status="status" />
+
+          <span class="text-xs" style="z-index: 20; margin-left:20px;"> Event VR({{status}}): {{messageRequestPlay}}</span>
           <v-list
             v-for="(item, index) in labels"
             :key="index"
@@ -189,8 +191,8 @@
                   <v-icon
                     v-on:click="startSession()"
                     v-if="subitem?.entry_point && !this.active_item"
-                    :size="this.status === 'RESPONSE_START' ?  '25px' : '20px' "
-                    :color="this.status === 'RESPONSE_START' ?  '#006400' : '#666' "
+                    :size="this.status === 'RESPONSE_START' || this.status === 'STATUS_READY'  ?  '25px' : '20px' "
+                    :color="this.status === 'RESPONSE_START' || this.status === 'STATUS_READY'  ?  '#006400' : '#666' "
                     >{{ "mdi-play-circle-outline" }}</v-icon
                   >
                 </v-row>
@@ -386,7 +388,8 @@ export default {
   data: () => ({
     labels: ["Intro", "Story", "Outro"],
     dataset: [],
-    status:"STATUS_READY",
+    status:"WAITING",
+    messageRequestPlay:"",
     intro_items: [],
     story_items: [],
     outro_items: [],
@@ -425,7 +428,7 @@ export default {
     async startStream() {
       connectActiveProcedure(this.onMessageProcedure)
       connectEventSource(this.procedureId, this.unitId, this.onMessageEvent)
-      this.emiteSessionControlEvent("STATUS_READY")
+     //this.emiteSessionControlEvent("STATUS_READY")
     },
     async onMessageProcedure(data){
       console.log(data)
@@ -436,9 +439,10 @@ export default {
       }
     },
     async onMessageEvent(data){
+
       switch (data.type) {
         case "STATUS_READY":
-          this.emiteSessionControlEvent("REQUEST_START")
+          this.messageRequestPlay=JSON.stringify(data);
           this.status=data.type;
           break;
         case "STATUS_LOADING":
@@ -448,24 +452,32 @@ export default {
           this.status=data.type;
         break;
         case "RESPONSE_START":
+          this.messageRequestPlay=JSON.stringify(data);
           this.status=data.type;
           break;
         case "STATUS_COMPLETED":
+          this.messageRequestPlay=JSON.stringify(data);
           this.status=data.type;
           this.emiteSessionControlEvent("REQUEST_FINISH")
         break;
         case "RESPONSE_FINISH":
+          this.messageRequestPlay=JSON.stringify(data);
           this.status=data.type;
           break;
         case "STATUS_UPLOADING_RESULTS":
+          this.messageRequestPlay=JSON.stringify(data);
           this.status=data.type;
           break;
         case "STATUS_EXIT":
+          this.messageRequestPlay=JSON.stringify(data);
           this.status=data.type;
           this.emiteSessionControlEvent("STATUS_EXIT")
           break;
         case "VR":
           this.setCoordinates(data)
+          break;
+        case "STATUS_PLAYING":
+          this.messageRequestPlay=JSON.stringify(data);
           break;
         default:
           break;
@@ -503,7 +515,7 @@ export default {
       );
     },
     startSession() {
-      if(this.status === "RESPONSE_START"){
+      if(this.status === "RESPONSE_START" || this.status === "STATUS_READY"){
           var nextItem = this.dataset.find(
             (item) => item.id == this.intro_items[0][0].id
           );
