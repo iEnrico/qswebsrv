@@ -79,9 +79,9 @@ export default {
   }),
   props: ["searchText"],
   watch: {
-    data: function () {
+    /*data: function () {
       console.log("update-data:\n" + JSON.stringify(this.data));
-    },
+    },*/
   },
   components: {
     ListItemCourseOption,

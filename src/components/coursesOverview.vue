@@ -51,10 +51,10 @@ export default {
   },
 
   watch: {
-    customData:  function () {
+    /*customData:  function () {
       console.log("update-data:\n" + JSON.stringify(this.customData));
        //this.refresh()
-    },
+    },*/
   },
 
   data: () => ({
@@ -67,7 +67,7 @@ export default {
   components: {CoursesOverviewItem},
   mounted: async function () {
     await this.refresh()
-  },
+},
   
   updated: async function () {
     await this.refresh()

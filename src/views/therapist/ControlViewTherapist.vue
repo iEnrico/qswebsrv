@@ -417,6 +417,7 @@ export default {
     this.patientId = this.$route.query.patientId;
     this.unitId = this.$route.query.unitId;
     this.procedureId = this.$route.query.procedureId;
+    this.roleplay = this.$route.query.roleplay;
   },
   //components: { ScenarioTimeline, ScenarioCommands },
   mounted: function () {
@@ -428,14 +429,15 @@ export default {
     async startStream() {
       connectActiveProcedure(this.onMessageProcedure)
       connectEventSource(this.procedureId, this.unitId, this.onMessageEvent)
-     //this.emiteSessionControlEvent("STATUS_READY")
+     this.emiteSessionControlEvent("STATUS_READY")
     },
     async onMessageProcedure(data){
-      console.log(data)
       if(data.state==="COMPLETED" || data.state==="ABORTED"){
         this.$router.push({
           name: "DashboardTherapist3",
         });
+      }else if(data.state ==="RUNNING"){
+        connectEventSource(this.procedureId, this.unitId, this.onMessageEvent)
       }
     },
     async onMessageEvent(data){
@@ -471,7 +473,7 @@ export default {
         case "STATUS_EXIT":
           this.messageRequestPlay=JSON.stringify(data);
           this.status=data.type;
-          this.emiteSessionControlEvent("STATUS_EXIT")
+          //this.emiteSessionControlEvent("STATUS_EXIT")
           break;
         case "VR":
           this.setCoordinates(data)
@@ -484,14 +486,14 @@ export default {
       }
     },
     loadData() {
-      this.dataset = data.getRolePlayDataSet();
+      this.dataset = data.getRolePlayDataSet(this.roleplay);
 
       this.action_items = this.dataset.filter(
         (item) => !item.oneshot && item.action
       );
 
       this.intro_items[this.intro_items.length] = this.dataset.filter(
-        (item) => !item.oneshot && !item.action && item.id.startsWith("intro")
+        (item) => !item.oneshot && !item.action && item.id.startsWith("intro") 
       );
 
       //TODO: not fix it to 20
@@ -500,7 +502,7 @@ export default {
           (item) =>
             !item.oneshot &&
             !item.action &&
-            item.id.startsWith("" + i) &&
+            (item.id.startsWith("K" + i) || item.id.startsWith("" + i)) &&
             !item.successors?.includes("finish")
         );
       }
@@ -603,6 +605,8 @@ export default {
       }
       // find next selected element
       else {
+         // eslint-disable-next-line
+        debugger;
         this.progress = 0;
         this.nextEnabled = false;
         var nextItem = this.dataset.find((item) => item.id == find);

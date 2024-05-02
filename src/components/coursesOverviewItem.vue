@@ -272,6 +272,7 @@ export default {
               patientId: item.fhirPatient,
               unitId: item.units[0].id,
               procedureId: item.id,
+              roleplay:item.carePlanUnit.activity.name
             },
           });
         }
@@ -317,6 +318,8 @@ export default {
               patientId: result.fhirPatient,
               unitId: result.units[0].id,
               procedureId: result.id,
+              roleplay:result.carePlanUnit.activity.name
+
             },
           });
   

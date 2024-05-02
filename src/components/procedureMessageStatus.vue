@@ -77,7 +77,8 @@ export default {
           return "Session Finished";
         case "STATUS_UPLOADING_RESULTS": 
           return "Uploading results from VR";
-        
+        case "STATUS_EXIT": 
+          return "SESSION FINISHED";
       }
       return;
     },
