@@ -4623,7 +4623,7 @@ var data = {
   */
   getRolePlayDataSet: function (type) {
 
-    if (type === "vr_roleplay_boss_single") {
+    if (type === "vr_roleplay_boss_single" || !type) {
       return [
         {
           "id": "intro1.1.1",
