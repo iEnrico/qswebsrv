@@ -77,7 +77,7 @@ export async function createProcedure(procedureName, response) {
     return result
 }
 
-export function connectActiveProcedure(onMessageEvent) {
+export function connectActiveProcedure(onMessageEvent, onConnect) {
   var events = new EventSourcePolyfill(
     "https://backend.relivr-integration.nuromedia.com/user/active-procedure/stream/"
 
@@ -93,6 +93,9 @@ export function connectActiveProcedure(onMessageEvent) {
   })
   events.onopen = (event) => {
     console.log("SSE OnOpen: " + JSON.stringify(event))
+    if(onConnect){
+      onConnect();
+    }
   }
 
   events.onerror = (event) => {

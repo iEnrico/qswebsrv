@@ -427,9 +427,10 @@ export default {
   },
   methods: {
     async startStream() {
-      connectActiveProcedure(this.onMessageProcedure)
+      connectActiveProcedure(this.onMessageProcedure, ()=>{
+          this.emiteSessionControlEvent("STATUS_READY")
+      })
       connectEventSource(this.procedureId, this.unitId, this.onMessageEvent)
-     this.emiteSessionControlEvent("STATUS_READY")
     },
     async onMessageProcedure(data){
       if(data.state==="COMPLETED" || data.state==="ABORTED"){
@@ -438,14 +439,18 @@ export default {
         });
       }else if(data.state ==="RUNNING"){
         connectEventSource(this.procedureId, this.unitId, this.onMessageEvent)
+        this.emiteSessionControlEvent("STATUS_READY")
       }
     },
     async onMessageEvent(data){
 
       switch (data.type) {
         case "STATUS_READY":
+          if(data.client !== "frontend"){
           this.messageRequestPlay=JSON.stringify(data);
           this.status=data.type;
+          }
+
           break;
         case "STATUS_LOADING":
           this.status=data.type;
@@ -460,7 +465,6 @@ export default {
         case "STATUS_COMPLETED":
           this.messageRequestPlay=JSON.stringify(data);
           this.status=data.type;
-          this.emiteSessionControlEvent("REQUEST_FINISH")
         break;
         case "RESPONSE_FINISH":
           this.messageRequestPlay=JSON.stringify(data);
@@ -480,6 +484,11 @@ export default {
           break;
         case "STATUS_PLAYING":
           this.messageRequestPlay=JSON.stringify(data);
+          this.progress = 0;
+          this.nextEnabled = false;
+          if(data.duration){
+            this.doTimerAnimation(data.duration)
+          }
           break;
         default:
           break;
@@ -526,17 +535,14 @@ export default {
           this.nextEnabled = false;
           this.active_item = nextItem;
           this.emiteInputEvent("REQUEST_PLAY",nextItem.id)
-          this.doTimerAnimation();
       }
 
     },
     replayItem(item) {
-      console.log(item);
       this.progress = 0;
       this.nextEnabled = false;
       this.active_item = item;
       this.sendCommand(item)
-      this.doTimerAnimation();
     },
     async simulateVRConnection() {
       await api.patchActivityUnitAlternate(
@@ -546,11 +552,12 @@ export default {
         { state: "RUNNING" }
       );
     },
-    doTimerAnimation: function (duration=1000) {
+    doTimerAnimation: function (duration=1) {
+      // eslint-disable-next-line
+      this.max_progress=duration;
       setTimeout(() => {
-        console.log(this.progress + " of " + this.max_progress);
+        console.log(this.progress + " of " + duration);
         console.log(this.nextEnabled);
-
         this.progress < this.max_progress
           ? this.progress++
           : (this.nextEnabled = true);
@@ -558,9 +565,9 @@ export default {
         if (this.nextEnabled) {
           this.active_items.push(this.active_item);
         } else {
-          this.doTimerAnimation();
+          this.doTimerAnimation(this.max_progress);
         }
-      }, duration);
+      }, 1000);
     },
     getNameOfOption(find, where) {
       return where.find((item) => item.id == find)?.text;
@@ -573,7 +580,7 @@ export default {
         sessionControlEvent: {
           type,
           clientCreateMoment: new Date(),
-          client: "string",
+          client: "frontend",
           data: "string",
         },
       });
@@ -585,7 +592,7 @@ export default {
           duration: 0,
           inputCommandId: command,
           clientCreateMoment: new Date(),
-          client: "string",
+          client: "frontend",
           data: "string",
         },
       });
@@ -613,7 +620,7 @@ export default {
         this.sendCommand(nextItem)
         //this.active_items.push( nextItem )
         this.active_item = nextItem;
-        this.doTimerAnimation();
+        //this.doTimerAnimation();
       }
     },
     itemPlayedOnce(find) {
