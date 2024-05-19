@@ -446,11 +446,17 @@ export default {
 
       switch (data.type) {
         case "STATUS_READY":
+          //COMMENT THE IF CONDITION IF THE VR DONT SEND THIS EVENT
           if(data.client !== "frontend"){
-          this.messageRequestPlay=JSON.stringify(data);
-          this.status=data.type;
+            this.messageRequestPlay=JSON.stringify(data);
+            this.status=data.type;
           }
 
+          /*
+           //UNCOMMENT IF COMMENT THE LAST CODE
+            this.messageRequestPlay=JSON.stringify(data);
+            this.status=data.type;
+          */
           break;
         case "STATUS_LOADING":
           this.status=data.type;
