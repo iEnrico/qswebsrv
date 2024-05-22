@@ -614,6 +614,7 @@ export default {
     chooseNextElement: async function (find) {
       // session finished
       if (find == "finish") {
+        this.sendCommand({id:"finish"})
         this.finishSession()
       }
       // find next selected element
@@ -677,6 +678,7 @@ export default {
           options
         );
         if (result == true) {
+        
           this.emiteSessionControlEvent("REQUEST_FINISH")
         }
     }
