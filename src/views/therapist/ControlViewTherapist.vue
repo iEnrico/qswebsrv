@@ -5,16 +5,16 @@
     <v-row class="pa-0 ma-0 fill-height">
       <v-col :cols="12" style="height: auto">
         <v-card
-          variant="elevated"
-          class="pa-0 ma-0 rounded-lg"
-          style="
+            variant="elevated"
+            class="pa-0 ma-0 rounded-lg"
+            style="
             height: 100%;
             background-color: rgb(255, 255, 255);
             display: flex;
             flex-direction: column;
           "
         >
-  
+
           <!--
           <v-card-title>Scenario Timeline</v-card-title>
         -->
@@ -69,7 +69,7 @@
                         :value="true"
                         :color="itemPlayedOnce(subitem.id) ? '#cce8cc' : '#ffd2d2'"
                         width="25%"
-                    > 
+                    >
 
                       <v-row class="pa-0 ma-0">
                           <v-btn
@@ -92,10 +92,10 @@
                           :max="max_progress"
                           color="rgba(0, 0, 0, 0.2)"
                           style="position:absolute; z-index: 0;"
-                          class="ml-0 mr-0 mt-0 mb-0 fill-height" 
+                          class="ml-0 mr-0 mt-0 mb-0 fill-height"
                       />
-                      
-                      <v-row style="z-index: 1;" class="pa-0 ma-0 mt-4" > 
+
+                      <v-row style="z-index: 1;" class="pa-0 ma-0 mt-4" >
                           <v-tooltip v-for="(option, x) in subitem?.successors" :key="x" location="bottom" :text="getNameOfOption(option, (index == 0 ? intro_items : index == 1 ? story_items : outro_items))">
                               <template v-slot:activator="{ props }">
                                   <v-btn
@@ -121,55 +121,57 @@
           </v-expansion-panels>
 
 -->
+          <!--
           <v-btn @click="simulateVRConnection()" class="pa-2 ma-2 ml-0 mr-2">
             <span class="text-xs" style="z-index: 20"> SIMULAR RUNNING VR (PRUEBAS)</span>
           </v-btn>
-
+          -->
           <v-btn @click="finishSession" class="pa-2 ma-2 ml-0 ms-auto mr-2" width="200" color="info">
             <span class="text-xs" style="z-index: 20"> Finish</span>
           </v-btn>
+
           <ProcedureMessageStatus :status="status" />
 
-          <span class="text-xs" style="z-index: 20; margin-left:20px;"> Event VR({{status}}): {{messageRequestPlay}}</span>
+          <!-- <span class="text-xs" style="z-index: 20; margin-left:20px;"> Event VR({{status}}): {{messageRequestPlay}}</span> -->
           <v-list
-            v-for="(item, index) in labels"
-            :key="index"
-            class="mt-4 pt-0"
-            style="overflow-y: auto; background-color: #fff"
+              v-for="(item, index) in labels"
+              :key="index"
+              class="mt-4 pt-0"
+              style="overflow-y: auto; background-color: #fff"
           >
             <span class="ml-4 mb-2 mt-2 text-xl text-grey">{{ item }}</span>
             <v-divider
-              :thickness="1"
-              class="mt-0 mb-2 border-opacity-100"
-              color="#f22"
+                :thickness="1"
+                class="mt-0 mb-2 border-opacity-100"
+                color="#f22"
             ></v-divider>
             <v-row
-              class="pa-0 ma-0 mx-4"
-              v-for="(item, i) in index == 0
+                class="pa-0 ma-0 mx-4"
+                v-for="(item, i) in index == 0
                 ? intro_items
                 : index == 1
                 ? story_items
                 : outro_items"
-              :key="i"
+                :key="i"
             >
               <v-alert
-                v-for="(subitem, n) in item"
-                :key="n"
-                class="ma-2 fill-height rounded-lg"
-                :style="
+                  v-for="(subitem, n) in item"
+                  :key="n"
+                  class="ma-2 fill-height rounded-lg"
+                  :style="
                   'border: 0.1em; border-color: ' +
                   subitem?.bordercolor +
                   '; border-style: solid;'
                 "
-                :value="true"
-                :color="itemPlayedOnce(subitem.id) ? '#cce8cc' : '#fff'"
-                width="25%"
+                  :value="true"
+                  :color="itemPlayedOnce(subitem.id) ? '#cce8cc' : '#fff'"
+                  width="25%"
               >
                 <v-row class="pa-0 ma-0">
                   <v-chip
-                    :color="subitem?.bordercolor"
-                    size="small"
-                    variant="flat"
+                      :color="subitem?.bordercolor"
+                      size="small"
+                      variant="flat"
                   >
                     <span class="text-xs font-weight-bold" style="z-index: 20">
                       {{ subitem?.id }}
@@ -179,35 +181,35 @@
                   <v-spacer></v-spacer>
 
                   <v-icon
-                    v-on:click="replayItem(subitem)"
-                    v-if="itemPlayedOnce(subitem.id)"
-                    style="z-index: 1000;"
-                    class="mr-0"
-                    size="20px"
-                    color="#666 "
-                    >{{ "mdi-repeat-variant" }}</v-icon
+                      v-on:click="replayItem(subitem)"
+                      v-if="itemPlayedOnce(subitem.id)"
+                      style="z-index: 1000;"
+                      class="mr-0"
+                      size="20px"
+                      color="#666 "
+                  >{{ "mdi-repeat-variant" }}</v-icon
                   >
 
                   <v-icon
-                    v-on:click="startSession()"
-                    v-if="subitem?.entry_point && !this.active_item"
-                    :size="this.status === 'RESPONSE_START' || this.status === 'STATUS_READY'  ?  '25px' : '20px' "
-                    :color="this.status === 'RESPONSE_START' || this.status === 'STATUS_READY'  ?  '#006400' : '#666' "
-                    >{{ "mdi-play-circle-outline" }}</v-icon
+                      v-on:click="startSession()"
+                      v-if="subitem?.entry_point && !this.active_item"
+                      :size="this.status === 'RESPONSE_START' || this.status === 'STATUS_READY'  ?  '25px' : '20px' "
+                      :color="this.status === 'RESPONSE_START' || this.status === 'STATUS_READY'  ?  '#006400' : '#666' "
+                  >{{ "mdi-play-circle-outline" }}</v-icon
                   >
                 </v-row>
 
                 <v-row class="pa-0 ma-0 mt-2">
                   <v-tooltip
-                    width="25%"
-                    location="bottom"
-                    :text="getNameOfOption(subitem.id, dataset)"
+                      width="25%"
+                      location="bottom"
+                      :text="getNameOfOption(subitem.id, dataset)"
                   >
                     <template v-slot:activator="{ props }">
                       <span
-                        v-bind="props"
-                        class="text-sm font-weight-bold"
-                        style="z-index: 20"
+                          v-bind="props"
+                          class="text-sm font-weight-bold"
+                          style="z-index: 20"
                       >
                         {{ subitem?.description }}
                       </span>
@@ -216,11 +218,11 @@
                 </v-row>
 
                 <v-row
-                  v-if="
+                    v-if="
                     this.active_item.id == subitem.id ||
                     (!itemPlayedOnce(subitem.id) && subitem?.entry_point)
                   "
-                  class="pa-0 ma-0 mt-2"
+                    class="pa-0 ma-0 mt-2"
                 >
                   <span class="text-sm" style="z-index: 20">
                     {{ subitem?.text }}
@@ -230,43 +232,43 @@
                 <v-spacer></v-spacer>
 
                 <v-progress-linear
-                  v-if="this.active_item.id == subitem.id"
-                  :model-value="progress"
-                  :max="max_progress"
-                  color="rgba(0, 0, 0, 0.2)"
-                  style="position: absolute; z-index: 0"
-                  class="ml-0 mr-0 mt-0 mb-0 fill-height"
+                    v-if="this.active_item.id == subitem.id"
+                    :model-value="progress"
+                    :max="max_progress"
+                    color="rgba(0, 0, 0, 0.2)"
+                    style="position: absolute; z-index: 0"
+                    class="ml-0 mr-0 mt-0 mb-0 fill-height"
                 />
                 <!--
 v-if="this.active_item.id == subitem.id"
                 -->
                 <v-row
-                  v-if="
+                    v-if="
                     itemPlayedOnce(subitem.id) ||
                     this.active_item.id == subitem.id
                   "
-                  style="z-index: 1"
-                  class="pa-0 ma-0 mt-4"
+                    style="z-index: 1"
+                    class="pa-0 ma-0 mt-4"
                 >
                   <v-icon class="mr-2" size="20px" color="#666">{{
-                    "mdi-arrow-right-bottom"
-                  }}</v-icon>
+                      "mdi-arrow-right-bottom"
+                    }}</v-icon>
                   <v-tooltip
-                    width="25%"
-                    location="bottom"
-                    v-for="(option, x) in subitem?.successors"
-                    :key="x"
-                    :text="getNameOfOption(option, dataset)"
+                      width="25%"
+                      location="bottom"
+                      v-for="(option, x) in subitem?.successors"
+                      :key="x"
+                      :text="getNameOfOption(option, dataset)"
                   >
                     <template v-slot:activator="{ props }">
                       <v-chip
-                        v-bind="props"
-                        class="mr-2 mt-1"
-                        :color="getColorOfOption(option, dataset)"
-                        size="x-small"
-                        variant="flat"
-                        :disabled="!this.nextEnabled || this.status ==='RESPONSE_FINISH'"
-                        @click="chooseNextElement(option)"
+                          v-bind="props"
+                          class="mr-2 mt-1"
+                          :color="getColorOfOption(option, dataset)"
+                          size="x-small"
+                          variant="flat"
+                          :disabled="!this.nextEnabled || this.status ==='RESPONSE_FINISH'"
+                          @click="chooseNextElement(option)"
                       >
                         <span class="text-xs" style="z-index: 20">
                           {{ option }}
@@ -284,9 +286,9 @@ v-if="this.active_item.id == subitem.id"
 
       <v-col :cols="12" style="height: auto">
         <v-card
-          variant="elevated"
-          class="pa-0 ma-0 rounded-lg"
-          style="
+            variant="elevated"
+            class="pa-0 ma-0 rounded-lg"
+            style="
             height: 100%;
             background-color: rgb(255, 255, 255);
             display: flex;
@@ -297,31 +299,31 @@ v-if="this.active_item.id == subitem.id"
             <v-col :cols="4" style="height: auto">
               <div style="min-height: 100%" id="outerDiv">
                 <div
-                  id="inner1"
-                  style="min-height: 100%; min-width: 100%; z-index: 1"
+                    id="inner1"
+                    style="min-height: 100%; min-width: 100%; z-index: 1"
                 >
                   <img
-                    id="tracking_canvas"
-                    class="pa-0 ma-0"
-                    style="min-height: 100%; min-width: 100%"
-                    :src="require('@/assets/placeholder.png')"
+                      id="tracking_canvas"
+                      class="pa-0 ma-0"
+                      style="min-height: 100%; min-width: 100%"
+                      :src="require('@/assets/placeholder.png')"
                   />
                 </div>
                 <!--min-height: 100%; min-width: 100%; -->
                 <div id="inner2" :style="trackingPosition + ' z-index: 2;'">
                   <!--<v-icon id="tracking_spot" color="blue" style="">{{ "mdi-checkbox-blank-circle-outline" }}</v-icon>-->
                   <v-icon id="tracking_spot" color="blue" style="">{{
-                    "mdi-record-circle-outline"
-                  }}</v-icon>
+                      "mdi-record-circle-outline"
+                    }}</v-icon>
                 </div>
               </div>
             </v-col>
             <v-col :cols="8" class="pa-4" style="height: auto">
               <v-btn
-                v-for="(option, x) in snippet_items"
-                :key="x"
-                @click="sendCommand(option)"
-                class="pa-2 ma-2 ml-0 mr-2"
+                  v-for="(option, x) in snippet_items"
+                  :key="x"
+                  @click="sendCommand(option)"
+                  class="pa-2 ma-2 ml-0 mr-2"
               >
                 <span class="text-xs" style="z-index: 20">
                   {{ option.text }}
@@ -388,7 +390,8 @@ export default {
   data: () => ({
     labels: ["Intro", "Story", "Outro"],
     dataset: [],
-    status:"WAITING",
+    //status:"WAITING",
+    status:"STATUS_READY",
     messageRequestPlay:"",
     intro_items: [],
     story_items: [],
@@ -427,29 +430,29 @@ export default {
   },
   methods: {
     async startStream() {
-      connectActiveProcedure(this.onMessageProcedure, ()=>{
-          this.emiteSessionControlEvent("STATUS_READY")
+      connectActiveProcedure(this.onMessageProcedure, () => {
+        this.emiteSessionControlEvent("STATUS_READY")
       })
       connectEventSource(this.procedureId, this.unitId, this.onMessageEvent)
     },
-    async onMessageProcedure(data){
-      if(data.state==="COMPLETED" || data.state==="ABORTED"){
+    async onMessageProcedure(data) {
+      if (data.state === "COMPLETED" || data.state === "ABORTED") {
         this.$router.push({
           name: "DashboardTherapist3",
         });
-      }else if(data.state ==="RUNNING"){
+      } else if (data.state === "RUNNING") {
         connectEventSource(this.procedureId, this.unitId, this.onMessageEvent)
         this.emiteSessionControlEvent("STATUS_READY")
       }
     },
-    async onMessageEvent(data){
+    async onMessageEvent(data) {
 
       switch (data.type) {
         case "STATUS_READY":
           //COMMENT THE IF CONDITION IF THE VR DONT SEND THIS EVENT
-          if(data.client !== "frontend"){
-            this.messageRequestPlay=JSON.stringify(data);
-            this.status=data.type;
+          if (data.client !== "frontend") {
+            this.messageRequestPlay = JSON.stringify(data);
+            this.status = data.type;
           }
 
           /*
@@ -459,40 +462,40 @@ export default {
           */
           break;
         case "STATUS_LOADING":
-          this.status=data.type;
-        break;
+          this.status = data.type;
+          break;
         case "REQUEST_START":
-          this.status=data.type;
-        break;
+          this.status = data.type;
+          break;
         case "RESPONSE_START":
-          this.messageRequestPlay=JSON.stringify(data);
-          this.status=data.type;
+          this.messageRequestPlay = JSON.stringify(data);
+          this.status = data.type;
           break;
         case "STATUS_COMPLETED":
-          this.messageRequestPlay=JSON.stringify(data);
-          this.status=data.type;
-        break;
+          this.messageRequestPlay = JSON.stringify(data);
+          this.status = data.type;
+          break;
         case "RESPONSE_FINISH":
-          this.messageRequestPlay=JSON.stringify(data);
-          this.status=data.type;
+          this.messageRequestPlay = JSON.stringify(data);
+          this.status = data.type;
           break;
         case "STATUS_UPLOADING_RESULTS":
-          this.messageRequestPlay=JSON.stringify(data);
-          this.status=data.type;
+          this.messageRequestPlay = JSON.stringify(data);
+          this.status = data.type;
           break;
         case "STATUS_EXIT":
-          this.messageRequestPlay=JSON.stringify(data);
-          this.status=data.type;
+          this.messageRequestPlay = JSON.stringify(data);
+          this.status = data.type;
           //this.emiteSessionControlEvent("STATUS_EXIT")
           break;
         case "VR":
           this.setCoordinates(data)
           break;
         case "STATUS_PLAYING":
-          this.messageRequestPlay=JSON.stringify(data);
+          this.messageRequestPlay = JSON.stringify(data);
           this.progress = 0;
           this.nextEnabled = false;
-          if(data.duration){
+          if (data.duration) {
             this.doTimerAnimation(data.duration)
           }
           break;
@@ -504,44 +507,44 @@ export default {
       this.dataset = data.getRolePlayDataSet(this.roleplay);
 
       this.action_items = this.dataset.filter(
-        (item) => !item.oneshot && item.action
+          (item) => !item.oneshot && item.action
       );
 
       this.intro_items[this.intro_items.length] = this.dataset.filter(
-        (item) => !item.oneshot && !item.action && item.id.startsWith("intro") 
+          (item) => !item.oneshot && !item.action && item.id.startsWith("intro")
       );
 
       //TODO: not fix it to 20
       for (let i = 0; i < 20; i++) {
         this.story_items[this.story_items.length] = this.dataset.filter(
-          (item) =>
-            !item.oneshot &&
-            !item.action &&
-            (item.id.startsWith("K" + i) || item.id.startsWith("" + i)) &&
-            !item.successors?.includes("finish")
+            (item) =>
+                !item.oneshot &&
+                !item.action &&
+                (item.id.startsWith("K" + i) || item.id.startsWith("" + i)) &&
+                !item.successors?.includes("finish")
         );
       }
 
       this.outro_items[this.outro_items.length] = this.dataset.filter(
-        (item) =>
-          !item.oneshot && !item.action && item.successors?.includes("finish")
+          (item) =>
+              !item.oneshot && !item.action && item.successors?.includes("finish")
       );
 
       this.snippet_items = this.dataset.filter(
-        (item) => item.oneshot && item.oneshot == true
+          (item) => item.oneshot && item.oneshot == true
       );
     },
     startSession() {
-      if(this.status === "RESPONSE_START" || this.status === "STATUS_READY"){
-          var nextItem = this.dataset.find(
+      //if (this.status === "RESPONSE_START" || this.status === "STATUS_READY") {
+        var nextItem = this.dataset.find(
             (item) => item.id == this.intro_items[0][0].id
-          );
-          //this.active_items.push( nextItem )
-          this.progress = 0;
-          this.nextEnabled = false;
-          this.active_item = nextItem;
-          this.emiteInputEvent("REQUEST_PLAY",nextItem.id)
-      }
+        );
+        //this.active_items.push( nextItem )
+        this.progress = 0;
+        this.nextEnabled = false;
+        this.active_item = nextItem;
+        this.emiteInputEvent("REQUEST_PLAY", nextItem.id)
+      //}
 
     },
     replayItem(item) {
@@ -552,21 +555,21 @@ export default {
     },
     async simulateVRConnection() {
       await api.patchActivityUnitAlternate(
-        this.patientId,
-        this.procedureId,
-        this.unitId,
-        { state: "RUNNING" }
+          this.patientId,
+          this.procedureId,
+          this.unitId,
+          {state: "RUNNING"}
       );
     },
-    doTimerAnimation: function (duration=1) {
+    doTimerAnimation: function (duration = 1) {
       // eslint-disable-next-line
-      this.max_progress=duration;
+      this.max_progress = duration;
       setTimeout(() => {
         console.log(this.progress + " of " + duration);
         console.log(this.nextEnabled);
         this.progress < this.max_progress
-          ? this.progress++
-          : (this.nextEnabled = true);
+            ? this.progress++
+            : (this.nextEnabled = true);
 
         if (this.nextEnabled) {
           this.active_items.push(this.active_item);
@@ -604,22 +607,22 @@ export default {
       });
     },
     async emitEventProcedure(payload) {
-       api.postEventProcedure(
-        this.patientId,
-        this.procedureId,
-        this.unitId,
-        payload
+      api.postEventProcedure(
+          this.patientId,
+          this.procedureId,
+          this.unitId,
+          payload
       );
     },
     chooseNextElement: async function (find) {
       // session finished
       if (find == "finish") {
-        this.sendCommand({id:"finish"})
+        this.sendCommand({id: "finish"})
         this.finishSession()
       }
       // find next selected element
       else {
-         // eslint-disable-next-line
+        // eslint-disable-next-line
         debugger;
         this.progress = 0;
         this.nextEnabled = false;
@@ -635,8 +638,8 @@ export default {
       return found ? true : false;
     },
     sendCommand: function (item) {
-      this.emiteInputEvent("REQUEST_PLAY",item.id)
-   
+      this.emiteInputEvent("REQUEST_PLAY", item.id)
+
     },
     doTrackingAnimation: function () {
       setTimeout(() => {
@@ -653,34 +656,34 @@ export default {
       var height = img.clientHeight;
 
       return (
-        "top: " +
-        (Math.random() * height - offset) +
-        "px; left: " +
-        (Math.random() * width - offset) +
-        "px;"
+          "top: " +
+          (Math.random() * height - offset) +
+          "px; left: " +
+          (Math.random() * width - offset) +
+          "px;"
       );
     },
     setCoordinates(headSetPosition) {
       console.log(headSetPosition);
     },
-    async finishSession(){
-        var options = {
-          color: "#28B9AF",
-          width: 400,
-          zIndex: 200,
-          noconfirm: false,
-        };
+    async finishSession() {
+      var options = {
+        color: "#28B9AF",
+        width: 400,
+        zIndex: 200,
+        noconfirm: false,
+      };
 
-        var result = await this.$refs.finish.open(
+      var result = await this.$refs.finish.open(
           "Session beendet",
           "Bitte wählen sie eine Option",
           this.action_items,
           options
-        );
-        if (result == true) {
-        
-          this.emiteSessionControlEvent("REQUEST_FINISH")
-        }
+      );
+      if (result == true) {
+
+        this.emiteSessionControlEvent("REQUEST_FINISH")
+      }
     }
   },
 };

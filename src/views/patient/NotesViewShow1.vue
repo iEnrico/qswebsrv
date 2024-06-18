@@ -49,7 +49,7 @@
               <!--
                 <ListItemPlayer class="mb-8" :elevated="false" :item="unit.audio" :index="i" />
               -->
-              
+
             </v-list-item>
           </v-list>
         </v-col>
@@ -94,28 +94,28 @@ export default {
     this.units = await Promise.all(this.item.item.units.map(async (unit) => {
 
       const unitId = unit.id;
-      
+
       const userData = getUser();
       const userId = userData.id;
       const results = await api.getProcedureResults(userId, idProcedure, unitId);
 
       var buf = []
       var audio_data = null
-      const resultId = results.data[0].id 
+      const resultId = results.data[0].id
       audio_data = await api.getResultAudioFile(userId, idProcedure, unitId, resultId);
       //var audio_buf = null
       if (results.data && results.data.length > 0) {
 
-        const resultId = results.data[0].id 
+        const resultId = results.data[0].id
         audio_data = await api.getResultAudioFile(userId, idProcedure, unitId, resultId);
         console.log("Audio Data Response: " + audio_data)
-        
+
 /*
         if (audio_data) {
-          
+
           //const audioblob = new Audio()
           //var blob = new Blob([audio_data], { type: 'audio/webm' })
-          //var url = window.URL.createObjectURL(blob)        
+          //var url = window.URL.createObjectURL(blob)
           //audioblob.src = url
           //console.log("AUDIO SRC: " + audioblob.src)
 
@@ -136,7 +136,7 @@ export default {
 */
 
       }
-      
+
       return {
         question: getTextByLanguage(unit.activityUnit.contentPackage.translations, this.$i18n),
         description: getDescriptionByLanguage(unit.activityUnit.contentPackage.translations, this.$i18n),
@@ -159,21 +159,21 @@ export default {
     streamFile: async function () {
       const userData = getUser();
       const userId = userData.id;
-      
+
       const idProcedure = this.item.item.id;
 
       var octet = await api.getResultAudioFile(userId, idProcedure, 799, 3282)
       var blob = new Blob([octet], { type: "audio/ogg" })
       console.log(JSON.stringify(blob))
 
-      const blobUrl = URL.createObjectURL(blob); 
-      const a = document.createElement('a'); 
-      a.style.display = 'none'; 
-      a.href = blobUrl; 
-      a.download = 'audio_file.mp3'; // set the desired filename 
-      document.body.appendChild(a); 
-      a.click(); 
-      document.body.removeChild(a); 
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = blobUrl;
+      a.download = 'audio_file.mp3'; // set the desired filename
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
       //var test = new Audio( URL.createObjectURL( blob ))
       //test.play()
     },
@@ -191,7 +191,7 @@ export default {
       //const blob = new Blob([unit.audio], {type: "octet/stream"})
       const audioblob = new Audio(window.URL.createObjectURL(blob));
       audioblob.play()
-      
+
     },
   },
 };

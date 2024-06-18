@@ -84,6 +84,7 @@ export default {
   },
   mounted: async function () {
     const data = await api.getVoiceRecords(getUser());
+    console.log("data from backend", data)
     data.forEach(element => {
       this.items.push({
             title: this.getTextByLanguage(element.carePlanUnit.activity.translations, this.$i18n ),

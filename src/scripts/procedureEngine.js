@@ -6,7 +6,7 @@ import { getLocalToken } from "./auth/auth";
 
 
 export function getUser() {
-      return JSON.parse(sessionStorage.getItem("user"));
+    return JSON.parse(sessionStorage.getItem("user"));
 }
 
 export function getFHIRId() {
@@ -15,7 +15,7 @@ export function getFHIRId() {
 
 export async function getNextAvailableProcedures() {
 
-    // get running 
+    // get running
     const response = await api.getRunningProcedures(getUser().id);
     if (response.data) {
         return { data: [response.data], state: 0 }; // state 0 means running
@@ -33,16 +33,16 @@ export async function createProcedure(procedureName, response) {
     let unit = null
     let carePlanUnit = null
     for (let x=0; x<response.data.length; x++) {
-      
-      unit = response.data[x].units.find(o => o.contentPackage.name === procedureName && o.contentPackage.available);
-      //console.log("create procedure: \n" + JSON.stringify(response.data[x]))
-      carePlanUnit = response.data[x].units[0] //.find(o => o.name === name && o.available);
-      //console.log("create procedure for: " + JSON.stringify(unit))
-      
-      if (unit)
-        break
+
+        unit = response.data[x].units.find(o => o.contentPackage.name === procedureName && o.contentPackage.available);
+        //console.log("create procedure: \n" + JSON.stringify(response.data[x]))
+        carePlanUnit = response.data[x].units[0] //.find(o => o.name === name && o.available);
+        //console.log("create procedure for: " + JSON.stringify(unit))
+
+        if (unit)
+            break
     }
-    
+
     let ownFHIRRessourceId = getFHIRId();
     //console.log("own fhir id: " + ownFHIRRessourceId)
 
@@ -54,115 +54,115 @@ export async function createProcedure(procedureName, response) {
     let unitResourceId = unit.contentPackage.resources[0].id;
 
     let procedure_data = {
-      "patient": ownFHIRRessourceId,
-      "carePlanUuid": carePlanUUId,
-      "carePlanUnitId": carePlanUnitsId,
-      "fhirProcedure": "0",
-      "units": [
-        {
-          "activityUnitId": unit.id,
-          "contentPackageResourceId": unitResourceId,
-          "packageParametersIds": [],
-          "resourceParametersIds": []
-        }
-      ]
+        "patient": ownFHIRRessourceId,
+        "carePlanUuid": carePlanUUId,
+        "carePlanUnitId": carePlanUnitsId,
+        "fhirProcedure": "0",
+        "units": [
+            {
+                "activityUnitId": unit.id,
+                "contentPackageResourceId": unitResourceId,
+                "packageParametersIds": [],
+                "resourceParametersIds": []
+            }
+        ]
     }
-    
+
     const result = await api.postProcedures(
-        getUser(), 
+        getUser(),
         procedure_data
     )
-    
+
     //console.log("createProcedure" + result)
     return result
 }
 
 export function connectActiveProcedure(onMessageEvent, onConnect) {
-  var events = new EventSourcePolyfill(
-    "https://backend.relivr-integration.nuromedia.com/user/active-procedure/stream/"
+    var events = new EventSourcePolyfill(
+        "https://backend.relivr-integration.nuromedia.com/user/active-procedure/stream/"
 
-    , {
-      withCredentials: true,
-      headers: {
-        'Authorization': "Bearer " + getLocalToken()
-      }
+        , {
+            withCredentials: true,
+            headers: {
+                'Authorization': "Bearer " + getLocalToken()
+            }
+        }
+    );
+    events.addEventListener("Procedures", e => {
+        onMessageEvent(JSON.parse(e.data))
+    })
+    events.onopen = (event) => {
+        console.log("SSE OnOpen: " + JSON.stringify(event))
+        if(onConnect){
+            onConnect();
+        }
     }
-  );
-  events.addEventListener("Procedures", e => {
-    onMessageEvent(JSON.parse(e.data))
-  })
-  events.onopen = (event) => {
-    console.log("SSE OnOpen: " + JSON.stringify(event))
-    if(onConnect){
-      onConnect();
-    }
-  }
 
-  events.onerror = (event) => {
-    console.log("SSE OnError: " + JSON.stringify(event))
-  }
+    events.onerror = (event) => {
+        console.log("SSE OnError: " + JSON.stringify(event))
+    }
 }
 
 
 
 export function connectEventSource(procedureId, procedureUnitId, onMessageEvent) {
-    
-  console.log("connect to event stream: \n" + "https://backend.relivr-integration.nuromedia.com/procedures/" + procedureId + "/units/" + procedureUnitId + "/events/stream/")
 
-  var events = new EventSourcePolyfill(
-    "https://backend.relivr-integration.nuromedia.com/procedures/" + procedureId + "/units/" + procedureUnitId + "/events/stream/"
-  
-  , {
-    withCredentials: true,
-    headers: {
-      'Authorization': "Bearer " + getLocalToken()
+    console.log("connect to event stream: \n" + "https://backend.relivr-integration.nuromedia.com/procedures/" + procedureId + "/units/" + procedureUnitId + "/events/stream/")
+
+    var events = new EventSourcePolyfill(
+        "https://backend.relivr-integration.nuromedia.com/procedures/" + procedureId + "/units/" + procedureUnitId + "/events/stream/"
+
+        , {
+            withCredentials: true,
+            headers: {
+                'Authorization': "Bearer " + getLocalToken()
+            }
+        }
+    );
+
+    // Listens to LocalDateTime "type" of Events
+    events.addEventListener("LocalDateTime", e => {
+        console.log("LocalDateTime", e)
+    })
+
+    events.addEventListener("SessionControlEvents", e => {
+        console.log(e);
+        onMessageEvent(JSON.parse(e.data))
+    })
+    events.addEventListener("InputEvents", e => {
+        onMessageEvent(JSON.parse(e.data))
+    })
+
+    // Listens to SensorEvent "type" of Events
+    /*
+    events.addEventListener("SensorEvent", e => {
+      console.log("SensorEvent", e)
+      let item = JSON.parse(e.data)
+      cableStates = item.values
+      cableStates.forEach((element) => {
+        setCableUpdates(evt, element)
+      });
+    })
+    */
+
+    events.onopen = (event) => {
+        console.log("SSE OnOpen: " + JSON.stringify(event))
     }
-  }
-  );
 
-  // Listens to LocalDateTime "type" of Events
-  events.addEventListener("LocalDateTime", e => {
-    console.log("LocalDateTime", e)
-  })
+    events.onerror = (event) => {
+        console.log("SSE OnError: " + JSON.stringify(event))
+    }
 
-  events.addEventListener("SessionControlEvents", e => {
-    console.log(e);
-    onMessageEvent(JSON.parse(e.data))
-  })
-  events.addEventListener("InputEvents", e => {
-    onMessageEvent(JSON.parse(e.data))
-  })
-
-  // Listens to SensorEvent "type" of Events
-  /*
-  events.addEventListener("SensorEvent", e => {
-    console.log("SensorEvent", e)
-    let item = JSON.parse(e.data)
-    cableStates = item.values
-    cableStates.forEach((element) => {
-      setCableUpdates(evt, element)
-    });
-  })
-  */
-
-  events.onopen = (event) => {
-    console.log("SSE OnOpen: " + JSON.stringify(event))
-  }
-
-  events.onerror = (event) => {
-    console.log("SSE OnError: " + JSON.stringify(event))
-  }
-
-  // THIS IS FIRED AND USED ONLY BY UN-NAMED EVENTS!
-  events.onmessage = (event) => {
-    console.log("SSE OnMessage: " + JSON.stringify(event));
-    //const parsedData = event.data;
-  };
+    // THIS IS FIRED AND USED ONLY BY UN-NAMED EVENTS!
+    events.onmessage = (event) => {
+        console.log("SSE OnMessage: " + JSON.stringify(event));
+        //const parsedData = event.data;
+    };
 
 
-  //const EventSource = NativeEventSource || EventSourcePolyfill;
-  // OR: may also need to set as global property
-  //global.EventSource =  NativeEventSource || EventSourcePolyfill;
+    //const EventSource = NativeEventSource || EventSourcePolyfill;
+    // OR: may also need to set as global property
+    //global.EventSource =  NativeEventSource || EventSourcePolyfill;
 
 }
 
@@ -190,10 +190,10 @@ export async function isAllUnitsComplete(procedure) {
     return (anyrunning ? false : true)
 }
 export  function isAllUnitsCompleteSync(procedure) {
-  //console.log("allUnitsComplete" + JSON.stringify(procedure))
-  let anyrunning = procedure.units?.find(o => (o.state == 'RUNNING' || o.state == 'CREATED'));
-  //console.log("!!!!!!!!!!!!!: \n" + JSON.stringify(anyrunning) + ", " + (anyrunning ? false : true))
-  return (anyrunning ? false : true)
+    //console.log("allUnitsComplete" + JSON.stringify(procedure))
+    let anyrunning = procedure.units?.find(o => (o.state == 'RUNNING' || o.state == 'CREATED'));
+    //console.log("!!!!!!!!!!!!!: \n" + JSON.stringify(anyrunning) + ", " + (anyrunning ? false : true))
+    return (anyrunning ? false : true)
 }
 export async function getNextTaskActivity(activityId) {
     //console.log("getNextTaskActivity: " + activityName)
@@ -206,52 +206,52 @@ export async function getNextTaskActivity(activityId) {
             return item.activityUnit.contentPackage;
         } else {
             return response.data.nextActivityUnit.contentPackage
-        } 
-    } 
-
-/*
-    response.forEach(async (element) => {
-        if (element.name == activityName && !element.state == 'COMPLETED') {
-            return element.activityUnit.contentPackage;
         }
-    })
-*/
+    }
+
+    /*
+        response.forEach(async (element) => {
+            if (element.name == activityName && !element.state == 'COMPLETED') {
+                return element.activityUnit.contentPackage;
+            }
+        })
+    */
 
     let response2 = await api.getAvailableActivitys(getUser().id);
     //console.log("getNextTaskActivity.response #2\n"+JSON.stringify(response2))
     //console.log("info: " + response2.data)
 
     for (let i=0; i<response2.data.length; i++) {
-      let item = response2.data[i].activity.units.find(o => 
-        ( o.contentPackage.id === activityId )
-        //console.log(activityName + " == " + o.contentPackage.name)
-      );
-      
-      //console.log("response #2 item: " + JSON.stringify(item)) // JSON.stringify(item)
-      
-      if (item) {
-        return item;
-      }
+        let item = response2.data[i].activity.units.find(o =>
+                ( o.contentPackage.id === activityId )
+            //console.log(activityName + " == " + o.contentPackage.name)
+        );
+
+        //console.log("response #2 item: " + JSON.stringify(item)) // JSON.stringify(item)
+
+        if (item) {
+            return item;
+        }
     }
 
-/*
-    let item = null
-    response2.data.forEach(element => {
-      item = element.units.find(o => 
-        ( o.contentPackage.id === activityId )
-        //console.log(activityName + " == " + o.contentPackage.name)
-      );
+    /*
+        let item = null
+        response2.data.forEach(element => {
+          item = element.units.find(o =>
+            ( o.contentPackage.id === activityId )
+            //console.log(activityName + " == " + o.contentPackage.name)
+          );
 
-      console.log("response #2 item: " + JSON.stringify(item)) // JSON.stringify(item)
-      
-      //console.log("item: " + item.contentPackage.name) //  JSON.stringify(item)
-      if (item) {
-        return;
-      }
+          console.log("response #2 item: " + JSON.stringify(item)) // JSON.stringify(item)
 
-    });
-    return item;
-*/
+          //console.log("item: " + item.contentPackage.name) //  JSON.stringify(item)
+          if (item) {
+            return;
+          }
+
+        });
+        return item;
+    */
 
     /*
     if (response2.data[0]) {
@@ -262,28 +262,28 @@ export async function getNextTaskActivity(activityId) {
         });
         return item;
     */
-    
-        /*
-        response2.data[0].units.forEach( (element) => {
-            console.log("avail element: " + JSON.stringify(element))
-            if (element.contentPackage.name == activityName) {
-                console.log("returning! " + element.contentPackage.name)
-                return element.contentPackage
-            }
-        })*/
-    
-        //}
+
+    /*
+    response2.data[0].units.forEach( (element) => {
+        console.log("avail element: " + JSON.stringify(element))
+        if (element.contentPackage.name == activityName) {
+            console.log("returning! " + element.contentPackage.name)
+            return element.contentPackage
+        }
+    })*/
+
+    //}
 
 }
 
 export async function getProcedureInformation(name) {
-  //console.log(name)
-  const activitiesResult = await api.getOtherAvailableActivities()
-  //console.log(activitiesResult)
-  return activitiesResult.data.find(function (o) {
-    return o.name == name /*&& (o.primaryType == 'WEBSITE' ||
+    //console.log(name)
+    const activitiesResult = await api.getOtherAvailableActivities()
+    //console.log(activitiesResult)
+    return activitiesResult.data.find(function (o) {
+        return o.name == name /*&& (o.primaryType == 'WEBSITE' ||
            o.primaryType == 'VR_DEVICE')*/
-  });
+    });
 
 }
 
@@ -318,44 +318,44 @@ export async function continueProcedure(activityId) {
         //startProcedure(response2.data[0].units[0])
 
         for (let i=0; i<response2.data.length; i++) {
-          let item = response2.data[i].units.find(o => 
-            ( o.contentPackage.id === activityId )
-            //console.log(activityName + " == " + o.contentPackage.name)
-          );
-          
-          //console.log("response #2 item: " + JSON.stringify(item)) // JSON.stringify(item)
-          
-          if (item) {
-            return {
-              "procedureId": response2.data[i].id,
-              "item": response2.data[i]
-              //"procedureUnitId": item.id
+            let item = response2.data[i].units.find(o =>
+                    ( o.contentPackage.id === activityId )
+                //console.log(activityName + " == " + o.contentPackage.name)
+            );
+
+            //console.log("response #2 item: " + JSON.stringify(item)) // JSON.stringify(item)
+
+            if (item) {
+                return {
+                    "procedureId": response2.data[i].id,
+                    "item": response2.data[i]
+                    //"procedureUnitId": item.id
+                }
             }
-          }
         }
 
 
-/*
-        let item = null
-        response2.data.forEach(element => {
-          console.log("r2: " + element.name.replace("-", "_") + " === " + activityName)
-          
-          if (element.name.replace("-", "_") === activityName) {
-            item =  {
-              "procedureId": element.id,
-              "item": element
-              //"procedureUnitId": item.id
-            }
-          }
+        /*
+                let item = null
+                response2.data.forEach(element => {
+                  console.log("r2: " + element.name.replace("-", "_") + " === " + activityName)
 
-          element.units.forEach(element => {
-            console.log("r3: " + element.contentPackage.name)
-          });
+                  if (element.name.replace("-", "_") === activityName) {
+                    item =  {
+                      "procedureId": element.id,
+                      "item": element
+                      //"procedureUnitId": item.id
+                    }
+                  }
 
-        });
-        console.log("continue item: " + item)
-        return item
-*/
+                  element.units.forEach(element => {
+                    console.log("r3: " + element.contentPackage.name)
+                  });
+
+                });
+                console.log("continue item: " + item)
+                return item
+        */
 
 
 
@@ -367,27 +367,27 @@ export async function continueProcedure(activityId) {
         }
         */
     }
-}   
+}
 
 export async function createConfig(env, type, object, procedure, user) {
 
     console.log("createConfig " + JSON.stringify(procedure))
 
-    let procedure_data = {     
-      "activityUnitId": procedure.data.nextActivityUnit.id,
-      "contentPackageResourceId": procedure.data.nextActivityUnit.contentPackage.resources[0].id,
-      "packageParametersIds": [
-        type, object,
-      ],
-      "resourceParametersIds": [
-        //env
-      ],
-      "state": "RUNNING"
+    let procedure_data = {
+        "activityUnitId": procedure.data.nextActivityUnit.id,
+        "contentPackageResourceId": procedure.data.nextActivityUnit.contentPackage.resources[0].id,
+        "packageParametersIds": [
+            type, object,
+        ],
+        "resourceParametersIds": [
+            //env
+        ],
+        "state": "RUNNING"
     }
 
     let result = await api.postActiveUnit(user, procedure_data)
     await startNextProcedure(result)
-    
+
     //this.procedureUnitId = result.data.id
     //this.procedureId = result.data.procedure.id
 
@@ -395,104 +395,104 @@ export async function createConfig(env, type, object, procedure, user) {
 
 function getResultDataSetForName(results, name, isPartial){
 
-  console.log(" -> get result set for: " + name)
-  console.log(" -> results: " + JSON.stringify(results))
-  
-  var payload = ""
-      
-  switch (name) {
+    console.log(" -> get result set for: " + name)
+    console.log(" -> results: " + JSON.stringify(results))
 
-    case "audio_diary_activities":
-    case "audio_diary_positive_emotions":
-    case "audio_diary_negative_situations":
-    case "audio_diary_social_relations":
-      payload += '['
-      /*
-      results.forEach((element, index) => {
-        if (isPartial && element.userRating != -1 || !isPartial) {
-          payload += '{ "resultTemplateId": ' + (2+index) + ', "values": [ ' + element.userRating + ' ] }';
-          (index+1 == results.length) ? payload += '' : payload += ',';
-        } 
-      })
-      */
-      payload += ']'
-      return payload; 
+    var payload = ""
 
-    case "system-usability-scale":
-      payload += '['
-      results.forEach((element, index) => {
-        if (isPartial && element.userRating != -1 || !isPartial) {
-          payload += '{ "resultTemplateId": ' + (2+index) + ', "values": [ ' + element.userRating + ' ] }';
-          (index+1 == results.length) ? payload += '' : payload += ',';
-        } 
-      })
-      payload += ']'
-      return payload; 
+    switch (name) {
 
-    case "BDI-II":
-      payload += '['
-        results.forEach((element, index) => {
-          if (isPartial && element.userRating != -1 || !isPartial) {
-            payload += '{ "resultTemplateId": ' + (14+index) + ', "values": [ ' + element.userRating + ' ] }';
-            (index+1 == results.length) ? payload += '' : payload += ',';
-          }
-        })
-      payload += ']'
-      return payload; 
-   
-    case "SAM":
-      payload += '['
-        results.forEach((element, index) => {
-          if (isPartial && element.userRating != -1 || !isPartial) {
-            payload += '{ "resultTemplateId": ' + (35+index) + ', "values": [ ' + element.userRating + ' ] }';
-            (index+1 == results.length) ? payload += '' : payload += ',';
-          }
-        })
-      if (payload.endsWith(',')) 
-        payload = payload.substring(0, payload.length-1)
-      payload += ']'
-      return payload; 
-    
-    case "TMS":
-      payload += '['
-      results.forEach((element, index) => {
-        if (isPartial && element.list_items[0].value != -1 || !isPartial) {
-          payload += '{ "resultTemplateId": ' + (38+index) + ', "values": [ ' + element.list_items[0].value + ' ] }';
-          (index+1 == results.length) ? payload += '' : payload += ',';
-        }
-      })
-      if (payload.endsWith(',')) 
-        payload = payload.substring(0, payload.length-1)
-      payload += ']'
-      return payload; 
+        case "audio_diary_activities":
+        case "audio_diary_positive_emotions":
+        case "audio_diary_negative_situations":
+        case "audio_diary_social_relations":
+            payload += '['
+            /*
+            results.forEach((element, index) => {
+              if (isPartial && element.userRating != -1 || !isPartial) {
+                payload += '{ "resultTemplateId": ' + (2+index) + ', "values": [ ' + element.userRating + ' ] }';
+                (index+1 == results.length) ? payload += '' : payload += ',';
+              }
+            })
+            */
+            payload += ']'
+            return payload;
 
-    case "GAD-7":
-      payload += '['
-      results.forEach((element, index) => {
-        if (isPartial && element.list_items[0].value != -1 || !isPartial) {
-          payload += '{ "resultTemplateId": ' + (51+index) + ', "values": [ ' + element.list_items[0].value + ' ] }';
-          (index+1 == results.length) ? payload += '' : payload += ',';
-        }
-      })
-      payload += ']'
-      return payload; 
- 
-    default:
-      break;
-  }
+        case "system-usability-scale":
+            payload += '['
+            results.forEach((element, index) => {
+                if (isPartial && element.userRating != -1 || !isPartial) {
+                    payload += '{ "resultTemplateId": ' + (2+index) + ', "values": [ ' + element.userRating + ' ] }';
+                    (index+1 == results.length) ? payload += '' : payload += ',';
+                }
+            })
+            payload += ']'
+            return payload;
+
+        case "BDI-II":
+            payload += '['
+            results.forEach((element, index) => {
+                if (isPartial && element.userRating != -1 || !isPartial) {
+                    payload += '{ "resultTemplateId": ' + (14+index) + ', "values": [ ' + element.userRating + ' ] }';
+                    (index+1 == results.length) ? payload += '' : payload += ',';
+                }
+            })
+            payload += ']'
+            return payload;
+
+        case "SAM":
+            payload += '['
+            results.forEach((element, index) => {
+                if (isPartial && element.userRating != -1 || !isPartial) {
+                    payload += '{ "resultTemplateId": ' + (35+index) + ', "values": [ ' + element.userRating + ' ] }';
+                    (index+1 == results.length) ? payload += '' : payload += ',';
+                }
+            })
+            if (payload.endsWith(','))
+                payload = payload.substring(0, payload.length-1)
+            payload += ']'
+            return payload;
+
+        case "TMS":
+            payload += '['
+            results.forEach((element, index) => {
+                if (isPartial && element.list_items[0].value != -1 || !isPartial) {
+                    payload += '{ "resultTemplateId": ' + (38+index) + ', "values": [ ' + element.list_items[0].value + ' ] }';
+                    (index+1 == results.length) ? payload += '' : payload += ',';
+                }
+            })
+            if (payload.endsWith(','))
+                payload = payload.substring(0, payload.length-1)
+            payload += ']'
+            return payload;
+
+        case "GAD-7":
+            payload += '['
+            results.forEach((element, index) => {
+                if (isPartial && element.list_items[0].value != -1 || !isPartial) {
+                    payload += '{ "resultTemplateId": ' + (51+index) + ', "values": [ ' + element.list_items[0].value + ' ] }';
+                    (index+1 == results.length) ? payload += '' : payload += ',';
+                }
+            })
+            payload += ']'
+            return payload;
+
+        default:
+            break;
+    }
 }
 
 export async function sendResults(/*data,*/ results, /*procedureId, procedureUnitId,*/ isPartial) {
-  
-  //console.log("procedure.sendresults: " + data.course_type)
 
-  /*
-  if (data.course_type == common.course_type_vr) {
-    const sampledata = {"state": "ABORTED"};
-    await api.patchProcedures(getUser(), JSON.parse(data).id, sampledata)
-  } 
-  else {
-  */
+    //console.log("procedure.sendresults: " + data.course_type)
+
+    /*
+    if (data.course_type == common.course_type_vr) {
+      const sampledata = {"state": "ABORTED"};
+      await api.patchProcedures(getUser(), JSON.parse(data).id, sampledata)
+    }
+    else {
+    */
 
     let questionaire = results[0].name;
     let questionaire_results = null;
@@ -500,8 +500,8 @@ export async function sendResults(/*data,*/ results, /*procedureId, procedureUni
     questionaire_results = getResultDataSetForName(results, questionaire, isPartial)
 
     //var parsedData = JSON.parse(data)
-    
-    var parsedData = await getNextAvailableProcedures() 
+
+    var parsedData = await getNextAvailableProcedures()
 
     //console.log("INFOOOOOO: \n" + JSON.stringify(parsedData.data[0]))
 
@@ -510,241 +510,240 @@ export async function sendResults(/*data,*/ results, /*procedureId, procedureUni
 
     var payload = JSON.parse(questionaire_results)
     if (payload.length != 0) {
-      await api.postProcedureResultBatch(
-        getUser(), 
-        parsedData.data[0].id, 
-        units[units.length-1].id, //activityUnit.id, 
-        payload
-      );
+        await api.postProcedureResultBatch(
+            getUser(),
+            parsedData.data[0].id,
+            units[units.length-1].id, //activityUnit.id,
+            payload
+        );
     }
     else {
-      console.log("nothing to save here...")
+        console.log("nothing to save here...")
     }
 
-  //}
+    //}
 
 }
 
 export async function getContainingUnitsFromProcedure(/*item*/) {
-  
-  //TODO: do live if metadata updated and containing full information (philip)
 
-  /*
-  var unitNames = []
-  console.log("parse this item: " + JSON.stringify(item))
-  item.units.forEach(unit => {
-    console.log(JSON.stringify(unit))
-    unitNames.push(unit.activityUnit.contentPackage.name)
-  });
-  return unitNames
-  */
+    //TODO: do live if metadata updated and containing full information (philip)
 
-  // until then use mocked data
+    /*
+    var unitNames = []
+    console.log("parse this item: " + JSON.stringify(item))
+    item.units.forEach(unit => {
+      console.log(JSON.stringify(unit))
+      unitNames.push(unit.activityUnit.contentPackage.name)
+    });
+    return unitNames
+    */
 
- return ["Aktuelle Empfindung und Stimmung", "Toronto Mindfulness Scale", "Achtsamkeit (VR)", "Aktuelle Empfindung und Stimmung", "Toronto Mindfulness Scale"]
+    // until then use mocked data
+
+    return ["Aktuelle Empfindung und Stimmung", "Toronto Mindfulness Scale", "Achtsamkeit (VR)", "Aktuelle Empfindung und Stimmung", "Toronto Mindfulness Scale"]
 }
 
 
 export function getStateId (item) {
-  switch(item) {
-    case "COMPLETED":
-      return common.session_state_done
-    case "RUNNING":
-      return common.session_state_running
-    case "ACTIVE":
-      return common.session_state_notstarted
-    case "OVERDUE":
-      return common.session_state_overdue
-    case "ABORTED":
-      return common.session_state_aborted
-  }
-  return common.session_state_notstarted
+    switch(item) {
+        case "COMPLETED":
+            return common.session_state_done
+        case "RUNNING":
+            return common.session_state_running
+        case "ACTIVE":
+            return common.session_state_notstarted
+        case "OVERDUE":
+            return common.session_state_overdue
+        case "ABORTED":
+            return common.session_state_aborted
+    }
+    return common.session_state_notstarted
 }
 
 export function getStateMsg (item) {
-  switch (item) {
-    case "ACTIVE": //common.session_state_notstarted:
-      return "state_notstarted";
-    case "RUNNING": //common.session_state_running:
-      return "state_paused";
-    case "COMPLETED": //common.session_state_done:
-      return "state_done";
-    case "OVERDUE": //common.session_state_overdue:
-      return "state_overdue";
-    case "ABORTED": //common.session_state_aborted:
-      return "state_abort";
-    case "CREATED": //common.session_state_aborted:
-      return "state_abort";
-  }
-  return;
+    switch (item) {
+        case "ACTIVE": //common.session_state_notstarted:
+            return "state_notstarted";
+        case "RUNNING": //common.session_state_running:
+            return "state_paused";
+        case "COMPLETED": //common.session_state_done:
+            return "state_done";
+        case "OVERDUE": //common.session_state_overdue:
+            return "state_overdue";
+        case "ABORTED": //common.session_state_aborted:
+            return "state_abort";
+        case "CREATED": //common.session_state_aborted:
+            return "state_abort";
+    }
+    return;
 }
 
 export function getStateIcon (item) {
-  //console.log(item)
-  switch (item) {
-    case "ACTIVE": //common.session_state_notstarted:
-      return "mdi-play-circle";
-    case "RUNNING": //common.session_state_running:
-      return "mdi-pause-circle";
-    case "COMPLETED": //common.session_state_done:
-      return "mdi-check-circle";
-    case "OVERDUE": //common.session_state_overdue:
-      return "mdi-alert-circle";
-    case "ABORTED": //common.session_state_aborted:
-      return "mdi-alert-circle";
-    case "CREATED": //common.session_state_running:
-      return "mdi-pause-circle";
-  }
-  return;
+    //console.log(item)
+    switch (item) {
+        case "ACTIVE": //common.session_state_notstarted:
+            return "mdi-play-circle";
+        case "RUNNING": //common.session_state_running:
+            return "mdi-pause-circle";
+        case "COMPLETED": //common.session_state_done:
+            return "mdi-check-circle";
+        case "OVERDUE": //common.session_state_overdue:
+            return "mdi-alert-circle";
+        case "ABORTED": //common.session_state_aborted:
+            return "mdi-alert-circle";
+        case "CREATED": //common.session_state_running:
+            return "mdi-pause-circle";
+    }
+    return;
 }
 
 export function getStateColor (item) {
 
-  var state = item.carePlan ? item.carePlan.state : item.state
+    var state = item.carePlan ? item.carePlan.state : item.state
 
-  //console.log ("getStateColorA: " + item)
-  //console.log ("getStateColorB: " + state)
-  
-  switch (state) {
-    /*
-    case "ACTIVE":
-      return "#DDD";
-    case "CREATED":
-      return "#FAC194";
-    */
-    case "ACTIVE": //common.session_state_notstarted:
-      return "#DDD";
-    case "RUNNING": //common.session_state_running:
-      return "#FAC194";
-    case "COMPLETED": //common.session_state_done:
-      return "#4FAF9C";
-    case "OVERDUE": //common.session_state_overdue:
-      return "#F47F76";
-    case "ABORTED": //common.session_state_aborted:
-      return "#F22224";
-  }
-  return;
+    //console.log ("getStateColorA: " + item)
+    //console.log ("getStateColorB: " + state)
+
+    switch (state) {
+        /*
+        case "ACTIVE":
+          return "#DDD";
+        case "CREATED":
+          return "#FAC194";
+        */
+        case "ACTIVE": //common.session_state_notstarted:
+            return "#DDD";
+        case "RUNNING": //common.session_state_running:
+            return "#FAC194";
+        case "COMPLETED": //common.session_state_done:
+            return "#4FAF9C";
+        case "OVERDUE": //common.session_state_overdue:
+            return "#F47F76";
+        case "ABORTED": //common.session_state_aborted:
+            return "#F22224";
+    }
+    return;
 }
 
 export function getCourseType (item) {
-  switch(item) {
-    case "QUESTIONNAIRE":
-      return 4
-    case "WEBSITE":
-      return 1
-    case "VR_DEVICE":
-      return 2
-    case "AUDIO_DIARY":
-      return 3
-  }
-  return 2
+    switch(item) {
+        case "QUESTIONNAIRE":
+            return 4
+        case "WEBSITE":
+            return 1
+        case "VR_DEVICE":
+            return 2
+        case "AUDIO_DIARY":
+            return 3
+    }
+    return 2
 }
 
 export function getCourseIcon (item) {
-  //console.log("getCourseIcon: " + JSON.stringify(item))
-  switch (item) {
-    case "QUESTIONNAIRE":
-      return 'mdi-file-sign';
-    case "WEBSITE":
-      return 'mdi-web';
-    case "VR_DEVICE":
-      return 'mdi-safety-goggles';
-    case "AUDIO_DIARY":
-      return 'mdi-headphones';
-  }
-  return;
+    //console.log("getCourseIcon: " + JSON.stringify(item))
+    switch (item) {
+        case "QUESTIONNAIRE":
+            return 'mdi-file-sign';
+        case "WEBSITE":
+            return 'mdi-web';
+        case "VR_DEVICE":
+            return 'mdi-safety-goggles';
+        case "AUDIO_DIARY":
+            return 'mdi-headphones';
+    }
+    return;
 }
 
 export function getCourseInfo (item) {
-  switch (item) {
-    case "QUESTIONNAIRE":
-      return "course_info_questionnaire";
-    case "WEBSITE":
-      return "course_info_web";
-    case "VR_DEVICE":
-      return "course_info_vr";
-    case "AUDIO_DIARY":
-      return "course_info_diary";
-  }
-  return;
+    switch (item) {
+        case "QUESTIONNAIRE":
+            return "course_info_questionnaire";
+        case "WEBSITE":
+            return "course_info_web";
+        case "VR_DEVICE":
+            return "course_info_vr";
+        case "AUDIO_DIARY":
+            return "course_info_diary";
+    }
+    return;
 }
 
 export function getIconForType (type) {
-  switch (type) {
-    case 4:
-      return "mdi-file-document-edit"
-    case 2:
-      return "mdi-safety-goggles"
-    case 1:
-      return "mdi-web"
-    default:
-      break;
-  }
+    switch (type) {
+        case 4:
+            return "mdi-file-document-edit"
+        case 2:
+            return "mdi-safety-goggles"
+        case 1:
+            return "mdi-web"
+        default:
+            break;
+    }
 }
 
 
-      /*
-      const result2 = await api.getRunningProcedures(this.user.id);
-      if (result2.data) {
-        //console.log("data: " + JSON.stringify(result2.data))
-        //console.log("size: " + result2.data[0].units.length)
-        
-        var isRunning = false;
-        result2.data.units.forEach(element => {
-          if (element.state == 'RUNNING') {
-            isRunning = true;
-            //alert("some procedure is running!")
-            
-            this.procedureId = result2.data.id;
-            this.procedureUnitId = element.id;
+/*
+const result2 = await api.getRunningProcedures(this.user.id);
+if (result2.data) {
+  //console.log("data: " + JSON.stringify(result2.data))
+  //console.log("size: " + result2.data[0].units.length)
 
-          }
-          
-          if (element.state == 'CREATED') {
-            isRunning = true;
-            //this.procedureId = result2.data.units[result2.data.units.length-1].id;
-            let payload = 
-            {
-              "state": "RUNNING"
-            }
-            const resultB = api.patchActivityUnitAlternate(this.user, result2.data.id, result2.data.units[result2.data.units.length-1].id, payload) //units[0].id, payload)
-            console.log("PATCH result: " + resultB)
-          }
-          
-        });
+  var isRunning = false;
+  result2.data.units.forEach(element => {
+    if (element.state == 'RUNNING') {
+      isRunning = true;
+      //alert("some procedure is running!")
 
-        if (!isRunning) {
-          
-          ///TODO: use this shortcut if working again!
-          
-          this.procedureId = result2.data.nextActivityUnit.id;
-          this.procedureUnitId = result2.data.nextActivityUnit.contentPackage.resources[0].id;
-          console.log("try patching procedure: " + this.procedureId + ", " + this.procedureUnitId)
-          
-          let procedure_data = {     
-            "activityUnitId": this.procedureId,
-            "contentPackageResourceId": this.procedureUnitId,
-            "packageParametersIds": [
-              
-            ],
-            "resourceParametersIds": [
-              
-            ],
-            "state": "CREATED"
-          }
-          const resultA = await api.postActiveUnit(this.user, procedure_data)
-          console.log("POST result: " + resultA)
-          
-          
-          ///TODO: until than use this... this.procedureId this.procedureUnitId
-          let payload = 
-          {
-            "state": "RUNNING"
-          }
-          //const result = await api.patchActivityUnitAlternate(this.user, result2.data.id, result2.data.nextActivityUnit.id, payload) //units[0].id, payload)
-          const resultB = await api.patchActivityUnitAlternate(this.user, result2.data.id, result2.data.units[result2.data.units.length-1].id, payload) //units[0].id, payload)
-          console.log("PATCH result: " + resultB)
-          
+      this.procedureId = result2.data.id;
+      this.procedureUnitId = element.id;
+
+    }
+
+    if (element.state == 'CREATED') {
+      isRunning = true;
+      //this.procedureId = result2.data.units[result2.data.units.length-1].id;
+      let payload =
+      {
+        "state": "RUNNING"
       }
-      */
-     
+      const resultB = api.patchActivityUnitAlternate(this.user, result2.data.id, result2.data.units[result2.data.units.length-1].id, payload) //units[0].id, payload)
+      console.log("PATCH result: " + resultB)
+    }
+
+  });
+
+  if (!isRunning) {
+
+    ///TODO: use this shortcut if working again!
+
+    this.procedureId = result2.data.nextActivityUnit.id;
+    this.procedureUnitId = result2.data.nextActivityUnit.contentPackage.resources[0].id;
+    console.log("try patching procedure: " + this.procedureId + ", " + this.procedureUnitId)
+
+    let procedure_data = {
+      "activityUnitId": this.procedureId,
+      "contentPackageResourceId": this.procedureUnitId,
+      "packageParametersIds": [
+
+      ],
+      "resourceParametersIds": [
+
+      ],
+      "state": "CREATED"
+    }
+    const resultA = await api.postActiveUnit(this.user, procedure_data)
+    console.log("POST result: " + resultA)
+
+
+    ///TODO: until than use this... this.procedureId this.procedureUnitId
+    let payload =
+    {
+      "state": "RUNNING"
+    }
+    //const result = await api.patchActivityUnitAlternate(this.user, result2.data.id, result2.data.nextActivityUnit.id, payload) //units[0].id, payload)
+    const resultB = await api.patchActivityUnitAlternate(this.user, result2.data.id, result2.data.units[result2.data.units.length-1].id, payload) //units[0].id, payload)
+    console.log("PATCH result: " + resultB)
+
+}
+*/

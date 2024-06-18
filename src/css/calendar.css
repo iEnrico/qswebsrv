@@ -8,8 +8,8 @@
     border-radius: 0;
     width: 100%;
   }
-  
-  
+
+
   .custom-calendar.vc-container .vc-header {
     /*
     background-color: #f1f5f8;
@@ -33,7 +33,7 @@
     padding: 0 5px 3px 5px;
     text-align: left;
     min-height: 104px;
-    max-height: 104px;
+    /*max-height: 104px;*/
     overflow: auto;
     background-color: white;
   }
@@ -59,23 +59,23 @@
     background-color: #28b9af;
     opacity: 0.2;
   }
-  
+
   /*
   span .day-label {
     color: #621312;
     opacity: 0.2;
   }*/
-  
+
   /* flex-start; // fixes compile error, but makes tooltip go crasy! */
   /* flex-start; // fixes compile error, but makes tooltip go crasy! */
-  
+
   .custom-calendar.vc-container .vc-day-box-center-center {
     display: flex;
     justify-content: flex-start;
     align-items: flex-start;
     transform-origin: 50% 50%;
   }
-  
+
   .custom-calendar.vc-container .vc-highlight {
     border-color: #123123 !important;
     background-color: #28b9af !important;

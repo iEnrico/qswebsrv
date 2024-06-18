@@ -31,6 +31,7 @@ export const useNotesStore = defineStore('notes', {
             try {
                 const data = await api.getVoiceRecords(this.userId);
                 this.notes = data;
+                console.log("aqui las notes", data )
             } catch (error) {
                 console.error('Error fetching notes:', error);
             }

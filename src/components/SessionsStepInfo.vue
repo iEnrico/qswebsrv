@@ -20,7 +20,7 @@
     <v-col :cols="8" class="pa-0 ma-0 fill-height">
       <v-card class="mx-4 mt-0 rounded-lg" variant="elevated">
         <v-img
-          :src="getSessionImage()" 
+          :src="getSessionImage()"
           height="25em"
           cover
         ></v-img>
@@ -88,15 +88,15 @@
           Next Task: {{nextTask.type}} , {{ nextTask.name }}
         </v-row>
         -->
-        
+
         <!-- -->
         <div v-if="getUnitConfigInfo().length > 1">
           <v-row v-for="(item, i) in getUnitConfigInfo()" :key="i" class="pa-0 mx-4 mt-1 mb-1" align-content="center">
             <span :class="i>0?'text-xs':''">{{ item }}</span>
           </v-row>
         </div>
-        
-        
+
+
         <v-row class="pa-0 mx-4 mt-4 mb-4" align-content="center">
           <v-spacer></v-spacer>
           <center>
@@ -109,15 +109,15 @@
           </center>
           <v-btn v-if="!loading && nextTask" variant="elevated" color="#28B9AF" @click="onNextStep()">
             <span class="text-white">
-              {{ 
+              {{
                 nextTask.type == 'QUESTIONNAIRE' || nextTask.type == 'AUDIO_DIARY'
-                  ? "Aufgabe starten" 
+                  ? "Aufgabe starten"
                   : getUnitState() == "RUNNING" ? "Aufgabe starten" : "Zur Konfiguration"
               }}
             </span>
           </v-btn>
         </v-row>
-        
+
       </v-card>
     </v-col>
   </v-row>
@@ -126,14 +126,14 @@
 <script>
 
 import api from "@/scripts/api/api";
-import { 
-  /*getNextTaskActivity, 
-  continueProcedure, 
-  getNextActivity,*/ 
-  //isAllUnitsComplete, 
+import {
+  /*getNextTaskActivity,
+  continueProcedure,
+  getNextActivity,*/
+  //isAllUnitsComplete,
   isAllUnitsCompleteSync,
-  getCourseIcon, 
-  getCourseInfo, 
+  getCourseIcon,
+  getCourseInfo,
   getFHIRId,
   getUser
 } from "@/scripts/procedureEngine";
@@ -145,7 +145,7 @@ export default {
   inheritAttrs: false,
   /*
   computed: {
-    
+
   },
   watch: {
     data: async function () {
@@ -171,7 +171,7 @@ export default {
   },
   components: { },
   mounted: async function () {
-    
+
     //console.log("COURSE INFO VIEW CREATED WITH: " + JSON.parse(this.data).id)
 
     if (!this.access_token) {
@@ -203,7 +203,7 @@ export default {
           return require('@/assets/thumb_questionnaire.jpg');
         case "AUDIO_DIARY":
           return require('@/assets/thumb_questionnaire.jpg');
-      
+
         default:
           return require('@/assets/placeholder.png');
       }
@@ -218,7 +218,7 @@ export default {
 
       var unit = (isAllUnitsCompleteSync(this.data) && this.data.nextActivityUnit)
         ? this.data.nextActivityUnit
-        : this.data.activity 
+        : this.data.activity
           ? this.data.activity.units[0]
           : this.data.units[this.data.units.length-1]
 
@@ -226,22 +226,22 @@ export default {
 
     },
     getUnitConfigInfo: function () {
-      
+
       var result = ["Ihre Konfiguration:"]
-      
+
       var unit = (isAllUnitsCompleteSync(this.data) && this.data.nextActivityUnit)
         ? this.data.nextActivityUnit
-        : this.data.activity 
+        : this.data.activity
           ? this.data.activity.units[0]
           : this.data.units[this.data.units.length-1]
-      
+
       if (unit) {
 
         var res1 = unit.contentPackageResourceBundle
         if (res1) {
           result.push(getTextByLanguage(res1.translations, this.$i18n))
         }
-        
+
         var res2 = unit.packageParameters
         if(res2) {
           res2.forEach(element => {
@@ -255,7 +255,7 @@ export default {
     },
     init: async function () {
       this.loading = true;
-      
+
       this.nextTask = await this.getContentPackage()
 
       //console.log( "CONTENT PACKAGE: " + JSON.stringify(this.nextTask) )
@@ -265,10 +265,10 @@ export default {
     getContentPackageName:  function () {
       var contentPackage = ( isAllUnitsCompleteSync(this.data) && this.data.nextActivityUnit)
         ? this.data.nextActivityUnit.contentPackage
-        : this.data.activity 
+        : this.data.activity
           ? this.data.activity.units[0].contentPackage
           : this.data.units[this.data.units.length-1].activityUnit.contentPackage
-      
+
       console.log("get content package for: " + contentPackage.name)
 
       return contentPackage.name
@@ -288,7 +288,7 @@ export default {
       else {
 
         if (isAllUnitsCompleteSync(this.data) && this.data.nextActivityUnit) {
-          console.log("-- next activity") 
+          console.log("-- next activity")
 
           let payload = {
             "activityUnitId": this.data.nextActivityUnit.id, //2,
@@ -305,7 +305,7 @@ export default {
           // https://backend.relivr-integration.nuromedia.com/user/active-procedure/active-unit/
 
           const result = await api.postUnit(
-                getUser(), 
+                getUser(),
                 payload
             )
 
@@ -315,10 +315,10 @@ export default {
 
         } else {
           if (this.data.activity) {
-            
+
             console.log("-- first activity")
 
-            let payload = 
+            let payload =
             {
               "patient": getFHIRId(), //"18828c88956-c8c7255d-e807-43d0-8d6a-f3a5d8e9cd95",
               "carePlanUuid": this.data.carePlan.uuid, //"f633c28e-4588-4c20-bd65-ae6d3642be8f",
@@ -329,10 +329,10 @@ export default {
                   "activityUnitId": this.data.activity.units[0].id, //4,
                   "contentPackageResourceBundleId": this.nextTask.resourceBundles[0].id, //8,
                   "packageParametersIds": [
-                    
+
                   ],
                   "resourceParametersIds": [
-                    
+
                   ],
                   "state": "RUNNING"
                 }
@@ -342,7 +342,7 @@ export default {
             console.log("PAYLOAD:\n" + payload)
 
             const result = await api.postProcedures(
-                getUser(), 
+                getUser(),
                 payload
             )
 
@@ -351,8 +351,8 @@ export default {
             //this.updateView(result)
 
           } else {
-            console.log("-- runnning activity") 
-          
+            console.log("-- runnning activity")
+
           }
         }
 

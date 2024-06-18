@@ -17,9 +17,9 @@
                       : 'border: 2px solid #28B9AF;'
                   "
                   :color="
-                    selectedSessionEnv != item 
-                      ? '#FFFFFF' 
-                      : '#EDF7F5' 
+                    selectedSessionEnv != item
+                      ? '#FFFFFF'
+                      : '#EDF7F5'
                   "
                   @click.stop="onChangeEnv(item)"
                   outlined
@@ -89,7 +89,7 @@
           ></v-select>
         </v-row>
 
-        <v-row v-if="textType.length >0" class="pa-0 mx-4 mt-4 mb-2" align-content="start">
+<!--        <v-row v-if="textType.length >0" class="pa-0 mx-4 mt-4 mb-2" align-content="start">
           <v-select
             class="ml-8 mr-8 font-color=#423412"
             label="Texte"
@@ -101,7 +101,7 @@
             item-value="id"
             return-object
           ></v-select>
-        </v-row>
+        </v-row>-->
 
         <v-row class="pa-0 mx-4 mt-2 mb-4" align-content="center">
           <v-spacer></v-spacer>
@@ -122,15 +122,15 @@
 import api from "@/scripts/api/api";
 import { getTextByLanguage } from "@/scripts/common/utils";
 import InfoDlg from "@/components/dialogs/dialogInformation.vue";
-import { 
+import {
   /*
-  createConfig, 
-  
-  createProcedure, 
+  createConfig,
+
+  createProcedure,
   startProcedure,
   */
-  isAllUnitsComplete, 
-  isAllUnitsCompleteSync, 
+  isAllUnitsComplete,
+  isAllUnitsCompleteSync,
   getFHIRId,
   getUser
 } from "@/scripts/procedureEngine";
@@ -173,7 +173,7 @@ export default {
   ],
   components: {InfoDlg},
   mounted: async function () {
-    
+
     //this.selectedSessionEnv = 0
 
     if (!this.access_token) {
@@ -194,12 +194,12 @@ export default {
         console.log("---> NO CONFIG YET")
 
 
-        var hasPredefined = parsedData.activity 
+        var hasPredefined = parsedData.activity
           ? parsedData.activity.units[0].parameters.length > 0
           : parsedData.nextActivityUnit.parameters.length > 0
         console.log("has predefined Parameter: " + hasPredefined)
 
-        var predefinedParams = parsedData.activity 
+        var predefinedParams = parsedData.activity
           ? parsedData.activity.units[0].parameters
           : parsedData.nextActivityUnit.parameters
 
@@ -211,7 +211,7 @@ export default {
         this.cpResources = contentPackage.resourceBundles
 
         // PARAMETERS
-           
+
 /*
         var mapping = [
           { key: "typeOfMeditation", array: this.typeOfMeditation},
@@ -245,13 +245,13 @@ export default {
           this.selectedTypeOfMeditation = this.preTypeOfMeditation
         }
 
-        
+
         this.cpParam.filter((param) => param.name == "objectType").forEach((item) => {
           this.objectType.push(
             { 'id': item.id, 'value': getTextByLanguage(item.translations, this.$i18n), 'name': item.value}
-          ) 
+          )
         });
-        
+
         var predefinedObject = predefinedParams.find(param => param.name === 'objectType');
         if (predefinedObject) {
           console.log("predefined objectType found!")
@@ -262,11 +262,11 @@ export default {
           this.selectedObjectType = this.preObjectType
         }
 
-        
+
         this.cpParam.filter((param) => param.name == "role").forEach((item) => {
           this.roleType.push(
             { 'id': item.id, 'value': getTextByLanguage(item.translations, this.$i18n), 'name': item.value}
-          ) 
+          )
         });
 
         var predefinedRole = predefinedParams.find(param => param.name === 'role');
@@ -279,11 +279,11 @@ export default {
           this.selectedRoleType = this.preRoleType
         }
 
-        
+
         this.cpParam.filter((param) => param.name == "avatar").forEach((item) => {
           this.avatarType.push(
             { 'id': item.id, 'value': getTextByLanguage(item.translations, this.$i18n), 'name': item.value}
-          ) 
+          )
         });
 
         var predefinedAvatar = predefinedParams.find(param => param.name === 'avatar');
@@ -296,14 +296,14 @@ export default {
           this.selectedAvatarType = this.preAvatarType
         }
 
-        
-        /*
+
+
         this.cpParam.filter((param) => param.name == "text").forEach((item) => {
           this.textType.push(
             { 'id': item.id, 'value': getTextByLanguage(item.translations, this.$i18n), 'name': item.value}
-          ) 
+          )
         });
-        
+
         var predefinedText = predefinedParams.find(param => param.name === 'text');
         if (predefinedText) {
           console.log("predefined text found!")
@@ -313,14 +313,14 @@ export default {
           console.log("found: " + this.preTextType.value)
           this.selectedTextType = this.preTextType
         }
-        */
+
 
         // RESSOURCES
-        
+
         this.cpResources.forEach(item => {
           this.sessionEnvironments.push(
             { 'id': item.id, 'value': getTextByLanguage(item.translations, this.$i18n), 'img': this.getImageForEnvironment(item)}
-          ) 
+          )
         });
 
         //TODO: setting default first element. should we?
@@ -328,7 +328,7 @@ export default {
           this.selectedSessionEnv = this.sessionEnvironments[0]
         }
 
-      } 
+      }
       else {
         console.log("---> CONFIG ALREADY SET...")
         await this.onNextStep();
@@ -339,12 +339,12 @@ export default {
 
       var contentPackage = ( isAllUnitsCompleteSync(this.data) && this.data.nextActivityUnit )
         ? this.data.nextActivityUnit.contentPackage
-        : this.data.activity 
+        : this.data.activity
           ? this.data.activity.units[this.data.activity.units.length-1].contentPackage
           : this.data.units[this.data.units.length-1].activityUnit.contentPackage
-      
+
       return await api.getContentPackageByName(this.user.id, contentPackage.name)
-      
+
     },
     getImageForEnvironment(item) {
       switch (item.name) {
@@ -352,7 +352,7 @@ export default {
           return require("@/assets/ph1.png")
         case "night_scene":
           return require("@/assets/ph2.png")
-      
+
         default:
           break;
       }
@@ -364,11 +364,11 @@ export default {
     onNextStep: async function (){
 
       //TODO: check for type of unit (roleplay, meditation etc) and verify required fields are filled
-      if (!this.selectedSessionEnv && this.sessionEnvironments.length > 0 || 
-          !this.selectedTypeOfMeditation && this.typeOfMeditation.length > 0 ||  
-          !this.selectedObjectType && this.objectType.length > 0 || 
-          !this.selectedRoleType && this.roleType.length > 0 || 
-          !this.selectedAvatarType && this.avatarType.length > 0 /*|| 
+      if (!this.selectedSessionEnv && this.sessionEnvironments.length > 0 ||
+          !this.selectedTypeOfMeditation && this.typeOfMeditation.length > 0 ||
+          !this.selectedObjectType && this.objectType.length > 0 ||
+          !this.selectedRoleType && this.roleType.length > 0 ||
+          !this.selectedAvatarType && this.avatarType.length > 0 /*||
           !this.selectedTextType && this.textType.length > 0 */
           ) {
         //alert("please set config!")
@@ -377,8 +377,8 @@ export default {
       else {
 
         /*
-        console.log(  
-          "Config to set: \n" 
+        console.log(
+          "Config to set: \n"
           + this.selectedSessionEnv       ? "Environment: " + this.selectedSessionEnv.id        + ", " : ""
           + this.selectedTypeOfMeditation ? "Type: "        + this.selectedTypeOfMeditation.id  + ", " : ""
           + this.selectedObjectType       ? "Object: "      + this.selectedObjectType.id        + ", " : ""
@@ -388,7 +388,7 @@ export default {
         )*/
 
         //let contentPackage = await this.getContentPackage()
-        
+
         var packageParams = []
         this.selectedTypeOfMeditation ? packageParams.push(this.selectedTypeOfMeditation.id) : console.log("no type of meditation to add")
         this.selectedObjectType ? packageParams.push(this.selectedObjectType.id) : console.log("no object to add")
@@ -397,11 +397,11 @@ export default {
         //this.selectedTextType ? packageParams.push(this.selectedTextType.id) : console.log("no text variant to add")
 
         if (isAllUnitsCompleteSync(this.data) && this.data.nextActivityUnit) {
-            console.log("-- next activity") 
+            console.log("-- next activity")
 
-              let procedure_data = {     
+              let procedure_data = {
                 "activityUnitId": this.data.nextActivityUnit.id,
-                "contentPackageResourceId": this.selectedSessionEnv.id, 
+                "contentPackageResourceId": this.selectedSessionEnv.id,
                 "packageParametersIds": packageParams,
                 "resourceParametersIds": [
                   //env
@@ -410,23 +410,23 @@ export default {
               }
 
               let result = await api.postActiveUnit(getUser(), procedure_data)
-      
+
               console.log("RESULT:\n" + result)
 
         } else {
           if (this.data.activity) {
             console.log("-- first activity")
 
-            let payload = 
+            let payload =
             {
-              "patient": getFHIRId(), 
-              "carePlanUuid": this.data.carePlan.uuid, 
-              "carePlanUnitId": this.data.id, 
+              "patient": getFHIRId(),
+              "carePlanUuid": this.data.carePlan.uuid,
+              "carePlanUnitId": this.data.id,
               "fhirProcedure": "0",
               "units": [
                 {
-                  "activityUnitId": this.data.activity.units[0].id, 
-                  "contentPackageResourceBundleId": this.selectedSessionEnv.id, 
+                  "activityUnitId": this.data.activity.units[0].id,
+                  "contentPackageResourceBundleId": this.selectedSessionEnv.id,
                   "packageParametersIds": packageParams,
                   "resourceParametersIds": [
                     //env
@@ -437,19 +437,19 @@ export default {
             }
 
             const result = await api.postProcedures(
-                getUser(), 
+                getUser(),
                 payload
             )
 
             console.log("RESULT:\n" + result)
 
           } else {
-            console.log("-- runnning activity") 
+            console.log("-- runnning activity")
           }
         }
         this.onNext();
       }
-      
+
     },
     showInfo: async function() {
 

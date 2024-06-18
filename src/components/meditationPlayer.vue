@@ -81,7 +81,7 @@
           class="pt-0 mb-0 pb-0"
           style="color:white"
       >
-        {{ options_SessionTypeAlternate[this.type] }}
+        <!-- {{ options_SessionTypeAlternate[this.type] }} -->
       </v-row>
       <v-row style="min-height: 120px" align="center" justify="center">
         <v-btn variant="elevated" style="background-color: #28B9AF;" v-if="meditationFinished" @click="start">
@@ -146,6 +146,11 @@
       </v-row>
     </v-card>
   </v-container>
+  <v-container v-if="showProceedButton" style="position: absolute; bottom: 20px; right: 20px;">
+    <v-btn variant="elevated" style="background-color: #28B9AF;" @click="proceedToNext">
+      <span class="text-white">Weiter</span>
+    </v-btn>
+  </v-container>
 </template>
 
 <script>
@@ -179,6 +184,7 @@ export default {
     ],
     currentBackgroundIndex: 0,
     backgroundChangeInterval: null,
+    showProceedButton: false,
   }),
   props: ["setProgress", "playerdata", "type", "onNext", "sendResults"],
   components: {},
@@ -190,25 +196,24 @@ export default {
       this.isPlaying = true;
     });
 
-    this.player.addEventListener("pause", () => {
-      this.isPlaying = false;
-    });
     this.player.addEventListener("ended", () => {
       this.isPlaying = false;
       setTimeout(() => {
-      this.index++;
-
-      if (this.index < this.playerdata.length) {
-        this.nextStep();
-        this.player.play().then(() => {
-          this.isPlaying = true;
-        }).catch(error => {
-          console.error("Auto reproduction failed:", error);
-        });
-
-      } else {
-        this.meditationFinished = true;
-      }
+        if (this.playerdata[this.index].audio === "Einleitung 1.1.ogg") {
+          this.showProceedButton = true;
+        } else {
+          this.index++;
+          if (this.index < this.playerdata.length) {
+            this.nextStep();
+            this.player.play().then(() => {
+              this.isPlaying = true;
+            }).catch(error => {
+              console.error("Auto reproduction failed:", error);
+            });
+          } else {
+            this.meditationFinished = true;
+          }
+        }
       }, 3000);
     });
 
@@ -216,14 +221,14 @@ export default {
       console.log(ev);
       this._resetProgress();
       this.duration = this.player.duration;
-          if (this.autoPlayNext) {
-            this.player.play().then(() => {
-              this.isPlaying = true;
-            }).catch(error => {
-              console.error("Error trying to reproduce the audio:", error);
-            });
-            this.autoPlayNext = false;
-          }
+      if (this.autoPlayNext) {
+        this.player.play().then(() => {
+          this.isPlaying = true;
+        }).catch(error => {
+          console.error("Error trying to reproduce the audio:", error);
+        });
+        this.autoPlayNext = false;
+      }
     });
 
     this.player.addEventListener("timeupdate", this._onTimeUpdate);
@@ -357,6 +362,20 @@ export default {
     _onChangeVolume(val) {
       if (val) {
         this.player.volume = val;
+      }
+    },
+    proceedToNext() {
+      this.showProceedButton = false;
+      this.index++;
+      if (this.index < this.playerdata.length) {
+        this.nextStep();
+        this.player.play().then(() => {
+          this.isPlaying = true;
+        }).catch(error => {
+          console.error("Auto reproduction failed:", error);
+        });
+      } else {
+        this.meditationFinished = true;
       }
     },
   },

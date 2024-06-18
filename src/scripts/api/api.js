@@ -114,7 +114,7 @@ var api = {
         }
     },
 
-    
+
     //---------------------------------------------
     // USER - GET  /user/available-activities/
     //---------------------------------------------
@@ -881,7 +881,7 @@ var api = {
     // Upload a new voice record
     //----------------------------------------------------------------------------
     postVoiceRecords: async function (userId, id, unitId, templateId, audio) {
-       
+
         try {
 
             var formData = new FormData();
@@ -909,7 +909,7 @@ var api = {
             );
 
             if (response.status == 200) {
-                return response.data; 
+                return response.data;
             } else {
                 console.error(response);
             }
@@ -1087,7 +1087,7 @@ var api = {
                 }
             );
 
-            
+
 
             if (response.status == 200 || response.status == 201) {
                 return response
@@ -1562,11 +1562,11 @@ var api = {
             );
 
             if (response.status == 200 || response.status == 204) {
-                
+
                 //console.log(JSON.stringify(response))
 
                 Buffer.from(response.data, 'binary').toString('base64')
-                
+
                 /*
                 const chunks = response.data.pipe(new PassThrough({encoding:'base64'}));
 
@@ -1690,7 +1690,7 @@ var api = {
         try {
             const response = await request(
                 "GET",
-                BASE_BACKEND_URL+"/user/active-procedure/stream/",
+                BASE_BACKEND_URL+"/user/events/stream/",
                 null,//payload,
                 new URLSearchParams({
                     fhirPatient: userId,
@@ -1721,7 +1721,7 @@ var api = {
         try {
             const response = await request(
                 "GET",
-                BASE_BACKEND_URL+"/user/active-procedure/stream/",
+                BASE_BACKEND_URL+"/user/events/stream/",
                 null,//payload,
                 new URLSearchParams({
                     fhirPatient: userId,

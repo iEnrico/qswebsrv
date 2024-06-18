@@ -3,7 +3,7 @@
   <v-card class="pa-4 ma-4 mt-16" fluid style="width: 66%;" v-if="question_index < max_elements">
     <v-divider :thickness="1" class="border-opacity-100" color="#f22"></v-divider>
 
-    <!-- 
+    <!--
       RECODE THIS!
       // 0=rating, 1=number select, 2=voice, 3=checkbox select
     -->
@@ -33,7 +33,7 @@
         <v-rating
           v-if="question_index < max_elements"
           v-model="elements[question_index].userRating"
-          @click="setSelection(elements[question_index].userRating)" 
+          @click="setSelection(elements[question_index].userRating)"
           empty-icon="mdi-circle-outline"
           full-icon="mdi-circle"
           half-icon="mdi-circle-half"
@@ -51,18 +51,18 @@
         </v-rating>
       </div>
 
-      <!-- SELECT ANSWER 
-          :style="'border: 1px solid #D9D9D9;'" 
+      <!-- SELECT ANSWER
+          :style="'border: 1px solid #D9D9D9;'"
           :color="elements[question_index].userRating == i ? 'green-darken-1' : '#68271D'"
           variant="outlined"
       -->
       <!--
       <div v-if="elements[question_index].answerType == 99" class="mt-8 text-center">
-        <v-btn 
-          v-for="(anwser, i) in elements[question_index].list_items" 
-          :key="i" 
-          @click="setSelection(i)" 
-          variant="outlined" 
+        <v-btn
+          v-for="(anwser, i) in elements[question_index].list_items"
+          :key="i"
+          @click="setSelection(i)"
+          variant="outlined"
           :style="(elements[question_index].userRating == i ? 'background-color: #28B9AF' : 'background-color: #FFF')"
           width="52px"
           height="52px"
@@ -75,9 +75,9 @@
       <!-- option select -->
       <div v-if="elements[question_index].answerType == 1" class="mt-8 text-start">
         <v-row v-for="(anwser, i) in elements[question_index].list_items" :key="i" no-gutters align="center" justify="start" class="mt-2">
-          <v-btn 
-            @click="setSelection(i)" 
-            variant="outlined" 
+          <v-btn
+            @click="setSelection(i)"
+            variant="outlined"
             :style="(elements[question_index].userRating == i ? 'background-color: #28B9AF' : 'background-color: #FFF')"
             width="52px"
             height="52px"
@@ -102,7 +102,7 @@
         <v-sheet  class="mx-auto">
           <v-form ref="form">
             <v-row v-for="(item, i) in elements[question_index].list_items" :key="i" no-gutters align="center" justify="start" class="mt-0">
-              
+
               <v-checkbox
                 v-if="item.type == 0"
                 v-model="item.value"
@@ -179,10 +179,10 @@
 
               <v-row class="mt-4" v-if="item.type == 6">
                 <v-col :cols="12" class="text-center">
-                  <v-btn 
-                    v-for="(item, i) in getQuestionImagesForIndex(question_index)" 
-                    @click="setSelection(i)" 
-                    variant="flat" 
+                  <v-btn
+                    v-for="(item, i) in getQuestionImagesForIndex(question_index)"
+                    @click="setSelection(i)"
+                    variant="flat"
                     :key="i"
                     :style="(elements[question_index].userRating == i ? 'background-color: #28B9AF' : 'background-color: #FFF')"
                     width="10%"
@@ -209,9 +209,9 @@
         </v-sheet>
         <!--
         <v-row v-for="(anwser, i) in elements[question_index].list_items" :key="i" no-gutters align="center" justify="start" class="mt-2">
-          <v-btn 
-            @click="setSelection(i)" 
-            variant="outlined" 
+          <v-btn
+            @click="setSelection(i)"
+            variant="outlined"
             :style="(elements[question_index].userRating == i ? 'background-color: #28B9AF' : 'background-color: #FFF')"
             width="32px"
             height="32px"
@@ -244,7 +244,7 @@
         <!-- style="background-color: #28B9AF;" -->
           <v-btn
             v-if="question_index < max_elements && question_index != 0"
-            variant="elevated" 
+            variant="elevated"
             @click="prevStep()"
             class="ml-0"
           >
@@ -252,19 +252,19 @@
           </v-btn>
           <v-spacer></v-spacer>
           <v-btn
-            variant="elevated" 
+            variant="elevated"
             :style="next_step_disabled ? 'background-color: #DDD;' : 'background-color: #28B9AF;'"
             :disabled="next_step_disabled"
             @click="nextStep()"
             class="ml-0"
           >
           <!-- {{ elements[question_index].list_items[0] }} -->
-          <span class="text-white">{{ question_index < max_elements 
-                                      ? ( elements[question_index].mandatory 
-                                            ? $t("questionaire_btn_next")  
-                                            : elements[question_index].list_items[0].value > -1 
-                                                ? $t("questionaire_btn_next") 
-                                                : $t("questionaire_btn_skip") ) 
+          <span class="text-white">{{ question_index < max_elements
+                                      ? ( elements[question_index].mandatory
+                                            ? $t("questionaire_btn_next")
+                                            : elements[question_index].list_items[0].value > -1
+                                                ? $t("questionaire_btn_next")
+                                                : $t("questionaire_btn_skip") )
                                       : $t("questionaire_btn_finish") }}</span>
           </v-btn>
         </v-row>
@@ -315,14 +315,14 @@ import VoiceRecorder from "@/components/voiceRecorder.vue";
 import { useNotesStore } from "@/stores/notesStore";
 import api from "@/scripts/api/api";
 //import { createUIElement } from "@/scripts/procedureUI";
-import { 
+import {
   getUser,
   /*continueProcedure, getNextActivity,*/
-  getNextAvailableProcedures, 
-  //isAllUnitsCompleteSync, 
+  getNextAvailableProcedures,
+  //isAllUnitsCompleteSync,
 } from "@/scripts/procedureEngine";
 import InfoDlg from "@/components/dialogs/dialogInformation.vue";
-
+console.log("entro")
 
 export default {
   name: "QuestionVisual",
@@ -335,7 +335,7 @@ export default {
   watch: {
     eventAbort: function () {
       if (this.eventAbort) {
-        this.sendResults( 
+        this.sendResults(
           true,
           this.elements
         );
@@ -375,7 +375,7 @@ export default {
   props: ["setProgress" /*"question_index", "max_elements"*/, "results", "eventAbort", "metadata", "data", "updateView", "sendResults"],
   components: {VoiceRecorder, InfoDlg},
   mounted: async function () {
-    
+
     this.elements = this.data;
     this.max_elements = this.data.length;
 
@@ -385,7 +385,7 @@ export default {
     //console.log(this.elements[0].list_items[0].type)
     console.log("data " + JSON.stringify(this.data))
     console.log("metadata " + JSON.stringify(this.metadata))
-  
+
   },
   methods: {
     showLoadedDataInfo: async function(value) {
@@ -402,7 +402,7 @@ export default {
           return ["arousal_1.png","arousal_2.png","arousal_3.png","arousal_4.png","arousal_5.png","arousal_6.png","arousal_7.png","arousal_8.png","arousal_9.png"]
         case 2:
           return ["dominance_1.png","dominance_2.png","dominance_3.png","dominance_4.png","dominance_5.png","dominance_6.png","dominance_7.png","dominance_8.png","dominance_9.png"]
-      
+
         default:
           break;
       }
@@ -413,27 +413,27 @@ export default {
         if (this.elements[this.question_index].answerType == 2) {
           this.next_step_disabled = this.result_data.length == this.question_index;
         } else {
-          this.next_step_disabled = 
-            this.elements[this.question_index] && 
-            this.elements[this.question_index].mandatory && 
+          this.next_step_disabled =
+            this.elements[this.question_index] &&
+            this.elements[this.question_index].mandatory &&
             ( this.elements[this.question_index].userRating === -1 && this.elements[this.question_index].list_items[0].value === -1 )
         }
       }
       console.log("next disabled: " + this.next_step_disabled)
       return this.next_step_disabled;
-      
+
       /*
       console.log(this.elements[this.question_index])
       console.log(this.elements[this.question_index].mandatory)
       console.log(( this.elements[this.question_index].userRating ))
       console.log(( this.elements[this.question_index].list_items[0].value ))
       */
-      
+
     },
     setSelection(index) {
-      console.log("selected item: " + index) 
+      console.log("selected item: " + index)
       //console.log(JSON.stringify(this.elements));
-      
+
       if (this.elements[this.question_index].answerType == 1 || this.elements[this.question_index].answerType == 3) {
         this.elements[this.question_index].userRating = index;
         //console.log(index)
@@ -442,7 +442,7 @@ export default {
         //console.log((index+1))
       }
       this.checkNextDisabled();
-      
+
       //console.log(this.elements[index].userRating)
 
     },
@@ -491,7 +491,7 @@ export default {
             console.log("NO audio result -> route back")
             this.routeBack("/dashboard1");
           }
-        } 
+        }
         // finish questionaire
         else {
           console.log("FINISH")
@@ -512,13 +512,13 @@ export default {
       //console.log("routeNext QV: " + JSON.stringify(this.metadata))
       //console.log("finished: " + this.metadata.max_progress+1 === this.metadata.progress)
       //if(this.metadata.max_progress === this.metadata.progress+1) {
-        
+
         //
 
         var item = await getNextAvailableProcedures();
 
         if (item.data[0].nextActivityUnit) {
-          
+
           this.$router.push({
             name: /*item.course_type == 3 ? "Dashboard3a" :*/ "Dashboard2a",
             //params: { data: JSON.stringify(item.data[0]) },
@@ -532,7 +532,7 @@ export default {
 
 
       //} else {
-        
+
         /*
 
         // next step, or route back
@@ -544,23 +544,23 @@ export default {
         if (showNextActivity && nextTask.nextActivityUnit) {
           contentPackage = nextTask.nextActivityUnit.contentPackage
         }
-        // 
+        //
         else if (showNextActivity) {
           contentPackage = nextTask.units[0].contentPackage
         }
         // show existing activity
         else {
-          contentPackage = nextTask.units[nextTask.units.length-1].contentPackage 
-            ? nextTask.units[nextTask.units.length-1].contentPackage 
+          contentPackage = nextTask.units[nextTask.units.length-1].contentPackage
+            ? nextTask.units[nextTask.units.length-1].contentPackage
             : nextTask.units[nextTask.units.length-1].activityUnit.contentPackage
         }
-        
+
         const metadata = await createUIElement(nextTask, contentPackage, this.$i18n)
         this.updateView(metadata)
 
         */
 
-        //var availableProcedures = await getNextAvailableProcedures() 
+        //var availableProcedures = await getNextAvailableProcedures()
         //console.log(JSON.stringify(availableProcedures))
 
         //this.updateView(availableProcedures.data)
@@ -576,79 +576,92 @@ export default {
     },
     completeAudioNote: async function () {
 
-      console.log("send audio diary result to backend...\n"+this.result_data);
-      //console.log("audio:\n"+JSON.stringify(this.result_data))
+      try {
+        console.log("send audio diary result to backend...\n" + this.result_data);
 
-      var parsedData = await getNextAvailableProcedures() 
+        var parsedData = await getNextAvailableProcedures();
+        console.log("Parsed Data: ", parsedData);
 
-      var units = parsedData.data[0].units ? parsedData.data[0].units : parsedData.data[0].activity.units
+        if (!parsedData.data || parsedData.data.length === 0) {
+          console.error("No data available in parsed data");
+          return;
+        }
 
-      var audio_file = new Audio(this.result_data)
-      //works: audio_file.play()
-      //console.log(audio_file)
+        var units = parsedData.data[0].units ? parsedData.data[0].units : parsedData.data[0].activity.units;
 
-      //console.log("content-unit: " + JSON.stringify(units[units.length-1]))
+        if (!units || units.length === 0) {
+          console.error("No units available in parsed data");
+          return;
+        }
 
-      //console.log("name: " + units[units.length-1].activityUnit.contentPackage.name)
+        var lastUnit = units[units.length - 1];
+        var contentPackage = lastUnit.contentPackage;
 
-      var name = units[units.length-1].activityUnit.contentPackage.name
+        if (!contentPackage) {
+          console.error("Content Package is undefined for the last unit");
+          return;
+        }
 
-      var contentPackage = await api.getContentPackageByName(getUser(), name)
-      
-      //console.log("content-package: " + JSON.stringify(contentPackage))
-      
-      /*
-      type a
-      */
-      /*
-      await api.postVoiceRecords(
-        getUser(), 
-        parsedData.data[0].id, 
-        units[units.length-1].id,
-        88,
-        audio_file
-      )
-      */
-      
+        console.log("Content Package: ", contentPackage);
 
-/*
-      const link = document.createElement("a");
-      link.href = this.result_data.src;
-      link.download = "recording" + (this.use_encoder == "mp3" ? ".mp3" : ".webm");
-*/    
+        var name = contentPackage.name;
+        var contentPackageDetails = await api.getContentPackageByName(getUser(), name);
+        console.log("Content Package Details: ", contentPackageDetails);
 
+        if (!contentPackageDetails || !contentPackageDetails.resultTemplates || contentPackageDetails.resultTemplates.length === 0) {
+          console.error("Result Templates are undefined for the content package");
+          return;
+        }
 
-      /*
-      type b
-      */
-      var xhr = new XMLHttpRequest();
-      xhr.open("GET", audio_file.src);
-      xhr.responseType = "blob";
-      xhr.onload = () => {
-        
-        api.postVoiceRecords(
-          getUser(), 
-          parsedData.data[0].id, 
-          units[units.length-1].id,
-          contentPackage.resultTemplates[0].id,
-          xhr.response
-        );
-        
-      };
-      xhr.send();
+        var audio_file = new Audio(this.result_data);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", audio_file.src);
+        xhr.responseType = "blob";
+        xhr.onload = async () => {
+          console.log("Recording audio for Procedure ID: ", parsedData.data[0].id);
+          console.log("Recording audio for Unit ID: ", lastUnit.id);
+          console.log("Recording audio with Template ID: ", contentPackageDetails.resultTemplates[0].id);
+
+          try {
+            await api.postVoiceRecords(
+                getUser(),
+                parsedData.data[0].id,
+                lastUnit.id,
+                contentPackageDetails.resultTemplates[0].id,
+                xhr.response
+            );
+            console.log("Audio recorded successfully");
+            // Proceed to the next audio recording or finish the process
+          } catch (error) {
+            console.error("Api.postVoiceRecords Error: ", error);
+            console.error("Request Data: ", {
+              userId: getUser(),
+              procedureId: parsedData.data[0].id,
+              unitId: lastUnit.id,
+              templateId: contentPackageDetails.resultTemplates[0].id,
+              audio: xhr.response
+            });
+          }
+        };
+        xhr.send();
+      } catch (error) {
+        console.error("Error in completeAudioNote: ", error);
+      }
+
 
       /*
       type c
-     
+
       api.postVoiceRecords(
-        getUser(), 
-        parsedData.data[0].id, 
+        getUser(),
+        parsedData.data[0].id,
         units[units.length-1].id,
         contentPackage.resultTemplates[0].id,
         this.result_data
       );
  */
-     
+
  /*
       console.log(this.result_data)
 
@@ -657,8 +670,8 @@ export default {
       xhr.responseType = "blob";
       xhr.onload = () => {
         api.postVoiceRecords(
-          getUser(), 
-          parsedData.data[0].id, 
+          getUser(),
+          parsedData.data[0].id,
           units[units.length-1].id,
           contentPackage.resultTemplates[0].id,
           xhr.response
@@ -707,7 +720,7 @@ export default {
       setTimeout(async function(){
         vm.routeBack("/Dashboard1");
       }, 500)
-      
+
     },
   },
 };

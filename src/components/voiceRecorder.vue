@@ -10,7 +10,7 @@
           Fehlende Mikrofonberechtigung!
         </v-card-title>
         <v-card-text class="ml-0 pl-2 mb-4">
-          Sie müssen für diese Funktion den Zugriff auf ihr Mikrofon freigeben. 
+          Sie müssen für diese Funktion den Zugriff auf ihr Mikrofon freigeben.
         </v-card-text>
         <v-card-actions>
           <v-btn variant="elevated" style="background-color: #E5E5E7;" @click="dialog = false"><span class="text-black">Zurück zur Session</span></v-btn>
@@ -22,14 +22,13 @@
   </div>
   <!-- recording controls -->
   <v-card max-width="320" color="#FFFFFF" class="rounded-lg" flat tile>
-
     <v-row justify="center" align="center" no-gutters>
       <v-card-subtitle v-if="this.state == 2" class="ph-0 ma-1">
         {{ formatTimeMMSS(getProgress()) }} {{ " / 01:00" }}
       </v-card-subtitle>
     </v-row>
 
-    <v-row v-if="!(this.state == 1 && audiofiles[index])" no-gutters align="center" justify="center">
+    <v-row v-if="!(this.state == 1 && audiofiles[currentIndex])" no-gutters align="center" justify="center">
       <v-progress-linear
         :model-value="getProgress()"
         :max="60"
@@ -47,19 +46,19 @@
         variant="text"
         class="pa-2 mt-2 mb-2"
         style="border: 5px solid #ddd; border-radius: 100%; background-color: #F47F76"
-        :height="this.state == 1 && audiofiles[index] ? 32 : 64"
-        :width="this.state == 1 && audiofiles[index] ? 32 : 64"
+        :height="this.state == 1 && audiofiles[currentIndex] ? 32 : 64"
+        :width="this.state == 1 && audiofiles[currentIndex] ? 32 : 64"
         @click="toggleRec()"
       >
         <v-icon size="32pt" color="#FFF" v-if="this.state == 0">mdi-microphone-off</v-icon>
-        <v-icon size="32pt" color="#FFF" v-if="this.state == 1 && audiofiles[index]">mdi-refresh</v-icon>
-        <v-icon size="32pt" color="#FFF" v-if="this.state == 1 && !audiofiles[index]">mdi-microphone</v-icon>
+        <v-icon size="32pt" color="#FFF" v-if="this.state == 1 && audiofiles[currentIndex]">mdi-refresh</v-icon>
+        <v-icon size="32pt" color="#FFF" v-if="this.state == 1 && !audiofiles[currentIndex]">mdi-microphone</v-icon>
         <v-icon size="32pt" color="#FFF" v-if="this.state == 2">mdi-stop</v-icon>
       </v-btn>
     </v-row>
     <!--<v-btn @click="downloadAudio()">DL</v-btn>-->
     <v-row justify="center" align="center" no-gutters>
-      <v-card-subtitle v-if="this.state == 0 || (this.state == 1 && !audiofiles[index])" class="ph-0 ma-1">
+      <v-card-subtitle v-if="this.state == 0 || (this.state == 1 && !audiofiles[currentIndex])" class="ph-0 ma-1">
         Zum Start der Aufnahme klicken
       </v-card-subtitle>
       <v-card-subtitle v-if="this.state == 2" class="ph-0 ma-1">
@@ -70,7 +69,7 @@
   <v-card max-width="350" color="#fff" class="rounded-lg" flat tile>
     <v-row v-if="this.audiofiles[this.index]" no-gutters align="center" justify="center">
       <ListItemPlayer :elevated="true" :item="this.audiofiles[this.index].src" :index="this.index" :action="toggleRec" />
-    </v-row> 
+    </v-row>
   </v-card>
 </template>
 
@@ -101,13 +100,15 @@ export default {
     processor: null,
     audioContext: null,
     use_encoder: "opus", // currently: "opus" or "mp3"
+    currentIndex: 0,
+    maxRecordings: 4
   }),
-  props: ["index", /*"max",*/ "onHasAudio"],
+  props: ["index", /*"max",*/ "onHasAudio", "onComplete"],
   watch: {
     index: function () {
+      this.currentIndex = this.index;
       this.countDown = 60.0;
       this.currentTime = 0;
-
       this.onHasAudio(this.audiofiles[this.index] == null ? true : false);
       /*
       this.audiofiles.forEach((element) => {
@@ -135,8 +136,8 @@ export default {
       this.$emit("item-updated", update);
     },
     getAudio(item) {
-      console.log(item)
-      console.log(item.src.search("blob:"));
+      //console.log(item)
+      //console.log(item.src.search("blob:"));
       if (item.src.search("blob:") == 0) {
         return item;
       } else {
@@ -227,7 +228,7 @@ export default {
         this.myStream = stream;
       }
 
-      console.log("initalized recorder with stream: " + this.myStream);
+      //console.log("initalized recorder with stream: " + this.myStream);
 
       if (this.myStream) {
         this.state = 1; // initialited
@@ -252,63 +253,43 @@ export default {
         this.state = 1;
       }
 
-      console.log("endtime: " + this.endTime);
+      //console.log("endtime: " + this.endTime);
 
       this.toggleTimer();
     },
     startRec() {
       if (this.use_encoder == "opus") {
         var vm = this;
-
-        console.log("start recording with " + vm.recorder);
-
+        //console.log("start recording with " + vm.recorder);
         this.rawaudiodata = [];
-        this.audiofiles[this.index] = null;
-
+        this.audiofiles[this.currentIndex] = null;
         vm.recorder.ondataavailable = function (event) {
-          // use the created blob
           vm.rawaudiodata.push(event.data);
-          console.log("ondataavailable:" + event);
-          console.log("audio size: " + vm.rawaudiodata.length);
+          //console.log("ondataavailable:" + event);
+          //console.log("audio size: " + vm.rawaudiodata.length);
           vm.visualizeStream();
         };
-
         this.recorder.onstop = function () {
-          var audioBlob = new window.Blob(vm.rawaudiodata, {
-            type: "audio/opus",
-          });
-
-          console.log("audio blob: " + audioBlob);
-          console.log("audio blob size: " + audioBlob.size);
-
-          console.log(URL.createObjectURL(audioBlob));
-          vm.audiofiles[vm.index] = new Audio(URL.createObjectURL(audioBlob));
+          var audioBlob = new window.Blob(vm.rawaudiodata, { type: "audio/opus" });
+          //console.log("audio blob: " + audioBlob);
+          //console.log("audio blob size: " + audioBlob.size);
+          //console.log(URL.createObjectURL(audioBlob));
+          vm.audiofiles[vm.currentIndex] = new Audio(URL.createObjectURL(audioBlob));
           vm.updateItem(URL.createObjectURL(audioBlob));
-          vm.audiofiles[vm.index].addEventListener("durationchange", () => {
-            if (
-              typeof vm.audiofiles[vm.index] !== "undefined" &&
-              vm.audiofiles[vm.index].duration != Infinity
-            ) {
-              vm.audioduration[vm.index] = vm.audiofiles[vm.index].duration;
+          vm.audiofiles[vm.currentIndex].addEventListener("durationchange", () => {
+            if (typeof vm.audiofiles[vm.currentIndex] !== "undefined" && vm.audiofiles[vm.currentIndex].duration != Infinity) {
+              vm.audioduration[vm.currentIndex] = vm.audiofiles[vm.currentIndex].duration;
             }
           });
-          vm.audiofiles[vm.index].addEventListener("timeupdate", () => {
-            vm.currentTime =
-              typeof vm.audiofiles[vm.index] !== "undefined"
-                ? vm.audiofiles[vm.index].currentTime
-                : 0;
+          vm.audiofiles[vm.currentIndex].addEventListener("timeupdate", () => {
+            vm.currentTime = typeof vm.audiofiles[vm.currentIndex] !== "undefined" ? vm.audiofiles[vm.currentIndex].currentTime : 0;
           });
-          //vm.audioduration[vm.index] = vm.getProgress();
-          //vm.audiofiles[vm.index].play();
-
-          // de/re init recorder
           vm.recorder.stream.getTracks().forEach((t) => t.stop());
           vm.recorder = null;
           vm.initMediaRec();
-
           vm.onHasAudio();
+          vm.moveToNextRecording();
         };
-
         vm.recorder.start(length);
       } else {
         this.analyseMp3Stream(this.myStream);
@@ -322,40 +303,39 @@ export default {
         this.input.disconnect();
         this.processor.disconnect();
         this.audioContext.close();
-
         const record = this.mp3encoder.finish();
         record.duration = this.formatTimeMMSS(record.duration);
-        //this.records.push(record);
-        console.log(record.url);
-        this.audiofiles[this.index] = new Audio(record.url);
+        this.audiofiles[this.currentIndex] = new Audio(record.url);
         this.updateItem(this.audiofiles);
-        this.audiofiles[this.index].addEventListener("timeupdate", () => {
-          this.currentTime =
-            typeof this.audiofiles[this.index] !== "undefined"
-              ? this.audiofiles[this.index].currentTime
-              : 0;
+        this.audiofiles[this.currentIndex].addEventListener("timeupdate", () => {
+          this.currentTime = typeof this.audiofiles[this.currentIndex] !== "undefined" ? this.audiofiles[this.currentIndex].currentTime : 0;
         });
-
         this.duration = 0;
-
         this.isPause = false;
         this.isRecording = false;
-
         this.afterRecording && this.afterRecording(record);
       }
     },
-    playRec: function () {
-      console.log("audio paused?: " + this.audiofiles[this.index].paused);
-      if (this.audiofiles[this.index].paused) {
-        this.audiofiles[this.index].play();
+    moveToNextRecording() {
+      if (this.currentIndex < this.maxRecordings - 1) {
+        this.currentIndex++;
+        this.onHasAudio(this.audiofiles[this.currentIndex] == null ? true : false);
       } else {
-        this.audiofiles[this.index].pause();
+        this.onComplete();
+      }
+    },
+    playRec: function () {
+      console.log("audio paused?: " + this.audiofiles[this.currentIndex].paused);
+      if (this.audiofiles[this.currentIndex].paused) {
+        this.audiofiles[this.currentIndex].play();
+      } else {
+        this.audiofiles[this.currentIndex].pause();
       }
     },
     downloadAudio() {
       const link = document.createElement("a");
-      console.log("clicked download on: " + this.audiofiles[this.index]);
-      link.href = this.audiofiles[this.index].src;
+      console.log("clicked download on: " + this.audiofiles[this.currentIndex]);
+      link.href = this.audiofiles[this.currentIndex].src;
       link.download = "recording" + (this.use_encoder == "mp3" ? ".mp3" : ".webm");
       link.click();
       URL.revokeObjectURL(link.href);
@@ -367,20 +347,18 @@ export default {
         types.forEach((type) => {
           const mimeType = `${media}/${type}`;
           codecs.forEach((codec) =>
-            [
-              `${mimeType};codecs=${codec}`,
-              `${mimeType};codecs=${codec.toUpperCase()}`,
-              // /!\ false positive /!\
-              // `${mimeType};codecs:${codec}`,
-              // `${mimeType};codecs:${codec.toUpperCase()}`
-            ].forEach((variation) => {
-              if (isSupported(variation)) supported.push(variation);
-            })
+              [
+                `${mimeType};codecs=${codec}`,
+                `${mimeType};codecs=${codec.toUpperCase()}`,
+              ].forEach((variation) => {
+                if (isSupported(variation)) supported.push(variation);
+              })
           );
           if (isSupported(mimeType)) supported.push(mimeType);
         });
         return supported;
       }
+
 
       // Usage ------------------
 
@@ -488,7 +466,7 @@ export default {
       this.analyser.getByteFrequencyData(this.vis_data_arr);
 
       this.volume = Math.floor((Math.max(...this.vis_data_arr) / 255) * 100);
-      console.log("Stream Volume: " + this.volume);
+      //console.log("Stream Volume: " + this.volume);
     },
     /*
       uploadAudio: function () {

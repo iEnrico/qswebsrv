@@ -1,11 +1,11 @@
 
 <template>
   <v-card
-    class="rounded-lg d-flex flex-column ml-2 mt-4 mb-4"
-    variant="outlined"
-    :style="'border: 1px solid ' + getStateColor(item)"
-    max-width="220"
-    min-width="220"
+      class="rounded-lg d-flex flex-column ml-2 mt-4 mb-4"
+      variant="outlined"
+      :style="'border: 1px solid ' + getStateColor(item)"
+      max-width="220"
+      min-width="220"
   >
     <!--
     min-height="150"
@@ -13,21 +13,21 @@
   -->
     <v-row class="pa-0 ma-2 mt-1 mb-0" style="height: auto">
       <span
-        @click="routeCourse(item)"
-        style="display: inline-flex; max-width: 90%; align-items: center"
-        >{{ getItemTitle(item) }}</span
+          @click="routeCourse(item)"
+          style="display: inline-flex; max-width: 90%; align-items: center"
+      >{{ getItemTitle(item) }}</span
       >
       <v-spacer></v-spacer>
       <v-tooltip location="bottom" :text="getStateMsg(item)">
         <template v-slot:activator="{ props }">
           <v-icon
-            @click="onClickIcon(item)"
-            style="justify-self: center; align-self: top"
-            class="pa-0 ma-0"
-            v-bind="props"
-            :color="getStateColor(item)"
-            size="20px"
-            :icon="this.getStateIcon(item)"
+              @click="onClickIcon(item)"
+              style="justify-self: center; align-self: top"
+              class="pa-0 ma-0"
+              v-bind="props"
+              :color="getStateColor(item)"
+              size="20px"
+              :icon="this.getStateIcon(item)"
           ></v-icon>
         </template>
       </v-tooltip>
@@ -36,17 +36,17 @@
       <v-tooltip location="bottom">
         <template v-slot:activator="{ props }">
           <v-progress-linear
-            class="mt-2"
-            v-bind="props"
-            :model-value="determine"
-            :buffer-value="progress"
-            color="#28B9AF"
-            height="14"
-            stream
-            style="border-width: 1px; border-color: lightgray"
+              class="mt-2"
+              v-bind="props"
+              :model-value="determine"
+              :buffer-value="progress"
+              color="#28B9AF"
+              height="14"
+              stream
+              style="border-width: 1px; border-color: lightgray"
           >
             <span class="text-xs"
-              >{{ determine ? determine / percent_step : 0 }} / {{ max }}</span
+            >{{ determine ? determine / percent_step : 0 }} / {{ max }}</span
             >
           </v-progress-linear>
         </template>
@@ -55,8 +55,8 @@
     </v-row>
     <v-spacer></v-spacer>
     <v-row
-      class="pa-0 ma-2 my-0"
-      style="height: auto; align-items: end; justify-items: end"
+        class="pa-0 ma-2 my-0"
+        style="height: auto; align-items: end; justify-items: end"
     >
       <span class="text-xs">{{ getItemSubtitle(item) }}</span>
       <v-spacer></v-spacer>
@@ -65,17 +65,17 @@
       <v-tooltip location="bottom" :text="getCourseInfo(item)">
         <template v-slot:activator="{ props }">
           <v-icon
-            v-bind="props"
-            color="grey"
-            style="justify-self: center; align-self: center"
-            :icon="getCourseIcon(item)"
+              v-bind="props"
+              color="grey"
+              style="justify-self: center; align-self: center"
+              :icon="getCourseIcon(item)"
           ></v-icon>
         </template>
       </v-tooltip>
       <v-card-text
-        style="justify-self: center; align-self: center"
-        text-align="center"
-        class="pa-0 mt-0 mb-0 ml-2 mr-0"
+          style="justify-self: center; align-self: center"
+          text-align="center"
+          class="pa-0 mt-0 mb-0 ml-2 mr-0"
       >
         <span class="text-grey">{{ getCourseInfo(item) }}</span>
       </v-card-text>
@@ -103,7 +103,7 @@ import api from "@/scripts/api/api";
 import { useCurrentSessionStore } from "@/stores/currentSessionStore";
 
 export default {
-        /* eslint-disable */ 
+  /* eslint-disable */
   name: "CourseOverviewItem",
   setup() {
     const sessionStore = useCurrentSessionStore();
@@ -129,8 +129,8 @@ export default {
       this.determine = 0; //this.percent_step * (isAllCompleted ? this.item.progress : this.item.progress-1)
 
       this.max = this.item.units
-        ? this.item.units.length
-        : this.item.activity.units.length;
+          ? this.item.units.length
+          : this.item.activity.units.length;
 
       this.percent_step = 100 / this.max;
     },
@@ -138,20 +138,20 @@ export default {
       if (item == null) return;
 
       var activity = item.activity
-        ? item.activity
-        : item.units[0].activityUnit?.activity
-        ? item.units[0].activityUnit?.activity
-        : item.units[0].activity;
+          ? item.activity
+          : item.units[0].activityUnit?.activity
+              ? item.units[0].activityUnit?.activity
+              : item.units[0].activity;
 
       return getTextByLanguage(activity.translations, this.$i18n);
     },
     getItemSubtitle(item) {
       var contentPackage =
-        isAllUnitsCompleteSync(item) && item.nextActivityUnit
-          ? item.nextActivityUnit.contentPackage
-          : item.activity
-          ? item.activity.units[0].contentPackage
-          : item.units[item.units.length - 1].activityUnit?.contentPackage;
+          isAllUnitsCompleteSync(item) && item.nextActivityUnit
+              ? item.nextActivityUnit.contentPackage
+              : item.activity
+                  ? item.activity.units[0].contentPackage
+                  : item.units[item.units.length - 1].activityUnit?.contentPackage;
 
       return getTextByLanguage(contentPackage?.translations, this.$i18n);
     },
@@ -161,32 +161,32 @@ export default {
       if (this.item == null) return;
 
       var units =
-        isAllUnitsCompleteSync(this.item) && this.item.nextActivityUnit
-          ? [this.item.nextActivityUnit]
-          : this.item.activity
-          ? this.item.activity.units
-          : this.item.units;
+          isAllUnitsCompleteSync(this.item) && this.item.nextActivityUnit
+              ? [this.item.nextActivityUnit]
+              : this.item.activity
+                  ? this.item.activity.units
+                  : this.item.units;
 
       //TODO: combine units and next activity unit here!!!!
 
       units.forEach((unit, index) => {
         var icon =
-          this.determine / this.percent_step > index
-            ? "✓"
-            : this.progress / this.percent_step > index
-            ? "⇾" //"⇢"
-            : "•";
+            this.determine / this.percent_step > index
+                ? "✓"
+                : this.progress / this.percent_step > index
+                    ? "⇾" //"⇢"
+                    : "•";
 
         var contentPackage = unit.contentPackage
-          ? unit.contentPackage
-          : unit.activityUnit?.contentPackage;
+            ? unit.contentPackage
+            : unit.activityUnit?.contentPackage;
 
         result +=
-          "<p>" +
-          icon +
-          " " +
-          getTextByLanguage(contentPackage?.translations, this.$i18n) +
-          "</p>";
+            "<p>" +
+            icon +
+            " " +
+            getTextByLanguage(contentPackage?.translations, this.$i18n) +
+            "</p>";
       });
 
       return result;
@@ -252,8 +252,8 @@ export default {
         });
       }
       // PATIENT - Others
-    else*/ 
-    if (this.mode == 0) {
+    else*/
+      if (this.mode == 0) {
         this.sessionStore.setItem(item);
 
         this.$router.push({
@@ -262,7 +262,7 @@ export default {
       }
       // THERAPIST
       else {
-        // eslint-disable-next-line 
+        // eslint-disable-next-line
         debugger;
         this.sessionStore.setItem(item);
         if(item.state){
@@ -290,12 +290,12 @@ export default {
       }
     },
     async startActivity(item) {      const units = item.activity.units.map((unit) => ({
-        activityUnitId: unit.id,
-        contentPackageResourceId: item.activity.name === "vr_roleplay_boss_single" ? 16 : 17,
-        packageParametersIds: [],
-        resourceParametersIds: [],
-        state: "CREATED",
-      }));
+      activityUnitId: unit.id,
+      contentPackageResourceId: item.activity.name === "vr_roleplay_boss_single" ? 16 : 17,
+      packageParametersIds: [],
+      resourceParametersIds: [],
+      state: "CREATED",
+    }));
       const payload = {
         patient: item.carePlan.fhirPatient,
         carePlanUuid: item.carePlan.uuid,
@@ -303,14 +303,14 @@ export default {
         units: units,
       };
       const result = await api.postProcedures(
-        item.carePlan.fhirPatient,
-        payload
+          item.carePlan.fhirPatient,
+          payload
       );
       if (result?.state === "CREATED") {
         if(this.mode == 0){
-        this.$router.push({
+          this.$router.push({
             name: "Dashboard2a",
-          }); 
+          });
         }else{
           this.$router.push({
             name: "DashboardTherapist5",
@@ -322,7 +322,7 @@ export default {
 
             },
           });
-  
+
         }
 
       }

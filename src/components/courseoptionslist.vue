@@ -1,8 +1,8 @@
 <template>
   <div style="height: 100%; position: relative; align-items: center">
     <v-card-text
-      v-if="!data.item.elements.length > 0"
-      style="
+        v-if="!data.item.elements.length > 0"
+        style="
         position: absolute;
         left: 0;
         top: 0;
@@ -16,9 +16,9 @@
     </v-card-text>
 
     <v-list
-      color="#FFFFFF"
-      class="mt-0 pt-0"
-      style="
+        color="#FFFFFF"
+        class="mt-0 pt-0"
+        style="
         position: absolute;
         left: 0;
         top: 0;
@@ -30,19 +30,19 @@
       "
     >
       <draggable
-        :group="{ name: 'people', put: true }"
-        class="dragArea list-group w-full h-full"
-        :list="data.item.elements"
-        @change="changed"
-        @start="isDragging = true"
-        @end="isDragging = false"
+          :group="{ name: 'people', put: true }"
+          class="dragArea list-group w-full h-full"
+          :list="data.item.elements"
+          @change="changed"
+          @start="isDragging = true"
+          @end="isDragging = false"
       >
         <ListItemCourseOption
-          :item="item"
-          :index="i"
-          v-for="(item, i) in data.item.elements"
-          :key="i"
-          :closeClick="removeItem"
+            :item="item"
+            :index="i"
+            v-for="(item, i) in data.item.elements"
+            :key="i"
+            :closeClick="removeItem"
         />
       </draggable>
     </v-list>
@@ -64,7 +64,7 @@ export default {
         title: "Initialer Fragebogen",
         subtitle: "Lorem Ipsum 1",
         description:
-          "Vivamus neque ante, viverra non luctus nec, molestie in mauris. Fusce et volutpat diam, ut suscipit nulla. Fusce venenatis odio pellentesque lacinia tincidunt. Maecenas eu neque id leo vulputate faucibus ut vitae dolor. Vestibulum enim erat, condimentum eu quam vel, volutpat ultrices nisi. Maecenas placerat, sem a efficitur tempus, massa dui fringilla dui, vestibulum sollicitudin orci ligula nec leo. Etiam rhoncus fringilla aliquet. Nulla sollicitudin dignissim sem vel ultricies. Maecenas augue lorem, euismod eget mauris id, sagittis consectetur urna. Fusce quis congue arcu.",
+            "Vivamus neque ante, viverra non luctus nec, molestie in mauris. Fusce et volutpat diam, ut suscipit nulla. Fusce venenatis odio pellentesque lacinia tincidunt. Maecenas eu neque id leo vulputate faucibus ut vitae dolor. Vestibulum enim erat, condimentum eu quam vel, volutpat ultrices nisi. Maecenas placerat, sem a efficitur tempus, massa dui fringilla dui, vestibulum sollicitudin orci ligula nec leo. Etiam rhoncus fringilla aliquet. Nulla sollicitudin dignissim sem vel ultricies. Maecenas augue lorem, euismod eget mauris id, sagittis consectetur urna. Fusce quis congue arcu.",
         image: require("@/assets/sunshine.jpg"),
         progress: 0,
         max_progress: 1,

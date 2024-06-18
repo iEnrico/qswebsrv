@@ -1,150 +1,150 @@
 <template>
-    <v-row class="pa-2 ma-2 ">
-      <v-col :cols="4" class="pa-0 ma-0 mt-0" >
-        <v-card variant="elevated" class="pa-2 mx-2 my-0 rounded-lg" >
-          <v-card-title style="font-size: 1.8em" class="pa-0 ma-2">{{ this.data.item.name }}</v-card-title>
-          <v-card-subtitle class="pa-0 mx-2 mb-0">{{ "Registriert seit:" }}</v-card-subtitle>
-          <v-card-subtitle class="pa-0 mx-2 mb-0">{{ parseDate(this.data.item.date) }}</v-card-subtitle>
-          
-          <!--
-          <div class="mt-4" v-if="analysis_data">
-            <v-card-subtitle class="pa-0 mx-2 mb-0">{{ "SER-DATASETS: " + analysis_data.serAudioAnalyses.length }}</v-card-subtitle>
-            <v-card-subtitle class="pa-0 mx-2 mb-0">{{ "DDS-DATASETS: " + analysis_data.ddsAudioAnalyses.length }}</v-card-subtitle>
-          </div>
-          -->
-          
-          <!--
-          <v-row class="pa-0 ma-0 mt-2">
-            <BarChart class="pa-2 mx-0" style="width: 50%" :chartData="ser_bardata" :options="ser_options" />
-            <BarChart class="pa-2 mx-0" style="width: 50%" :chartData="dds_bardata" :options="dds_options" />
-          </v-row>
-          -->
-          
-          <!--  
-          
-          -->
+  <v-row class="pa-2 ma-2 ">
+    <v-col :cols="4" class="pa-0 ma-0 mt-0" >
+      <v-card variant="elevated" class="pa-2 mx-2 my-0 rounded-lg" >
+        <v-card-title style="font-size: 1.8em" class="pa-0 ma-2">{{ this.data.item.name }}</v-card-title>
+        <v-card-subtitle class="pa-0 mx-2 mb-0">{{ "Registriert seit:" }}</v-card-subtitle>
+        <v-card-subtitle class="pa-0 mx-2 mb-0">{{ parseDate(this.data.item.date) }}</v-card-subtitle>
 
-        </v-card>
-        <NewsView :news="notes" :showAddButton="true" :addNote="addNote" :editNote="editNote" :deleteNote="deleteNote"/>
-        <!-- v-if="notes.length>0" -->
-      </v-col>
-      <v-col :cols="8" class="pa-0 ma-0" style="height: 80%">
-        
         <!--
-          ?.item?.carePlans
-          
-          {{ "info: " + JSON.stringify(this.data.item.item?.carePlans) }}
+        <div class="mt-4" v-if="analysis_data">
+          <v-card-subtitle class="pa-0 mx-2 mb-0">{{ "SER-DATASETS: " + analysis_data.serAudioAnalyses.length }}</v-card-subtitle>
+          <v-card-subtitle class="pa-0 mx-2 mb-0">{{ "DDS-DATASETS: " + analysis_data.ddsAudioAnalyses.length }}</v-card-subtitle>
+        </div>
         -->
-        
-        <v-card class="ml-2 mr-2 rounded-lg">
-          <v-tabs
+
+        <!--
+        <v-row class="pa-0 ma-0 mt-2">
+          <BarChart class="pa-2 mx-0" style="width: 50%" :chartData="ser_bardata" :options="ser_options" />
+          <BarChart class="pa-2 mx-0" style="width: 50%" :chartData="dds_bardata" :options="dds_options" />
+        </v-row>
+        -->
+
+        <!--
+
+        -->
+
+      </v-card>
+      <NewsView :news="notes" :showAddButton="true" :addNote="addNote" :editNote="editNote" :deleteNote="deleteNote"/>
+      <!-- v-if="notes.length>0" -->
+    </v-col>
+    <v-col :cols="8" class="pa-0 ma-0" style="height: 80%">
+
+      <!--
+        ?.item?.carePlans
+
+        {{ "info: " + JSON.stringify(this.data.item.item?.carePlans) }}
+      -->
+
+      <v-card class="ml-2 mr-2 rounded-lg">
+        <v-tabs
             v-model="tab"
             bg-color="#fff"
-          >
-            <v-tab value="one">Aktuelle Aufgaben</v-tab>
-            <v-tab value="two">Programmübersicht</v-tab>
-            <v-tab value="three">Auswertung</v-tab>
-            <v-tab value="four">Ergebnisse</v-tab>
+        >
+          <v-tab value="one">Aktuelle Aufgaben</v-tab>
+          <v-tab value="two">Programmübersicht</v-tab>
+          <v-tab value="three">Auswertung</v-tab>
+          <v-tab value="four">Ergebnisse</v-tab>
 
-          </v-tabs>
+        </v-tabs>
 
-          <v-card-text>
-            <v-window v-model="tab">
+        <v-card-text>
+          <v-window v-model="tab">
 
-              <v-window-item value="one">
-                <CoursesView class="mb-2" :mode="1" :customData="this.availableActivities?.data"  :onUnitChange="refreshDataActivities" />
-              </v-window-item>
-       
-              <v-window-item value="two">
-                <v-card-subtitle v-if="this.grouped_items.length <= 0" class="mt-8" style="text-align: start;"> Kein Wochenplan vorhanden... </v-card-subtitle>
-                <v-list :items="grouped_items" density="compact" disabled>
-                  <template v-slot:title="{ item }">
-                    <v-row no-gutters style="min-height: 16px">
-                      <!--
-                        <v-icon v-if="item.icon" :color="getStateColor(item.state)"> {{ item.icon }} </v-icon> 
-                        -->
-                      <v-col cols="12" sm="8">
-                        <div :style="'color:'+getStateColor(item.state)" :class="item.state?'text-sm':'font-bold underline'" v-html="item.title"></div>
-                      </v-col>
-                      <v-col cols="12" sm="2">
-                        <div :style="'color:'+getStateColor(item.state)" :class="item.state?'text-xs':'font-bold underline'" v-html="item.date"></div>
-                      </v-col>
-                      <v-col cols="12" sm="2">
-                        <div :style="'color:'+getStateColor(item.state)" :class="item.state?'text-xs':'font-bold underline'" v-html="item.status"></div>
-                      </v-col>
-                      <v-divider
+            <v-window-item value="one">
+              <CoursesView class="mb-2" :mode="1" :customData="this.availableActivities?.data"  :onUnitChange="refreshDataActivities" />
+            </v-window-item>
+
+            <v-window-item value="two">
+              <v-card-subtitle v-if="this.grouped_items.length <= 0" class="mt-8" style="text-align: start;"> Kein Wochenplan vorhanden... </v-card-subtitle>
+              <v-list :items="grouped_items" density="compact" disabled>
+                <template v-slot:title="{ item }">
+                  <v-row no-gutters style="min-height: 16px">
+                    <!--
+                      <v-icon v-if="item.icon" :color="getStateColor(item.state)"> {{ item.icon }} </v-icon>
+                      -->
+                    <v-col cols="12" sm="8">
+                      <div :style="'color:'+getStateColor(item.state)" :class="item.state?'text-sm':'font-bold underline'" v-html="item.title"></div>
+                    </v-col>
+                    <v-col cols="12" sm="2">
+                      <div :style="'color:'+getStateColor(item.state)" :class="item.state?'text-xs':'font-bold underline'" v-html="item.date"></div>
+                    </v-col>
+                    <v-col cols="12" sm="2">
+                      <div :style="'color:'+getStateColor(item.state)" :class="item.state?'text-xs':'font-bold underline'" v-html="item.status"></div>
+                    </v-col>
+                    <v-divider
                         v-if="!item.state"
                         class="mb-0 border-opacity-100"
                         :thickness="1"
                         color="#f22"
-                      ></v-divider>
-                    </v-row>
-                  </template>
-                  <!--
-                  <template v-slot:subtitle="{ item }">
-                    <div v-html="item.date"></div>
-                  </template>
-                  -->
-                  <template v-slot:prepend="{ item }">        
-                    <v-icon v-if="item.icon" :color="getStateColor(item.state)"> {{ item.icon }} </v-icon> 
-                  </template>
-                </v-list>
-              </v-window-item>
-
-              <v-window-item value="three">
-
+                    ></v-divider>
+                  </v-row>
+                </template>
                 <!--
-                <v-card-subtitle 
-                  v-if="!ser_bardata?.length > 0 && !test2_data?.length > 0 && !dds_bardata?.length > 0 && !test_data?.length > 0" 
-                  class="mt-8 mb-6" style="text-align: start;"> Sie haben noch keine Auswertungen hinterlegt. 
-                </v-card-subtitle>
-
-                <v-row v-if="ser_bardata?.length > 0" class="pa-0 ma-0 mt-2">
-                  <BarChart class="pa-2 mx-0" style="width: 50%" :chartData="ser_bardata" :options="ser_options" />
-                </v-row>
-                
-                <v-row v-if="test2_data?.length > 0" class="pa-0 ma-0 mt-2">
-                  <LineChart class="mx-0" style="width: 100%" :chartData="test2_data" :options="test2_options" />
-                </v-row>
-                
-                <v-row v-if="dds_bardata?.length > 0" class="pa-0 ma-0 mt-2">
-                  <BarChart class="pa-2 mx-0" style="width: 50%" :chartData="dds_bardata" :options="dds_options" />
-                </v-row>
-                    
-                <v-row v-if="test_data?.length > 0" class="pa-0 ma-0 mt-2">
-                  <LineChart class="mx-0" style="width: 100%" :chartData="test_data" :options="test_options" />
-                </v-row>
+                <template v-slot:subtitle="{ item }">
+                  <div v-html="item.date"></div>
+                </template>
                 -->
+                <template v-slot:prepend="{ item }">
+                  <v-icon v-if="item.icon" :color="getStateColor(item.state)"> {{ item.icon }} </v-icon>
+                </template>
+              </v-list>
+            </v-window-item>
 
-                <v-row>
-                  <BarChart class="pa-8 mx-0" style="width: 50%" :chartData="ser_bardata" :options="ser_options" />
-                  <BarChart class="pa-8 mx-0" style="width: 50%" :chartData="dds_bardata" :options="dds_options" />
-                </v-row>
+            <v-window-item value="three">
 
-              </v-window-item>
+              <!--
+              <v-card-subtitle
+                v-if="!ser_bardata?.length > 0 && !test2_data?.length > 0 && !dds_bardata?.length > 0 && !test_data?.length > 0"
+                class="mt-8 mb-6" style="text-align: start;"> Sie haben noch keine Auswertungen hinterlegt.
+              </v-card-subtitle>
 
-              <v-window-item value="four">
-                <v-card-subtitle 
-                  v-if="procedures?.data.length == 0" 
-                  class="mt-8 mb-6" style="text-align: start;"> Sie haben noch keine Ergebnisse hinterlegt. 
-                </v-card-subtitle>
-                <ListItemUserActivitys
+              <v-row v-if="ser_bardata?.length > 0" class="pa-0 ma-0 mt-2">
+                <BarChart class="pa-2 mx-0" style="width: 50%" :chartData="ser_bardata" :options="ser_options" />
+              </v-row>
+
+              <v-row v-if="test2_data?.length > 0" class="pa-0 ma-0 mt-2">
+                <LineChart class="mx-0" style="width: 100%" :chartData="test2_data" :options="test2_options" />
+              </v-row>
+
+              <v-row v-if="dds_bardata?.length > 0" class="pa-0 ma-0 mt-2">
+                <BarChart class="pa-2 mx-0" style="width: 50%" :chartData="dds_bardata" :options="dds_options" />
+              </v-row>
+
+              <v-row v-if="test_data?.length > 0" class="pa-0 ma-0 mt-2">
+                <LineChart class="mx-0" style="width: 100%" :chartData="test_data" :options="test_options" />
+              </v-row>
+              -->
+
+              <v-row>
+                <BarChart class="pa-8 mx-0" style="width: 50%" :chartData="ser_bardata" :options="ser_options" />
+                <BarChart class="pa-8 mx-0" style="width: 50%" :chartData="dds_bardata" :options="dds_options" />
+              </v-row>
+
+            </v-window-item>
+
+            <v-window-item value="four">
+              <v-card-subtitle
+                  v-if="procedures?.data.length == 0"
+                  class="mt-8 mb-6" style="text-align: start;"> Sie haben noch keine Ergebnisse hinterlegt.
+              </v-card-subtitle>
+              <ListItemUserActivitys
                   :item="procedure"
                   :index="i"
                   v-for="(procedure, i) in procedures.data"
                   :key="i"
-                />
-              </v-window-item>
+              />
+            </v-window-item>
 
-            </v-window>
-            
-          </v-card-text>
-        </v-card>
+          </v-window>
 
-        
-        
-      </v-col>
-    </v-row>
+        </v-card-text>
+      </v-card>
+
+
+
+    </v-col>
+  </v-row>
 </template>
 
 <script>
@@ -157,23 +157,23 @@ import { getTextByLanguage, parseDate } from "@/scripts/common/utils";
 import ListItemUserActivitys from "@/components/listItems/listItemUserActivitys.vue";
 
 
-import { 
-  BarChart, 
-  //LineChart 
+import {
+  BarChart,
+  //LineChart
 } from 'vue-chart-3';
 
 import { Chart, registerables } from "chart.js";
 
 import api from "@/scripts/api/api";
 
-import { 
-  /*getNextTaskActivity, 
-  continueProcedure, 
-  getNextActivity,*/ 
-  //isAllUnitsComplete, 
+import {
+  /*getNextTaskActivity,
+  continueProcedure,
+  getNextActivity,*/
+  //isAllUnitsComplete,
   //isAllUnitsCompleteSync,
-  getCourseIcon, 
-  //getCourseInfo, 
+  getCourseIcon,
+  //getCourseInfo,
   //getFHIRId,
   getUser
 } from "@/scripts/procedureEngine";
@@ -203,13 +203,13 @@ export default {
     ser_options: null,
     dds_bardata: null,
     dds_options: null,
-    
+
     test_data: null,
     test_options: null,
-    
+
     test2_data: null,
     test2_options: null,
-    
+
     // generel data
     tab: null,
     data: {
@@ -227,28 +227,28 @@ export default {
   }),
   props: [
   ],
-  components: { 
-    CoursesView, 
-    NewsView, 
-    BarChart, 
+  components: {
+    CoursesView,
+    NewsView,
+    BarChart,
     //LineChart,
     ListItemUserActivitys,
-    
+
   },
   mounted: async function () {
-    this.data = this.patientStore.getItem 
+    this.data = this.patientStore.getItem
     //console.log("LOG: " + JSON.stringify(this.data.item.item))
 
     await this.loadData()
 
     await this.getAudioAnalysis()
-    
+
     await this.parseSERResults()
     await this.parseDDSResults()
 
     //await this.parseTESTResults()
     //await this.parseTESTResults2()
-    
+
     await this.getProcedures()
     await this.getRunningProcedures()
     await this.getAvailableActivitysToUser()
@@ -277,39 +277,39 @@ export default {
       if(this.availableActivities.data.length > 0 && this.procedureRunning){
 
         const index = this.availableActivities.data.findIndex(activity => activity.id === this.procedureRunning.carePlanUnit.id);
-      if (index !== -1) {
-        this.availableActivities.data[index]={...this.procedureRunning}; 
+        if (index !== -1) {
+          this.availableActivities.data[index]={...this.procedureRunning};
+        }
       }
-    }
     },
     createCalendarEntries: async function () {
-      var data = this.data.item.item.calendarEntries 
+      var data = this.data.item.item.calendarEntries
 
       // ADDING SORTED ITEMS BY WEEK
-      
+
       this.grouped_items = []
 
       for (let i=0; i<50; i++) {
-        
+
         let filtered = data.filter(
-          (item) => item.carePlanWeek == i
+            (item) => item.carePlanWeek == i
         )
-      
+
         if (filtered.length > 0) {
           this.grouped_items.push({ type: 'header', title: 'Woche #'+i })
-        
+
           filtered.forEach(element => {
             this.grouped_items.push(
-              {
-                title: getTextByLanguage(element.activity.translations, this.$i18n),
-                date: element.startDate + " - " + element.stopDate + " (" + element.state + ")",
-                state: element.state,
-                icon: getCourseIcon(element.activity.primaryType),
-                /*
-                props: {
-                  prependIcon: this.getTypeIcon(element.activity.primaryType),
-                },*/
-              }
+                {
+                  title: getTextByLanguage(element.activity.translations, this.$i18n),
+                  date: element.startDate + " - " + element.stopDate + " (" + element.state + ")",
+                  state: element.state,
+                  icon: getCourseIcon(element.activity.primaryType),
+                  /*
+                  props: {
+                    prependIcon: this.getTypeIcon(element.activity.primaryType),
+                  },*/
+                }
             )
           });
 
@@ -320,37 +320,37 @@ export default {
       // ADDING UNGROUPED ITEMS AT BOTTOM
 
       let filtered = data.filter(
-        (item) => item.carePlanWeek == null
+          (item) => item.carePlanWeek == null
       )
 
       if (filtered.length > 0) {
 
         this.grouped_items.push({ type: 'header', title: 'un-grouped' })
-        
+
         filtered.forEach(element => {
           this.grouped_items.push(
-            {
-              title: getTextByLanguage(element.activity.translations, this.$i18n),
-              date: element.startDate + " - " + element.stopDate + " (" + element.state + ")",
-              state: element.state,
-              icon: getCourseIcon(element.activity.primaryType),
-              /*props: {
-                prependIcon: this.getTypeIcon(element.activity.primaryType),
-              },*/
-            }
+              {
+                title: getTextByLanguage(element.activity.translations, this.$i18n),
+                date: element.startDate + " - " + element.stopDate + " (" + element.state + ")",
+                state: element.state,
+                icon: getCourseIcon(element.activity.primaryType),
+                /*props: {
+                  prependIcon: this.getTypeIcon(element.activity.primaryType),
+                },*/
+              }
           )
         });
         this.grouped_items.push( { type: 'divider' } )
       }
-      
+
     },
     getRunningProcedures: async function(){
-     //this.procedureRunning= await api.getRunningProcedures(this.data.item.item.fhirPatient.id)
+      //this.procedureRunning= await api.getRunningProcedures(this.data.item.item.fhirPatient.id)
     },
     refreshDataActivities: async function(){
-       await this.getProcedures()
-       await this.getRunningProcedures()
-       await this.getAvailableActivitysToUser()
+      await this.getProcedures()
+      await this.getRunningProcedures()
+      await this.getAvailableActivitysToUser()
     },
     /**
      * depression
@@ -368,7 +368,7 @@ export default {
       const mild = this.analysis_data?.ddsAudioAnalyses.filter((obj) => obj.prediction === "MILD_DEPRESSION").length;
       const moderate = this.analysis_data?.ddsAudioAnalyses.filter((obj) => obj.prediction === "MODERATE_DEPRESSION").length;
       const heavy = this.analysis_data?.ddsAudioAnalyses.filter((obj) => obj.prediction === "HEAVY_DEPRESSION").length;
-      
+
       const arr = [ normal, mild, moderate, heavy ]
       const dds_max = Math.max(...arr)
 
@@ -438,9 +438,9 @@ export default {
      * emotions
      */
     parseSERResults: async function () {
-      
+
       // predictedEmotion
-      //	
+      //
       //    ?         NEUTRAL
       // angeekelt    DISGUST
       // glücklich    HAPPINESS
@@ -531,7 +531,7 @@ export default {
           return 'mdi-web'
         case "VR_DEVICE":
           return 'mdi-safety-goggles'
-      
+
         default:
           break;
       }
@@ -544,7 +544,7 @@ export default {
           return '#040'
         case "SCHEDULED":
           return '#004'
-      
+
         default:
           break;
       }
@@ -573,7 +573,7 @@ export default {
         case "MODERATE_DEPRESSION":
           return 2
         case "HEAVY_DEPRESSION":
-          return 3          
+          return 3
         default:
           return 0
       }
@@ -590,7 +590,7 @@ export default {
         case "MODERATE_DEPRESSION":
           return 2
         case "HEAVY_DEPRESSION":
-          return 3          
+          return 3
         default:
           return 0
       }
@@ -631,7 +631,7 @@ export default {
       const mild = this.analysis_data?.ddsAudioAnalyses.filter((obj) => obj.prediction === "MILD_DEPRESSION").length;
       const moderate = this.analysis_data?.ddsAudioAnalyses.filter((obj) => obj.prediction === "MODERATE_DEPRESSION").length;
       const heavy = this.analysis_data?.ddsAudioAnalyses.filter((obj) => obj.prediction === "HEAVY_DEPRESSION").length;
-      
+
       const arr = [ normal, mild, moderate, heavy ]
       const max = Math.max(...arr)
 
@@ -692,7 +692,7 @@ export default {
                 return yaxis[context];
               },
             },
-            
+
           },
         },
       }
@@ -704,7 +704,7 @@ export default {
     parseTESTResults2: async function () {
 
       // predictedEmotion
-      //	
+      //
       //    ?         NEUTRAL
       // angeekelt    DISGUST
       // glücklich    HAPPINESS
@@ -732,12 +732,12 @@ export default {
       const valuesAnger = []
       const valuesSurprised = []
       const valuesDisgust = []
-      
+
       //const valuesNormal = []
-      
+
       this.analysis_data?.serAudioAnalyses.forEach(element => {
         labels.push(element.createMoment.substring(0,10))
-        
+
         valuesHappy.push(element.probabilityHappiness)
         valuesSad.push(element.probabilitySadness)
         valuesFear.push(element.probabilityFearful)
@@ -747,7 +747,7 @@ export default {
 
         //valuesNormal.push(element.probabilityNeutral)
       });
-      
+
       /*
       const happy = this.analysis_data.serAudioAnalyses.filter((obj) => obj.predictedEmotion === "HAPPINESS").length;
       const sad = this.analysis_data.serAudioAnalyses.filter((obj) => obj.predictedEmotion === "SADNESS").length;
@@ -758,13 +758,13 @@ export default {
 */
       const arr = [...valuesHappy, ...valuesSad, ...valuesFear, ...valuesAnger, ...valuesSurprised, ...valuesDisgust /*,valuesNormal*/ ]
       const max = Math.max(...arr)
-      
+
       this.test2_data = {
-        labels: labels, 
+        labels: labels,
         datasets: [
           {
             label: "Happy",
-            data: valuesHappy, 
+            data: valuesHappy,
             borderColor: '#888',
             borderWidth: 1,
             backgroundColor: '#2DEA45',
@@ -772,7 +772,7 @@ export default {
           },
           {
             label: "Sad",
-            data: valuesSad, 
+            data: valuesSad,
             borderColor: '#888',
             borderWidth: 1,
             backgroundColor: '#4800FF',
@@ -788,7 +788,7 @@ export default {
           },
           {
             label: "Anger",
-            data: valuesAnger, 
+            data: valuesAnger,
             borderColor: '#888',
             borderWidth: 1,
             backgroundColor: '#FFAA00',
@@ -796,7 +796,7 @@ export default {
           },
           {
             label: "Surprised",
-            data: valuesSurprised, 
+            data: valuesSurprised,
             borderColor: '#888',
             borderWidth: 1,
             backgroundColor: '#FF009D',
@@ -804,14 +804,14 @@ export default {
           },
           {
             label: "Disgust",
-            data: valuesDisgust, 
+            data: valuesDisgust,
             borderColor: '#888',
             borderWidth: 1,
             backgroundColor: '#E20000',
             fill: false
           },
-          
-          
+
+
         ]
       }
 

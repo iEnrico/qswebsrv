@@ -5,13 +5,13 @@
       {{ $t("title_dashboard_active_courses") }}
     </v-card-title>
     <v-divider :thickness="1" class="border-opacity-100" color="#f22" v-if="showCard"></v-divider>
-    
+
     <center>
       <v-progress-circular
-        class="mx-8 my-8"
-        v-if="loading"
-        indeterminate
-        color="#28B9AF"
+          class="mx-8 my-8"
+          v-if="loading"
+          indeterminate
+          color="#28B9AF"
       />
     </center>
 
@@ -20,12 +20,12 @@
       <v-container fluid>
         <v-row >
           <!--  class="ma-2 pa-2" :cols="3" :cols="4" :cols="item.flex" -->
-          <div v-for="item in availableProcedures.data" :key="item.id"> 
+          <div v-for="item in availableProcedures.data" :key="item.id">
             <CoursesOverviewItem :item="item"  :mode="mode" :clickable="showCard" :onUnitChange="onUnitChange"/>
           </div>
         </v-row>
       </v-container>
-      
+
       <center style="height: 100%" v-if="availableProcedures.data?.length <= 0">
         <v-card-subtitle class="mb-4" style="text-align: start;"> Sie haben noch keine Kurse hinterlegt. </v-card-subtitle>
       </center>
@@ -67,12 +67,12 @@ export default {
   components: {CoursesOverviewItem},
   mounted: async function () {
     await this.refresh()
-},
-  
+  },
+
   updated: async function () {
     await this.refresh()
   },
-  
+
   methods: {
     refresh: async function () {
       this.loading = true;
@@ -83,8 +83,8 @@ export default {
 
       // get available units, if none avail maybe one started
       // if none available AND none started then the user has no plan. show "EMPTY CAREPLAN"
-      this.availableProcedures = this.mode == 1 ? { data: this.customData } : await getNextAvailableProcedures() 
-      
+      this.availableProcedures = this.mode == 1 ? { data: this.customData } : await getNextAvailableProcedures()
+
       this.loading = false;
     },
   },
