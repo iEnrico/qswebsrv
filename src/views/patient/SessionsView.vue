@@ -258,7 +258,8 @@ export default {
       this.dialog = false
     },
     routeBack() {
-      this.$router.push("/dashboard1");
+      const returnTo= this.parsedData.returnTo ?this.parsedData.returnTo : "/dashboard1"
+      this.$router.push(returnTo);
     },
     getQuestionaire() {
 
