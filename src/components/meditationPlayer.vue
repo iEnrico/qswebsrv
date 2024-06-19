@@ -1,23 +1,25 @@
+
 <template>
   <audio :id="playerUniqId" :src="audioSource"></audio>
   <!-- :class="[sceneClass, 'mx-auto', 'mt-0', 'rounded-lg']" -->
   <v-card
-      :class='sceneClass'
-      :style="backgroundStyle"
-      height="600"
-      width="100%"
-      color="#FFF"
-      variant="flat"
-      v-if="this.index < this.playerdata.length"
+    :class="sceneClass"
+    :style="backgroundStyle"
+    height="600"
+    width="100%"
+    color="#FFF"
+    variant="flat"
+    v-if="this.index < this.playerdata.length"
   >
     <v-container
-        @mousedown="handleDragStart"
-        @mousemove="handleDragMove"
-        @mouseup="handleDragEnd"
-        @touchstart="handleDragStart"
-        @touchmove="handleDragMove"
-        @touchend="handleDragEnd"
-        style="min-height: 100%; min-width: 100%">
+      @mousedown="handleDragStart"
+      @mousemove="handleDragMove"
+      @mouseup="handleDragEnd"
+      @touchstart="handleDragStart"
+      @touchmove="handleDragMove"
+      @touchend="handleDragEnd"
+      style="min-height: 100%; min-width: 100%"
+    >
       <v-row align="center" justify="center">
         <v-card-title v-if="!meditationFinished" class="mt-0 mb-4 pb-0">
           {{ this.options_SessionTypeAlternate[this.type] }}
@@ -26,77 +28,115 @@
 
       <v-row align="center" justify="center">
         <vue3dLoader
-            v-if="showInteraction"
-            :height="500"
-            :width="960"
-            :showFps="false"
-            :filePath="this.playerdata[this.index].model"
-            :mtlPath="null"
-            :lights="[
+          v-if="showInteraction"
+          :height="500"
+          :width="960"
+          :showFps="false"
+          :filePath="this.playerdata[this.index].model"
+          :mtlPath="null"
+          :lights="[
             {
               type: 'AmbientLight',
               color: '#FFFFFF',
               intensity: 3,
             },
-
           ]"
-            :backgroundColor="white"
-            :backgroundAlpha="0.1"
-            :controlsOptions="{
+          :backgroundColor="white"
+          :backgroundAlpha="0.1"
+          :controlsOptions="{
             enablePan: true,
             enableZoom: true,
             enableRotate: true,
           }"
-            :cameraPosition="{ x: 4, y: 2, z: 2 }"
-            :scale="{ x: 12, y: 12, z: 12 }"
+          :cameraPosition="{ x: 4, y: 2, z: 2 }"
+          :scale="{ x: 12, y: 12, z: 12 }"
         ></vue3dLoader>
         <!--
           :scale="{ x: 1.5, y: 1.5, z: 1.5 }"
         -->
       </v-row>
       <v-row align="start" justify="start">
-        <v-card-title v-if="meditationFinished" class="mt-8 mb-0 pb-0" style="background: rgba(255,255,255,0.5); color:black;opacity: 1; ; padding: 10px 15px !important;">{{
-            "Einleitung"
-          }}</v-card-title>
+        <v-card-title
+          v-if="meditationFinished"
+          class="mt-8 mb-0 pb-0"
+          style="
+            background: rgba(255, 255, 255, 0.5);
+            color: black;
+            opacity: 1;
+            padding: 10px 15px !important;
+          "
+          >{{ "Einleitung" }}</v-card-title
+        >
       </v-row>
       <v-row align="start" justify="start">
-        <v-card-subtitle v-if="meditationFinished" class="mt-8 mb-0 pb-0" style="background: rgba(0,0,0,0.5); color:white;opacity: 1; border-radius: 45px; padding: 10px 15px !important;" >{{
+        <v-card-subtitle
+          v-if="meditationFinished"
+          class="mt-8 mb-0 pb-0"
+          style="
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            opacity: 1;
+            border-radius: 45px;
+            padding: 10px 15px !important;
+          "
+          >{{
             "Bitte setzten sie ihre Kopfhörer auf. Sobald sie bequem sitzen können sie mit der Übung beginnen."
-          }}</v-card-subtitle>
+          }}</v-card-subtitle
+        >
       </v-row>
       <v-row
-          v-if="!showInteraction"
-          align="center"
-          justify="center"
-          class="pt-16 mb-0 pb-0"
-
+        v-if="!showInteraction"
+        align="center"
+        justify="center"
+        class="pt-16 mb-0 pb-0"
       >
         <!--<v-icon size="160" color="#DDDDDD">{{ "mdi-headphones" }}</v-icon>-->
         <!--"mdi-earbuds-outline"-->
       </v-row>
       <v-row
-          v-if="!showInteraction"
-          align="center"
-          justify="center"
-          class="pt-0 mb-0 pb-0"
-          style="color:white"
+        v-if="!showInteraction"
+        align="center"
+        justify="center"
+        class="pt-0 mb-0 pb-0"
+        style="color: white"
       >
         <!-- {{ options_SessionTypeAlternate[this.type] }} -->
       </v-row>
       <v-row style="min-height: 120px" align="center" justify="center">
-        <v-btn variant="elevated" style="background-color: #28B9AF;" v-if="meditationFinished" @click="start">
+        <v-btn
+          variant="elevated"
+          style="background-color: #28b9af"
+          v-if="meditationFinished"
+          @click="start"
+        >
           <span class="text-white">Jetzt Starten</span>
         </v-btn>
       </v-row>
-      <v-row align="center" justify="center" style="margin-top: 110px;">
+      <v-row align="center" justify="center" style="margin-top: 110px">
         <div class="fixed-controls">
-          <v-btn size="small" variant="elevated" v-if="!meditationFinished" @click="previousImage">
+          <v-btn
+            size="small"
+            variant="elevated"
+            v-if="!meditationFinished"
+            @click="previousImage"
+          >
             <v-icon>mdi-chevron-left</v-icon>
           </v-btn>
-          <v-btn size="small" variant="elevated" v-if="!meditationFinished" @click="togglePlay" style="margin: 0 5px;">
+          <v-btn
+            size="small"
+            variant="elevated"
+            v-if="!meditationFinished"
+            @click="togglePlay"
+            style="margin: 0 5px"
+          >
             <v-icon>{{ playBtnIcon }}</v-icon>
           </v-btn>
-          <v-btn size="small" variant="elevated" v-if="!meditationFinished" @click="nextImage">
+          <v-btn
+            size="small"
+            variant="elevated"
+            v-if="!meditationFinished"
+            @click="nextImage"
+          >
             <v-icon>mdi-chevron-right</v-icon>
           </v-btn>
         </div>
@@ -105,22 +145,29 @@
   </v-card>
   <v-row align="end" justify="end" class="mt-0" v-if="!meditationFinished">
     <v-progress-linear
-        v-if="!meditationFinished"
-        :model-value="this.progress"
-        :max="100"
-        height="3"
-        color="#28B9AF"
-        class="ml-0 mr-0 mb-1 mt-2"
+      v-if="!meditationFinished"
+      :model-value="this.progress"
+      :max="100"
+      height="3"
+      color="#28B9AF"
+      class="ml-0 mr-0 mb-1 mt-2"
     ></v-progress-linear>
-    <v-card-subtitle @click="finish()">{{ this.index + 1 }} / {{ this.playerdata.length }}</v-card-subtitle>
+    <v-card-subtitle @click="finish()"
+      >{{ this.index + 1 }} / {{ this.playerdata.length }}</v-card-subtitle
+    >
   </v-row>
 
-
   <!-- END SCREEN -->
-  <v-container class="pa-4 ma-4 mt-12 mb-12" style="min-height: 100%; min-width: 100%" v-if="meditationFinished && this.index >= this.playerdata.length">
-    <v-card class="pa-4 ma-4" style="width: 50%;" >
+  <v-container
+    class="pa-4 ma-4 mt-12 mb-12"
+    style="min-height: 100%; min-width: 100%"
+    v-if="meditationFinished && this.index >= this.playerdata.length"
+  >
+    <v-card class="pa-4 ma-4" style="width: 50%">
       <v-row align="center" justify="center">
-        <v-icon class="pa-8 mt-16 mb-0" size="64pt" color="#28B9AF">mdi-checkbox-marked-circle-outline</v-icon>
+        <v-icon class="pa-8 mt-16 mb-0" size="64pt" color="#28B9AF"
+          >mdi-checkbox-marked-circle-outline</v-icon
+        >
         <!--
          mdi-check-circle-outline
          mdi-checkbox-marked-circle-outline
@@ -136,9 +183,10 @@
       </v-row>
       <v-row align="center" justify="center">
         <v-btn
-            variant="elevated" style="background-color: #28B9AF;"
-            @click="finish()"
-            class="ml-0 mr-0 mt-8 mb-4"
+          variant="elevated"
+          style="background-color: #28b9af"
+          @click="finish()"
+          class="ml-0 mr-0 mt-8 mb-4"
         >
           <!-- TODO: add storing of questionaries too! -->
           <span class="text-white">{{ $t("overlay_save_exit") }}</span>
@@ -146,14 +194,22 @@
       </v-row>
     </v-card>
   </v-container>
-  <v-container v-if="showProceedButton" style="position: absolute; bottom: 20px; right: 20px;">
-    <v-btn variant="elevated" style="background-color: #28B9AF;" @click="proceedToNext">
+  <v-container
+    v-if="showProceedButton"
+    style="position: absolute; bottom: 30px; right: 20px; display: flex;justify-content: end;right: 25px;"
+  >
+    <v-btn
+      variant="elevated"
+      style="background-color: #28b9af"
+      @click="proceedToNext"
+    >
       <span class="text-white">Weiter</span>
     </v-btn>
   </v-container>
 </template>
 
 <script>
+/* eslint-disable */
 import api from "@/scripts/api/api";
 export default {
   name: "MeditationPlayer",
@@ -169,7 +225,7 @@ export default {
     error: null,
     isPlaying: false,
     localPlayerData: [],
-    sceneType: '',
+    sceneType: "",
     dragStartX: 0,
     options_SessionTypeAlternate: [
       "Lupenübung Stein (ca. 9 Minuten)",
@@ -198,35 +254,41 @@ export default {
 
     this.player.addEventListener("ended", () => {
       this.isPlaying = false;
-      setTimeout(() => {
-        if (this.playerdata[this.index].audio === "Einleitung 1.1.ogg") {
-          this.showProceedButton = true;
-        } else {
+      if (this.playerdata[this.index].text === "Einleitung 1.1.ogg") {
+        this.showProceedButton = true;
+      } else {
+        setTimeout(() => {
           this.index++;
           if (this.index < this.playerdata.length) {
             this.nextStep();
-            this.player.play().then(() => {
-              this.isPlaying = true;
-            }).catch(error => {
-              console.error("Auto reproduction failed:", error);
-            });
+            this.player
+              .play()
+              .then(() => {
+                this.isPlaying = true;
+              })
+              .catch((error) => {
+                console.error("Auto reproduction failed:", error);
+              });
           } else {
             this.meditationFinished = true;
           }
-        }
-      }, 3000);
+        }, 3000);
+      }
     });
 
     this.player.addEventListener("loadeddata", (ev) => {
-      console.log(ev);
+
       this._resetProgress();
       this.duration = this.player.duration;
       if (this.autoPlayNext) {
-        this.player.play().then(() => {
-          this.isPlaying = true;
-        }).catch(error => {
-          console.error("Error trying to reproduce the audio:", error);
-        });
+        this.player
+          .play()
+          .then(() => {
+            this.isPlaying = true;
+          })
+          .catch((error) => {
+            console.error("Error trying to reproduce the audio:", error);
+          });
         this.autoPlayNext = false;
       }
     });
@@ -254,14 +316,17 @@ export default {
       }
     },
     handleDragStart(event) {
-      this.dragStartX = event.type.includes('mouse') ? event.clientX : event.touches[0].clientX;
+      this.dragStartX = event.type.includes("mouse")
+        ? event.clientX
+        : event.touches[0].clientX;
     },
 
-    handleDragMove() {
-    },
+    handleDragMove() {},
 
     handleDragEnd(event) {
-      const dragEndX = event.type.includes('mouse') ? event.clientX : event.changedTouches[0].clientX;
+      const dragEndX = event.type.includes("mouse")
+        ? event.clientX
+        : event.changedTouches[0].clientX;
       const threshold = 50;
 
       if (Math.abs(dragEndX - this.dragStartX) > threshold) {
@@ -273,14 +338,21 @@ export default {
       }
     },
     changeBackground() {
-      const images = this.sceneType === 'night_scene' ? this.nightImages : this.dayImages;
-      this.currentBackgroundIndex = (this.currentBackgroundIndex + 1) % images.length;
+      const images =
+        this.sceneType === "night_scene" ? this.nightImages : this.dayImages;
+      this.currentBackgroundIndex =
+        (this.currentBackgroundIndex + 1) % images.length;
     },
     determineSceneType() {
       if (this.localPlayerData.length > 0 && this.localPlayerData[0].units) {
-        const currentUnit = this.localPlayerData[0].units.find(unit => unit.state === 'RUNNING');
+        const currentUnit = this.localPlayerData[0].units.find(
+          (unit) => unit.state === "RUNNING"
+        );
         if (currentUnit && currentUnit.contentPackageResourceBundle) {
-          this.sceneType = currentUnit.contentPackageResourceBundle.name === 'night_scene' ? 'night_scene' : 'day_scene';
+          this.sceneType =
+            currentUnit.contentPackageResourceBundle.name === "night_scene"
+              ? "night_scene"
+              : "day_scene";
         }
       }
     },
@@ -315,7 +387,7 @@ export default {
     async finish() {
       this.meditationFinished = true;
       //alert("DONE!, send results and goto overview!")
-      this.sendResults()
+      this.sendResults();
     },
     nextStep() {
       if (this.index < this.playerdata.length) {
@@ -329,11 +401,14 @@ export default {
         }
 
         if (this.audioSource) {
-          this.player.play().then(() => {
-            this.isPlaying = true;
-          }).catch(error => {
-            console.error("Error trying to reproduce the audio:", error);
-          });
+          this.player
+            .play()
+            .then(() => {
+              this.isPlaying = true;
+            })
+            .catch((error) => {
+              console.error("Error trying to reproduce the audio:", error);
+            });
         }
       } else {
         this.meditationFinished = true;
@@ -369,11 +444,14 @@ export default {
       this.index++;
       if (this.index < this.playerdata.length) {
         this.nextStep();
-        this.player.play().then(() => {
-          this.isPlaying = true;
-        }).catch(error => {
-          console.error("Auto reproduction failed:", error);
-        });
+        this.player
+          .play()
+          .then(() => {
+            this.isPlaying = true;
+          })
+          .catch((error) => {
+            console.error("Auto reproduction failed:", error);
+          });
       } else {
         this.meditationFinished = true;
       }
@@ -381,27 +459,28 @@ export default {
   },
   computed: {
     backgroundStyle() {
-      const images = this.sceneType === 'night_scene' ? this.nightImages : this.dayImages;
+      const images =
+        this.sceneType === "night_scene" ? this.nightImages : this.dayImages;
       return {
         backgroundImage: `url(${images[this.currentBackgroundIndex]})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center center',
+        backgroundSize: "cover",
+        backgroundPosition: "center center",
       };
     },
     dayImages() {
       return [
-        require('../assets/webMeditation/meditation_day_E.jpg'),
-        require('../assets/webMeditation/meditation_day_N.jpg'),
-        require('../assets/webMeditation/meditation_day_S.jpg'),
-        require('../assets/webMeditation/meditation_day_W.jpg'),
+        require("../assets/webMeditation/meditation_day_E.jpg"),
+        require("../assets/webMeditation/meditation_day_N.jpg"),
+        require("../assets/webMeditation/meditation_day_S.jpg"),
+        require("../assets/webMeditation/meditation_day_W.jpg"),
       ];
     },
     nightImages() {
       return [
-        require('../assets/webMeditation/meditation_night_E.jpg'),
-        require('../assets/webMeditation/meditation_night_N.jpg'),
-        require('../assets/webMeditation/meditation_night_S.jpg'),
-        require('../assets/webMeditation/meditation_night_W.jpg'),
+        require("../assets/webMeditation/meditation_night_E.jpg"),
+        require("../assets/webMeditation/meditation_night_N.jpg"),
+        require("../assets/webMeditation/meditation_night_S.jpg"),
+        require("../assets/webMeditation/meditation_night_W.jpg"),
       ];
     },
     audioSource() {
@@ -425,18 +504,25 @@ export default {
       return `audio-player${this._uid}`;
     },
     sceneClass() {
-      return (this.sceneType === 'night_scene' ? 'night-scene' : 'day-scene') +  ' mx-auto mt-0 rounded-lg';
+      return (
+        (this.sceneType === "night_scene" ? "night-scene" : "day-scene") +
+        " mx-auto mt-0 rounded-lg"
+      );
     },
   },
 };
 </script>
 
 <style>
-.viewer-container {background: transparent !important;}
-.viewer-canvas{ background: transparent !important;}
-.fixed-controls{
+.viewer-container {
+  background: transparent !important;
+}
+.viewer-canvas {
+  background: transparent !important;
+}
+.fixed-controls {
   position: fixed;
-  bottom: 32.5%;
+  bottom: 35.5%;
   right: 3.5%;
 }
 </style>
