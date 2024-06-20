@@ -2,9 +2,9 @@
   <FullscreenNavBarActions :visible='dialog' :abort='onAbort'/>
   <v-row
       class="pa-0 ma-0"
-      style="background-color: white; justify-content: center; align-items: center"
-  >
+      style="background-color: white; justify-content: center; align-items: center">
     <v-card-title> {{ getTitle() }} </v-card-title>
+
     <v-spacer></v-spacer>
     <v-btn variant="flat" prepend-icon="mdi-close" @click="this.dialog = true">
       <template v-slot:prepend>
@@ -20,46 +20,41 @@
       color="#28B9AF"
       class="mr-16"
   ></v-progress-linear>
-
   <!-- AUDIO DIARY -->
   <v-container
       v-if="getCourseType() == 'AUDIO_DIARY'"
       style="min-width: 100%; "
-      class="mx-0 my-0"
-  >
-    <SessionsStepInfo v-if="index == 0 && showInfo" :data="parsedData" :onBack="onBack" :onNext="onNext" />
+      class="mx-0 my-0">
+    <SessionsStepInfo v-if="index == 0" :data="parsedData" :onBack="onBack" :onNext="onNext" />
     <SessionsStepQuestions v-if="index == 1" :eventAbort="EVENT_QUESTION_ABORT" :data="parsedData" :updateView="updateView" :questions="getQuestions()" :onBack="onBack" :onNext="onNext" :setProgress="setProgress" />
   </v-container>
-
   <!-- WEB -->
   <v-container
       v-if="getCourseType() == 'WEBSITE'"
       style="min-width: 100%; "
-      class="mx-0 my-0"
-  >
-    <SessionsStepInfo v-if="index == 0 && showInfo" :data="parsedData" :onBack="onBack" :onNext="onNext" />
+      class="mx-0 my-0">
+    <SessionsStepInfo v-if="index == 0" :data="parsedData" :onBack="onBack" :onNext="onNext" />
     <SessionsStepConfig
-        v-if="index == 1 || (index == 0 && !showInfo)"
+        v-if="index == 1"
         :data="parsedData"
         :onBack="onBack"
         :onNext="onNext"
     />
     <SessionsStepMeditation v-if="index == 2" :data="parsedData" :updateView="updateView" :setProgress="setProgress" :onNext="onNext"/>
   </v-container>
-
   <!-- VR / QUESTIONNAIRE -->
   <v-container
       v-if="getCourseType() == 'VR_DEVICE' || getCourseType() == 'QUESTIONNAIRE'"
       style="min-width: 100%; "
-      class="mx-0 my-0"
-  >
-    <SessionsStepInfo v-if="index == 0 && showInfo" :data="parsedData" :onBack="onBack" :onNext="onNext" />
+      class="mx-0 my-0">
+    <SessionsStepInfo v-if="index == 0" :data="parsedData" :onBack="onBack" :onNext="onNext" />
+
     <div v-if="getCourseType() == 'QUESTIONNAIRE'">
       <SessionsStepQuestions v-if="index == 1" :eventAbort="EVENT_QUESTION_ABORT" :data="parsedData" :updateView="updateView" :questions="getQuestionaire()" :onBack="onBack" :onNext="onNext" :setProgress="setProgress" />
     </div>
     <div v-if="getCourseType() == 'VR_DEVICE'">
       <SessionsStepConfig
-          v-if="index == 1 || (index == 0 && !showInfo)"
+          v-if="index == 1"
           :data="parsedData"
           :onBack="onBack"
           :onNext="onNext"
@@ -67,14 +62,11 @@
       <SessionsStepVRLogin v-if="index == 2" :data="parsedData" :updateView="updateView" :onBack="onBack" :onNext="onNext" />
     </div>
   </v-container>
-
   <!-- VIDEO -->
   <v-container
       v-if="getCourseType() == 'VIDEO'"
-      style="min-width: 100%;  align-items: center;"
-      class="mx-0 my-0"
-  >
-    <!-- fill-width fill-height -->
+      style="min-width: 100%; align-items: center;"
+      class="mx-0 my-0">
     <v-row
         class="pa-0 ma-0"
         style="background-color: transparent; justify-content: center; align-items: center"
@@ -85,7 +77,6 @@
       </video>
     </v-row>
   </v-container>
-
   <!-- TAGEBUCH EINTRAG // NOT USED ANYMORE, replaced by notes add view -->
   <!--
   <v-container
@@ -99,7 +90,6 @@
   </v-container>
   -->
 </template>
-
 <script>
 import SessionsStepInfo from "@/components/SessionsStepInfo.vue";
 import SessionsStepConfig from "@/components/SessionsStepConfig.vue";
@@ -145,7 +135,6 @@ export default {
     max: 3,
     dialog: false,
     parsedData: null,
-    showInfo: true,
     //doSave: true,
   }),
   components: {
@@ -159,18 +148,7 @@ export default {
     FullscreenNavBarActions
   },
   mounted: async function () {
-    this.parsedData = this.sessionStore.getItem;
-    console.log('parsedData:', this.parsedData);
-    // Verify that is the first time and show SessionsStepInfo
-    const hasSeenInfo = sessionStorage.getItem('hasSeenInfo');
-    console.log('hasSeenInfo:', hasSeenInfo);
-    if (hasSeenInfo) {
-      this.showInfo = false;
-      this.index = 1;
-    } else {
-      sessionStorage.setItem('hasSeenInfo', true);
-      this.showInfo = true;
-    }
+    this.parsedData = this.sessionStore.getItem
   },
   methods: {
     getQuestions() {
@@ -258,8 +236,7 @@ export default {
       this.dialog = false
     },
     routeBack() {
-      const returnTo= this.parsedData.returnTo ?this.parsedData.returnTo : "/dashboard1"
-      this.$router.push(returnTo);
+      this.$router.push("/dashboard1");
     },
     getQuestionaire() {
 
@@ -306,5 +283,4 @@ export default {
   },
 };
 </script>
-
 <style></style>
