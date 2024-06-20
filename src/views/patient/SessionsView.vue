@@ -152,7 +152,7 @@ export default {
   },
   methods: {
     getQuestions() {
-
+      debugger;
       var contentPackage = ( isAllUnitsCompleteSync(this.parsedData) && this.parsedData.nextActivityUnit)
           ? this.parsedData.nextActivityUnit.contentPackage
           : this.parsedData.activity
@@ -201,10 +201,11 @@ export default {
       return getTextByLanguage(translations, locale)
     },
     async updateView() {
+      debugger;
       let newData = await getNextAvailableProcedures()
       this.parsedData = newData.data[0]
       this.sessionStore.setItem(this.parsedData)
-      this.index = 0
+      this.index = 1
     },
     onBack() {
       if (this.index > 0) {
@@ -236,7 +237,8 @@ export default {
       this.dialog = false
     },
     routeBack() {
-      this.$router.push("/dashboard1");
+      const returnTo= this.parsedData.returnTo ?this.parsedData.returnTo : "/dashboard1"
+      this.$router.push(returnTo);
     },
     getQuestionaire() {
 

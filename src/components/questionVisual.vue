@@ -325,6 +325,7 @@ import InfoDlg from "@/components/dialogs/dialogInformation.vue";
 console.log("entro")
 
 export default {
+  /* eslint-disable */
   name: "QuestionVisual",
   setup() {
     const notesStore = useNotesStore();
@@ -342,6 +343,7 @@ export default {
       }
     },
     results: function () {
+       debugger;
       this.question_index = this.results.length
       if (this.results.length > 0) {
         this.showLoadedDataInfo(this.results.length)
@@ -375,7 +377,7 @@ export default {
   props: ["setProgress" /*"question_index", "max_elements"*/, "results", "eventAbort", "metadata", "data", "updateView", "sendResults"],
   components: {VoiceRecorder, InfoDlg},
   mounted: async function () {
-
+    debugger;
     this.elements = this.data;
     this.max_elements = this.data.length;
 
@@ -475,13 +477,9 @@ export default {
       }
       else {
         // next step
-        if (this.question_index < this.max_elements) {
-          console.log("index++")
-          this.question_index++;
-          this.checkNextDisabled();
-        }
+
         // finish audio note
-        else if (this.elements[0].answerType == 2) {
+        if (this.elements[0].answerType == 2) {
           console.log("finish audio!")
           console.log("audio data: " + this.result_data)
           if (this.result_data.length > 0) {
@@ -508,7 +506,7 @@ export default {
     routeBack: function (value) {
       this.$router.push(value);
     },
-    routeNext: async function () {
+    routeNext: async function (nextAvailable) {
       //console.log("routeNext QV: " + JSON.stringify(this.metadata))
       //console.log("finished: " + this.metadata.max_progress+1 === this.metadata.progress)
       //if(this.metadata.max_progress === this.metadata.progress+1) {
@@ -517,19 +515,12 @@ export default {
 
         var item = await getNextAvailableProcedures();
 
-        if (item.data[0].nextActivityUnit) {
-
-          this.$router.push({
-            name: /*item.course_type == 3 ? "Dashboard3a" :*/ "Dashboard2a",
-            //params: { data: JSON.stringify(item.data[0]) },
-          });
-
+     if (item.data && item.data[0] && item.data[0].nextActivityUnit) {
           this.updateView()
 
         } else {
           this.routeBack('/Dashboard1')
         }
-
 
       //} else {
 
@@ -575,10 +566,9 @@ export default {
       );
     },
     completeAudioNote: async function () {
-
+      debugger;
       try {
         console.log("send audio diary result to backend...\n" + this.result_data);
-
         var parsedData = await getNextAvailableProcedures();
         console.log("Parsed Data: ", parsedData);
 
@@ -595,7 +585,7 @@ export default {
         }
 
         var lastUnit = units[units.length - 1];
-        var contentPackage = lastUnit.contentPackage;
+        var contentPackage = lastUnit.activityUnit.contentPackage;
 
         if (!contentPackage) {
           console.error("Content Package is undefined for the last unit");
@@ -718,7 +708,7 @@ export default {
       // after async finish the view
       var vm = this;
       setTimeout(async function(){
-        vm.routeBack("/Dashboard1");
+        await vm.routeNext();
       }, 500)
 
     },
